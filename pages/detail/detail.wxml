@@ -77,6 +77,10 @@
 
   <!-- 操作按钮 -->
   <view class="action-buttons">
+    <view class="action-btn cover-btn" bindtap="fetchBookCover">
+      <view class="action-icon">🖼️</view>
+      <text>获取封面</text>
+    </view>
     <view class="action-btn share-btn" bindtap="shareBook">
       <view class="action-icon">📤</view>
       <text>分享</text>

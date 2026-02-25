@@ -1,0 +1,12 @@
+{
+  "name": "batchUpdateCovers",
+  "version": "1.0.0",
+  "description": "批量更新书籍封面",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

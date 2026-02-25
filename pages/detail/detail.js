@@ -90,6 +90,57 @@ Page({
     await this.updateBookStatus('intensiveRead', !this.data.book.intensiveRead)
   },
 
+  // 获取书籍封面
+  async fetchBookCover() {
+    const { book } = this.data
+    if (!book) return
+
+    wx.showLoading({
+      title: '获取封面中...',
+      mask: true
+    })
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'getBookCoverFromDouban',
+        data: {
+          bookId: book._id,
+          title: book.title.replace(/《|》/g, ''), // 移除书名号
+          author: book.author
+        }
+      })
+
+      wx.hideLoading()
+
+      if (res.result.success) {
+        // 更新本地数据
+        this.setData({
+          'book.cover': res.result.coverUrl
+        })
+
+        wx.showToast({
+          title: '封面获取成功',
+          icon: 'success',
+          duration: 2000
+        })
+      } else {
+        wx.showToast({
+          title: res.result.message || '未找到封面',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    } catch (error) {
+      wx.hideLoading()
+      console.error('获取封面失败:', error)
+      wx.showToast({
+        title: '获取失败，请重试',
+        icon: 'error',
+        duration: 2000
+      })
+    }
+  },
+
   // 更新书籍状态
   async updateBookStatus(field, value) {
     if (!this.data.book || !this.data.bookId) return

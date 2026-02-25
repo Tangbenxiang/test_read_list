@@ -1,0 +1,13 @@
+{
+  "name": "getBookCoverFromDouban",
+  "version": "1.0.0",
+  "description": "从豆瓣API获取书籍封面",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest",
+    "axios": "^1.6.0"
+  }
+}

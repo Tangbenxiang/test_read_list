@@ -241,6 +241,11 @@
   transition: all 0.3s ease;
 }
 
+.cover-btn {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: white;
+}
+
 .share-btn {
   background: linear-gradient(135deg, #66B3FF 0%, #3388FF 100%);
   color: white;
