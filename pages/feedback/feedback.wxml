@@ -1,0 +1,55 @@
+<!-- pages/feedback/feedback.wxml -->
+<view class="container page-content">
+  <!-- 顶部标题 -->
+  <view class="header">
+    <text class="title">意见和建议</text>
+    <text class="subtitle">感谢您的反馈，我们会认真听取</text>
+  </view>
+
+  <!-- 反馈表单 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">意见建议：</text>
+      <view class="textarea-wrapper">
+        <textarea
+          class="textarea"
+          placeholder="请描述您遇到的问题或提出改进建议（500字以内）"
+          placeholder-class="placeholder"
+          maxlength="{{maxLength}}"
+          value="{{feedbackContent}}"
+          bindinput="onInputChange"
+        ></textarea>
+        <view class="character-count">
+          <text>{{characterCount}}/{{maxLength}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提示信息 -->
+    <view class="tips">
+      <text class="tip-item">• 我们会认真阅读每一条反馈</text>
+      <text class="tip-item">• 您的意见将帮助我们改进小程序</text>
+      <text class="tip-item">• 如有紧急问题，请通过其他渠道联系</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <view
+      class="submit-btn {{submitting ? 'disabled' : ''}}"
+      bindtap="submitFeedback"
+    >
+      <text>{{submitting ? '提交中...' : '提交反馈'}}</text>
+    </view>
+    <view class="back-btn" bindtap="goBack">
+      <text>取消</text>
+    </view>
+  </view>
+
+  <!-- 加载提示 -->
+  <view wx:if="{{submitting}}" class="loading-overlay">
+    <view class="loading-content">
+      <text>正在提交，请稍候...</text>
+    </view>
+  </view>
+</view>

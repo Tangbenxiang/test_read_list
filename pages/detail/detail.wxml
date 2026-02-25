@@ -4,6 +4,12 @@
   <view class="book-header">
     <view class="book-cover">
       <image src="{{book.cover || '/images/default-cover.png'}}" mode="aspectFill"></image>
+      <view wx:if="{{coverStatus === 'empty'}}" class="cover-overlay" bindtap="fetchBookCover">
+        <text class="cover-tip">点击获取封面</text>
+      </view>
+      <view wx:if="{{coverStatus === 'error'}}" class="cover-overlay error" bindtap="fetchBookCover">
+        <text class="cover-tip">封面获取失败，点击重试</text>
+      </view>
     </view>
     <view class="book-header-info">
       <text class="book-title">{{book.title}}</text>
@@ -80,6 +86,10 @@
     <view class="action-btn cover-btn" bindtap="fetchBookCover">
       <view class="action-icon">🖼️</view>
       <text>获取封面</text>
+    </view>
+    <view wx:if="{{isAdmin}}" class="action-btn edit-btn" bindtap="editBook">
+      <view class="action-icon">✏️</view>
+      <text>编辑</text>
     </view>
     <view class="action-btn share-btn" bindtap="shareBook">
       <view class="action-icon">📤</view>

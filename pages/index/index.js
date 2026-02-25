@@ -123,6 +123,20 @@ Page({
     })
   },
 
+  // 跳转到意见建议页面
+  goToFeedback() {
+    wx.navigateTo({
+      url: '/pages/feedback/feedback'
+    })
+  },
+
+  // 跳转到添加书籍页面
+  goToAddBook() {
+    wx.navigateTo({
+      url: '/pages/addbook/addbook'
+    })
+  },
+
   // 分享功能
   onShareAppMessage() {
     return {

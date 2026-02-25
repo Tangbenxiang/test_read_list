@@ -1,0 +1,204 @@
+/* pages/feedback/feedback.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #E6F4FF 0%, #FFFFFF 100%);
+  padding: 40rpx 30rpx 80rpx;
+}
+
+/* 顶部标题 */
+.header {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.title {
+  display: block;
+  font-size: 42rpx;
+  font-weight: bold;
+  color: #0066CC;
+  margin-bottom: 15rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 102, 204, 0.2);
+}
+
+.subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 表单部分 */
+.form-section {
+  background: white;
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4rpx 30rpx rgba(77, 166, 255, 0.1);
+}
+
+.form-item {
+  margin-bottom: 40rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.textarea-wrapper {
+  position: relative;
+  border: 2rpx solid #E6F4FF;
+  border-radius: 16rpx;
+  padding: 25rpx;
+  background: #F8FBFF;
+  transition: all 0.3s ease;
+}
+
+.textarea-wrapper:focus-within {
+  border-color: #4DA6FF;
+  box-shadow: 0 0 10rpx rgba(77, 166, 255, 0.3);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 300rpx;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+.placeholder {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.character-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 15rpx;
+  padding-top: 15rpx;
+  border-top: 1rpx solid #EEE;
+}
+
+/* 提示信息 */
+.tips {
+  background: #F0F8FF;
+  border-radius: 16rpx;
+  padding: 25rpx;
+  border-left: 6rpx solid #4DA6FF;
+}
+
+.tip-item {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+  line-height: 1.5;
+}
+
+.tip-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  gap: 30rpx;
+}
+
+.submit-btn {
+  flex: 2;
+  background: linear-gradient(135deg, #4DA6FF 0%, #0066CC 100%);
+  color: white;
+  padding: 30rpx;
+  border-radius: 20rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.submit-btn.disabled {
+  opacity: 0.7;
+  background: #CCC;
+}
+
+.submit-btn:not(.disabled):active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 10rpx rgba(0, 102, 204, 0.3);
+}
+
+.back-btn {
+  flex: 1;
+  background: #F5F5F5;
+  color: #666;
+  padding: 30rpx;
+  border-radius: 20rpx;
+  font-size: 32rpx;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.back-btn:active {
+  background: #E5E5E5;
+  transform: translateY(2rpx);
+}
+
+/* 加载遮罩 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-content {
+  background: white;
+  padding: 60rpx 80rpx;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+}
+
+/* 响应式调整 */
+@media (max-width: 375px) {
+  .container {
+    padding: 30rpx 20rpx 60rpx;
+  }
+
+  .title {
+    font-size: 38rpx;
+  }
+
+  .form-section {
+    padding: 30rpx 20rpx;
+  }
+
+  .form-label {
+    font-size: 30rpx;
+  }
+
+  .textarea {
+    min-height: 250rpx;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 20rpx;
+  }
+
+  .submit-btn,
+  .back-btn {
+    width: 100%;
+  }
+}

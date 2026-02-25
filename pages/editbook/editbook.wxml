@@ -1,0 +1,177 @@
+<!-- pages/editbook/editbook.wxml -->
+<view class="container page-content">
+  <!-- 权限检查 -->
+  <view wx:if="{{checkingAdmin || loading}}" class="loading-overlay">
+    <view class="loading-content">
+      <text>{{checkingAdmin ? '检查权限中...' : '加载中...'}}</text>
+    </view>
+  </view>
+
+  <view wx:elif="{{!isAdmin}}" class="permission-denied">
+    <view class="denied-icon">🔒</view>
+    <text class="denied-title">权限不足</text>
+    <text class="denied-message">{{errorMessage || '只有管理员可以编辑书籍'}}</text>
+    <view class="back-btn" bindtap="goBack">
+      <text>返回</text>
+    </view>
+  </view>
+
+  <!-- 编辑书籍表单 -->
+  <view wx:else class="form-container">
+    <!-- 顶部标题和状态 -->
+    <view class="header">
+      <text class="title">编辑书籍</text>
+      <text class="subtitle">{{originalBook ? originalBook.title : ''}}</text>
+      <view wx:if="{{hasChanges}}" class="change-indicator">
+        <text>有未保存的修改</text>
+      </view>
+    </view>
+
+    <!-- 表单 -->
+    <scroll-view class="form-scroll" scroll-y>
+      <view class="form-section">
+        <!-- 书名 -->
+        <view class="form-item">
+          <text class="form-label required">书名：</text>
+          <input
+            class="form-input"
+            placeholder="请输入书名"
+            value="{{formData.title}}"
+            bindinput="onInputChange"
+            data-field="title"
+            maxlength="100"
+          />
+        </view>
+
+        <!-- 书籍类型 -->
+        <view class="form-item">
+          <text class="form-label required">类型：</text>
+          <picker
+            class="form-picker"
+            range="{{typeOptions}}"
+            value="{{typeOptions.indexOf(formData.type)}}"
+            bindchange="onPickerChange"
+            data-field="type"
+          >
+            <view class="picker-view">
+              <text class="picker-text {{formData.type ? '' : 'placeholder'}}">
+                {{formData.type || '请选择书籍类型'}}
+              </text>
+              <text class="picker-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 作者 -->
+        <view class="form-item">
+          <text class="form-label required">作者：</text>
+          <input
+            class="form-input"
+            placeholder="请输入作者"
+            value="{{formData.author}}"
+            bindinput="onInputChange"
+            data-field="author"
+            maxlength="50"
+          />
+        </view>
+
+        <!-- 年级 -->
+        <view class="form-item">
+          <text class="form-label required">适合年级：</text>
+          <picker
+            class="form-picker"
+            range="{{gradeOptions}}"
+            value="{{gradeOptions.indexOf(formData.gradeLevel)}}"
+            bindchange="onPickerChange"
+            data-field="gradeLevel"
+          >
+            <view class="picker-view">
+              <text class="picker-text">{{formData.gradeLevel}}</text>
+              <text class="picker-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 简介 -->
+        <view class="form-item">
+          <text class="form-label">简介：</text>
+          <textarea
+            class="form-textarea"
+            placeholder="请输入书籍简介（可选）"
+            value="{{formData.description}}"
+            bindinput="onInputChange"
+            data-field="description"
+            maxlength="500"
+            auto-height
+          />
+        </view>
+
+        <!-- 状态开关 -->
+        <view class="form-item switches">
+          <text class="form-label">状态：</text>
+          <view class="switch-group">
+            <view class="switch-item">
+              <text class="switch-label">已购买</text>
+              <switch
+                checked="{{formData.purchased}}"
+                bindchange="onSwitchChange"
+                data-field="purchased"
+                color="#52C41A"
+              />
+            </view>
+            <view class="switch-item">
+              <text class="switch-label">已阅读</text>
+              <switch
+                checked="{{formData.read}}"
+                bindchange="onSwitchChange"
+                data-field="read"
+                color="#1890FF"
+              />
+            </view>
+            <view class="switch-item">
+              <text class="switch-label">已精读</text>
+              <switch
+                checked="{{formData.intensiveRead}}"
+                bindchange="onSwitchChange"
+                data-field="intensiveRead"
+                color="#FAAD14"
+              />
+            </view>
+          </view>
+        </view>
+
+        <!-- 封面URL -->
+        <view class="form-item">
+          <text class="form-label">封面URL：</text>
+          <input
+            class="form-input"
+            placeholder="封面图片URL（可选）"
+            value="{{formData.cover}}"
+            bindinput="onInputChange"
+            data-field="cover"
+          />
+          <text class="form-hint">可留空，后续可通过获取封面功能添加</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <view
+        class="submit-btn {{!hasChanges || submitting ? 'disabled' : ''}}"
+        bindtap="submitUpdate"
+      >
+        <text>{{submitting ? '更新中...' : '保存修改'}}</text>
+      </view>
+      <view
+        class="reset-btn {{!hasChanges ? 'disabled' : ''}}"
+        bindtap="resetForm"
+      >
+        <text>重置</text>
+      </view>
+      <view class="back-btn" bindtap="goBack">
+        <text>取消</text>
+      </view>
+    </view>
+  </view>
+</view>

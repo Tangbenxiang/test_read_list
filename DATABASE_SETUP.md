@@ -46,6 +46,39 @@
 | createTime | Date | 是 | serverDate | 创建时间 |
 | updateTime | Date | 否 | serverDate | 更新时间 |
 
+### 2.4 创建feedback集合（意见建议）
+1. 进入微信开发者工具 → 云开发控制台 → 数据库
+2. 点击"+"号创建新集合，命名为 `feedback`
+3. 集合权限设置：建议设置为"所有用户可写，仅管理员可读"
+
+#### 集合结构
+`feedback` 集合应包含以下字段：
+
+| 字段名 | 类型 | 必填 | 默认值 | 说明 |
+|--------|------|------|--------|------|
+| _id | String | 是 | 自动生成 | 文档ID |
+| content | String | 是 | - | 反馈内容 |
+| userInfo | Object | 否 | - | 用户信息（昵称、头像等） |
+| contact | String | 否 | '匿名用户' | 联系方式 |
+| status | String | 是 | 'pending' | 状态：pending（待处理）、reviewed（已查看）、resolved（已解决） |
+| createTime | Date | 是 | serverDate | 创建时间 |
+
+### 2.5 创建admins集合（管理员）
+1. 进入微信开发者工具 → 云开发控制台 → 数据库
+2. 点击"+"号创建新集合，命名为 `admins`
+3. 集合权限设置：建议设置为"仅管理员可读写"
+
+#### 集合结构
+`admins` 集合应包含以下字段：
+
+| 字段名 | 类型 | 必填 | 默认值 | 说明 |
+|--------|------|------|--------|------|
+| _id | String | 是 | 自动生成 | 文档ID |
+| openid | String | 是 | - | 微信用户openid |
+| nickname | String | 否 | - | 昵称 |
+| role | String | 是 | 'admin' | 角色：admin（管理员） |
+| createTime | Date | 是 | serverDate | 创建时间 |
+
 ## 3. 测试数据（可选）
 
 如需添加测试数据，可以使用以下JSON格式：
@@ -108,6 +141,12 @@
    - `searchBooks` - 搜索书籍
    - `updateBookStatus` - 更新书籍状态
    - `initDatabase` - 数据库初始化检查
+   - `getBookCoverFromDouban` - 从豆瓣获取书籍封面
+   - `batchUpdateCovers` - 批量更新封面
+   - `importTestBooks` - 导入测试数据
+   - `checkAdmin` - 检查用户是否为管理员
+   - `addBook` - 添加新书籍（需管理员权限）
+   - `updateBookInfo` - 更新书籍信息（需管理员权限）
 
 ## 6. 环境配置
 

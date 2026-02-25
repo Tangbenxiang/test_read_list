@@ -3,6 +3,7 @@
   <!-- 顶部背景区域 -->
   <view class="header-bg">
     <view class="snowflake">❄️</view>
+    <view class="admin-icon" bindtap="goToAddBook">➕</view>
     <text class="title">阅读记录小助手</text>
     <text class="subtitle">和Shelly一起探索书海，爱上阅读</text>
   </view>
@@ -68,6 +69,11 @@
       <view class="entry-icon">📚</view>
       <text class="entry-text">全部书籍</text>
       <text class="entry-count">{{stats.grade1 + stats.grade2 + stats.grade3}}本</text>
+    </view>
+
+    <view class="quick-entry" bindtap="goToFeedback">
+      <view class="entry-icon">💬</view>
+      <text class="entry-text">意见建议</text>
     </view>
   </view>
 

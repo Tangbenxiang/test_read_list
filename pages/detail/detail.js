@@ -5,7 +5,11 @@ Page({
   data: {
     book: null,
     loading: false,
-    bookId: ''
+    bookId: '',
+    coverStatus: '', // 封面状态：'empty', 'loading', 'loaded', 'error'
+    coverRetryCount: 0, // 封面获取重试次数
+    isAdmin: false, // 是否是管理员
+    checkingAdmin: false // 是否正在检查管理员权限
   },
 
   onLoad(options) {
@@ -40,6 +44,12 @@ Page({
       wx.setNavigationBarTitle({
         title: res.data.title || '书籍详情'
       })
+
+      // 检查封面状态
+      this.checkCoverStatus(res.data)
+
+      // 检查管理员权限
+      this.checkAdminPermission()
     } catch (error) {
       console.error('加载书籍详情失败:', error)
       this.setData({ loading: false })
@@ -75,6 +85,118 @@ Page({
     }
   },
 
+  // 检查封面状态
+  checkCoverStatus(book) {
+    if (!book) return
+
+    let coverStatus = 'loaded'
+    if (!book.cover) {
+      coverStatus = 'empty'
+    } else if (book.cover === '') {
+      coverStatus = 'empty'
+    } else if (book.cover.startsWith('http')) {
+      coverStatus = 'loaded'
+    } else {
+      coverStatus = 'error'
+    }
+
+    this.setData({ coverStatus })
+
+    // 如果封面为空，给出提示
+    if (coverStatus === 'empty') {
+      console.log('书籍缺少封面，可点击"获取封面"按钮')
+    }
+  },
+
+  // 检查管理员权限
+  async checkAdminPermission() {
+    this.setData({ checkingAdmin: true })
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'checkAdmin'
+      })
+
+      if (res.result.success && res.result.isAdmin) {
+        this.setData({
+          isAdmin: true,
+          checkingAdmin: false
+        })
+      } else {
+        this.setData({
+          isAdmin: false,
+          checkingAdmin: false
+        })
+      }
+    } catch (error) {
+      console.error('检查管理员权限失败:', error)
+      this.setData({
+        isAdmin: false,
+        checkingAdmin: false
+      })
+    }
+  },
+
+  // 跳转到编辑页面
+  editBook() {
+    const { bookId, isAdmin } = this.data
+    if (!isAdmin) {
+      wx.showToast({
+        title: '没有编辑权限',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
+    wx.navigateTo({
+      url: `/pages/editbook/editbook?id=${bookId}`
+    })
+  },
+
+  // 测试批量更新封面（开发调试用）
+  async testBatchUpdateCovers() {
+    wx.showLoading({
+      title: '批量更新中...',
+      mask: true
+    })
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'batchUpdateCovers',
+        data: {
+          limit: 5,
+          skip: 0
+        }
+      })
+
+      wx.hideLoading()
+
+      if (res.result.success) {
+        wx.showModal({
+          title: '批量更新结果',
+          content: `处理完成：成功 ${res.result.updated} 本，失败 ${res.result.failed} 本。${res.result.message}`,
+          showCancel: false
+        })
+        console.log('批量更新结果:', res.result)
+      } else {
+        wx.showModal({
+          title: '批量更新失败',
+          content: res.result.error || '未知错误',
+          showCancel: false
+        })
+      }
+    } catch (error) {
+      wx.hideLoading()
+      console.error('批量更新封面失败:', error)
+      wx.showModal({
+        title: '批量更新失败',
+        content: error.message || '网络错误',
+        showCancel: false
+      })
+    }
+  },
+
   // 切换购买状态
   async togglePurchased() {
     await this.updateBookStatus('purchased', !this.data.book.purchased)
@@ -94,6 +216,10 @@ Page({
   async fetchBookCover() {
     const { book } = this.data
     if (!book) return
+
+    // 增加重试计数
+    const newRetryCount = this.data.coverRetryCount + 1
+    this.setData({ coverRetryCount: newRetryCount })
 
     wx.showLoading({
       title: '获取封面中...',
@@ -115,7 +241,9 @@ Page({
       if (res.result.success) {
         // 更新本地数据
         this.setData({
-          'book.cover': res.result.coverUrl
+          'book.cover': res.result.coverUrl,
+          coverStatus: 'loaded',
+          coverRetryCount: 0 // 重置重试计数
         })
 
         wx.showToast({
@@ -124,8 +252,12 @@ Page({
           duration: 2000
         })
       } else {
+        this.setData({
+          coverStatus: 'error'
+        })
+        const retryMsg = newRetryCount > 1 ? `（第${newRetryCount}次重试）` : ''
         wx.showToast({
-          title: res.result.message || '未找到封面',
+          title: `${res.result.message || '未找到封面'}${retryMsg}`,
           icon: 'none',
           duration: 2000
         })
@@ -133,8 +265,13 @@ Page({
     } catch (error) {
       wx.hideLoading()
       console.error('获取封面失败:', error)
+      this.setData({
+        coverStatus: 'error'
+      })
+      const retryCount = this.data.coverRetryCount
+      const retryMsg = retryCount > 1 ? `（第${retryCount}次重试）` : ''
       wx.showToast({
-        title: '获取失败，请重试',
+        title: `获取失败，请重试${retryMsg}`,
         icon: 'error',
         duration: 2000
       })
