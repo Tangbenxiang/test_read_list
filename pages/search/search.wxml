@@ -1,0 +1,113 @@
+<!-- pages/search/search.wxml -->
+<view class="container page-content">
+  <!-- 搜索框 -->
+  <view class="search-box">
+    <view class="search-input-wrapper">
+      <view class="search-icon">🔍</view>
+      <input
+        class="search-input"
+        placeholder="搜索书名、作者或类型"
+        placeholder-class="placeholder"
+        value="{{keyword}}"
+        bindinput="onInput"
+        bindconfirm="onSearch"
+        focus="{{autoFocus}}"
+      />
+      <view wx:if="{{keyword}}" class="clear-btn" bindtap="clearKeyword">×</view>
+    </view>
+    <view class="search-btn" bindtap="onSearch">搜索</view>
+  </view>
+
+  <!-- 搜索提示 -->
+  <view wx:if="{{showSuggestions && keyword}}" class="suggestions">
+    <view class="suggestion-item" bindtap="searchWithKeyword" data-keyword="{{keyword}}">
+      搜索 "{{keyword}}"
+    </view>
+    <view wx:if="{{recentKeywords.length > 0}}" class="suggestion-section">
+      <text class="suggestion-title">最近搜索</text>
+      <block wx:for="{{recentKeywords}}" wx:key="index">
+        <view class="suggestion-item" bindtap="searchWithKeyword" data-keyword="{{item}}">
+          {{item}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view wx:if="{{showResults}}" class="search-results">
+    <view class="results-header">
+      <text class="results-title">搜索结果</text>
+      <text class="results-count">{{total}}条</text>
+    </view>
+
+    <scroll-view
+      class="results-list"
+      scroll-y
+      bindscrolltolower="loadMore"
+      lower-threshold="100"
+      enable-back-to-top
+    >
+      <block wx:for="{{results}}" wx:key="_id">
+        <view class="result-item" bindtap="goToDetail" data-id="{{item._id}}">
+          <view class="result-header">
+            <text class="result-title">
+              <text class="highlight">{{keyword}}</text>
+              <text>{{item.title.split(keyword).join('')}}</text>
+            </text>
+            <view class="result-status">
+              <text wx:if="{{item.purchased}}" class="status-icon purchased">✓</text>
+              <text wx:if="{{item.read}}" class="status-icon read">👁</text>
+              <text wx:if="{{item.intensiveRead}}" class="status-icon intensive">⭐</text>
+            </view>
+          </view>
+          <text class="result-author">{{item.author}}</text>
+          <text class="result-type">{{item.type}} · {{item.gradeLevel}}</text>
+          <text class="result-desc">
+            {{item.description ? highlightText(item.description, keyword) : '暂无简介'}}
+          </text>
+        </view>
+      </block>
+
+      <!-- 加载提示 -->
+      <view wx:if="{{loading}}" class="loading">
+        <view class="loading-icon">⏳</view>
+        <text>加载中...</text>
+      </view>
+      <view wx:if="{{!hasMore && results.length > 0}}" class="no-more">
+        <text>没有更多结果了</text>
+      </view>
+      <view wx:if="{{results.length === 0 && !loading && showResults}}" class="empty">
+        <view class="empty-icon">🔍</view>
+        <text class="empty-text">未找到相关书籍</text>
+        <text class="empty-desc">换个关键词试试吧</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view wx:if="{{!showResults && recentKeywords.length > 0}}" class="history-section">
+    <view class="history-header">
+      <text class="history-title">搜索历史</text>
+      <view class="clear-history" bindtap="clearHistory">清空</view>
+    </view>
+    <view class="history-tags">
+      <block wx:for="{{recentKeywords}}" wx:key="index">
+        <view class="history-tag" bindtap="searchWithKeyword" data-keyword="{{item}}">
+          {{item}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 热门搜索 -->
+  <view wx:if="{{!showResults}}" class="hot-section">
+    <text class="hot-title">热门搜索</text>
+    <view class="hot-tags">
+      <view class="hot-tag" bindtap="searchWithKeyword" data-keyword="童话">童话</view>
+      <view class="hot-tag" bindtap="searchWithKeyword" data-keyword="科普">科普</view>
+      <view class="hot-tag" bindtap="searchWithKeyword" data-keyword="安徒生">安徒生</view>
+      <view class="hot-tag" bindtap="searchWithKeyword" data-keyword="一年级">一年级</view>
+      <view class="hot-tag" bindtap="searchWithKeyword" data-keyword="经典">经典</view>
+    </view>
+  </view>
+</view>

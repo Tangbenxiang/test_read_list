@@ -1,0 +1,228 @@
+/* pages/index/index.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #A0D6FF 0%, #E6F4FF 100%);
+  padding-bottom: 40rpx;
+}
+
+/* 顶部背景区域 */
+.header-bg {
+  height: 280rpx;
+  background: linear-gradient(135deg, #7BC6FF 0%, #4DA6FF 50%, #3388FF 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 0 0 60rpx 60rpx;
+  box-shadow: 0 4rpx 30rpx rgba(77, 166, 255, 0.3);
+  margin-bottom: 30rpx;
+}
+
+.snowflake {
+  position: absolute;
+  top: 40rpx;
+  right: 40rpx;
+  font-size: 48rpx;
+  animation: float 3s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20rpx) rotate(180deg);
+  }
+}
+
+.title {
+  font-size: 46rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 0 2rpx 8rpx rgba(0, 102, 204, 0.4);
+  margin-bottom: 16rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #E6F4FF;
+  opacity: 0.9;
+}
+
+/* 搜索栏 */
+.search-bar {
+  margin: 0 30rpx 40rpx;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+  box-shadow: var(--shadow-light);
+  border: 2rpx solid rgba(160, 214, 255, 0.3);
+}
+
+.search-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+  color: #66B3FF;
+}
+
+.search-placeholder {
+  font-size: 28rpx;
+  color: #999;
+  flex: 1;
+}
+
+/* 章节标题 */
+.section-title {
+  display: flex;
+  align-items: center;
+  margin: 0 30rpx 20rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #0066CC;
+}
+
+.section-icon {
+  font-size: 36rpx;
+  margin-right: 15rpx;
+}
+
+/* 年级卡片 */
+.grade-cards {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  margin-bottom: 50rpx;
+}
+
+.grade-card {
+  width: 210rpx;
+  height: 160rpx;
+  border-radius: 24rpx;
+  padding: 25rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.grade-1 {
+  background: linear-gradient(135deg, #7BC6FF 0%, #4DA6FF 100%);
+}
+
+.grade-2 {
+  background: linear-gradient(135deg, #66B3FF 0%, #3388FF 100%);
+}
+
+.grade-3 {
+  background: linear-gradient(135deg, #4DA6FF 0%, #0066CC 100%);
+}
+
+.grade-name {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 10rpx;
+}
+
+.book-count {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.card-icon {
+  position: absolute;
+  bottom: 10rpx;
+  right: 10rpx;
+  font-size: 60rpx;
+  opacity: 0.8;
+}
+
+/* 快捷入口 */
+.quick-entries {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 30rpx;
+  margin-bottom: 50rpx;
+}
+
+.quick-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 180rpx;
+}
+
+.entry-icon {
+  font-size: 80rpx;
+  margin-bottom: 15rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+}
+
+.entry-text {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.entry-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 数据统计卡片 */
+.stats-cards {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.stat-card {
+  width: calc(50% - 40rpx);
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx 20rpx;
+  margin: 10rpx 20rpx;
+  text-align: center;
+  box-shadow: var(--shadow-light);
+}
+
+.stat-number {
+  display: block;
+  font-size: 42rpx;
+  font-weight: bold;
+  color: #0066CC;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 加载提示 */
+.loading {
+  text-align: center;
+  padding: 30rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 响应式调整 */
+@media (max-width: 375px) {
+  .grade-card {
+    width: 200rpx;
+    height: 150rpx;
+    padding: 20rpx;
+  }
+
+  .quick-entry {
+    width: 160rpx;
+  }
+}

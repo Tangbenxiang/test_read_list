@@ -1,0 +1,8 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "阅读记录小助手",
+  "navigationBarBackgroundColor": "#A0D6FF",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": false,
+  "backgroundColor": "#E6F4FF"
+}

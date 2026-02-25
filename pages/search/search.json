@@ -1,0 +1,9 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "搜索书籍",
+  "navigationBarBackgroundColor": "#A0D6FF",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#E6F4FF",
+  "enablePullDownRefresh": false,
+  "onReachBottomDistance": 50
+}

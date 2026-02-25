@@ -1,0 +1,93 @@
+<!-- pages/detail/detail.wxml -->
+<view class="container page-content">
+  <!-- 书籍封面和标题 -->
+  <view class="book-header">
+    <view class="book-cover">
+      <text wx:if="{{!book.cover}}" class="cover-placeholder">📚</text>
+      <image wx:else src="{{book.cover}}" mode="aspectFill"></image>
+    </view>
+    <view class="book-header-info">
+      <text class="book-title">{{book.title}}</text>
+      <text class="book-author">{{book.author}}</text>
+      <view class="book-tags">
+        <text class="book-tag">{{book.type}}</text>
+        <text class="book-tag">{{book.gradeLevel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 状态切换 -->
+  <view class="status-section">
+    <text class="section-title">阅读状态</text>
+    <view class="status-buttons">
+      <view
+        class="status-btn {{book.purchased ? 'active' : ''}}"
+        bindtap="togglePurchased"
+      >
+        <view class="status-icon purchased">{{book.purchased ? '✓' : '+'}}</view>
+        <text class="status-text">已购买</text>
+      </view>
+      <view
+        class="status-btn {{book.read ? 'active' : ''}}"
+        bindtap="toggleRead"
+      >
+        <view class="status-icon read">{{book.read ? '👁' : '👁'}}</view>
+        <text class="status-text">已阅读</text>
+      </view>
+      <view
+        class="status-btn {{book.intensiveRead ? 'active' : ''}}"
+        bindtap="toggleIntensive"
+      >
+        <view class="status-icon intensive">{{book.intensiveRead ? '⭐' : '☆'}}</view>
+        <text class="status-text">已精读</text>
+      </view>
+    </view>
+    <text class="status-hint">点击状态图标切换</text>
+  </view>
+
+  <!-- 书籍信息 -->
+  <view class="info-section">
+    <text class="section-title">书籍信息</text>
+    <view class="info-grid">
+      <view class="info-item">
+        <text class="info-label">序号：</text>
+        <text class="info-value">{{book.serial}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">类型：</text>
+        <text class="info-value">{{book.type}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">作者：</text>
+        <text class="info-value">{{book.author}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">年级：</text>
+        <text class="info-value">{{book.gradeLevel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 书籍简介 -->
+  <view class="description-section">
+    <text class="section-title">内容简介</text>
+    <view class="description-content">
+      <text>{{book.description || '暂无简介'}}</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <view class="action-btn share-btn" bindtap="shareBook">
+      <view class="action-icon">📤</view>
+      <text>分享</text>
+    </view>
+    <view class="action-btn back-btn" bindtap="goBack">
+      <view class="action-icon">←</view>
+      <text>返回列表</text>
+    </view>
+  </view>
+
+  <!-- 加载提示 -->
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+</view>

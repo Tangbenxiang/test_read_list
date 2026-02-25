@@ -1,0 +1,161 @@
+<!-- pages/list/list.wxml -->
+<view class="container page-content">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-title">
+      <text>{{pageTitle}}</text>
+      <text class="book-total">{{total}}本</text>
+    </view>
+    <view class="filter-btn" bindtap="showFilterPanel">
+      <view class="filter-icon">⚙️</view>
+      <text>筛选</text>
+    </view>
+  </view>
+
+  <!-- 筛选标签 -->
+  <view wx:if="{{filterTags.length > 0}}" class="filter-tags">
+    <block wx:for="{{filterTags}}" wx:key="index">
+      <view class="filter-tag">
+        <text>{{item.label}}: {{item.value}}</text>
+        <view class="tag-close" bindtap="removeFilter" data-index="{{index}}">×</view>
+      </view>
+    </block>
+    <view class="clear-all" bindtap="clearAllFilters">清空</view>
+  </view>
+
+  <!-- 书籍列表 -->
+  <scroll-view
+    class="book-list"
+    scroll-y
+    bindscrolltolower="loadMore"
+    lower-threshold="100"
+    enable-back-to-top
+  >
+    <block wx:for="{{books}}" wx:key="_id">
+      <view class="book-item" bindtap="goToDetail" data-id="{{item._id}}">
+        <view class="book-cover">
+          <text wx:if="{{!item.cover}}" class="cover-placeholder">📚</text>
+          <image wx:else src="{{item.cover}}" mode="aspectFill"></image>
+        </view>
+        <view class="book-info">
+          <view class="book-header">
+            <text class="book-title">{{item.title}}</text>
+            <view class="book-status">
+              <text wx:if="{{item.purchased}}" class="status-icon purchased">✓</text>
+              <text wx:if="{{item.read}}" class="status-icon read">👁</text>
+              <text wx:if="{{item.intensiveRead}}" class="status-icon intensive">⭐</text>
+            </view>
+          </view>
+          <text class="book-author">{{item.author}}</text>
+          <text class="book-type">{{item.type}}</text>
+          <text class="book-grade">{{item.gradeLevel}}</text>
+          <text class="book-desc">{{item.description ? item.description.slice(0, 40) + '...' : '暂无简介'}}</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- 加载更多提示 -->
+    <view wx:if="{{loading}}" class="loading">
+      <view class="loading-icon">⏳</view>
+      <text>加载中...</text>
+    </view>
+    <view wx:if="{{!hasMore && books.length > 0}}" class="no-more">
+      <text>没有更多书籍了</text>
+    </view>
+    <view wx:if="{{books.length === 0 && !loading}}" class="empty">
+      <view class="empty-icon">📚</view>
+      <text class="empty-text">暂无书籍</text>
+      <text class="empty-desc">尝试调整筛选条件或添加书籍</text>
+    </view>
+  </scroll-view>
+
+  <!-- 筛选面板 -->
+  <view wx:if="{{showFilterPanel}}" class="filter-panel-mask" bindtap="hideFilterPanel">
+    <view class="filter-panel" catchtap="stopPropagation">
+      <view class="filter-header">
+        <text>筛选条件</text>
+        <view class="filter-close" bindtap="hideFilterPanel">×</view>
+      </view>
+
+      <scroll-view class="filter-content" scroll-y>
+        <!-- 年级筛选 -->
+        <view class="filter-section">
+          <text class="section-title">适合年级</text>
+          <view class="filter-options">
+            <view
+              class="filter-option {{filters.gradeLevel === '一至二年级' ? 'active' : ''}}"
+              bindtap="setGradeFilter"
+              data-value="一至二年级"
+            >
+              <text>一至二年级</text>
+              <view wx:if="{{filters.gradeLevel === '一至二年级'}}" class="option-check">✓</view>
+            </view>
+            <view
+              class="filter-option {{filters.gradeLevel === '三至四年级' ? 'active' : ''}}"
+              bindtap="setGradeFilter"
+              data-value="三至四年级"
+            >
+              <text>三至四年级</text>
+              <view wx:if="{{filters.gradeLevel === '三至四年级'}}" class="option-check">✓</view>
+            </view>
+            <view
+              class="filter-option {{filters.gradeLevel === '五至六年级' ? 'active' : ''}}"
+              bindtap="setGradeFilter"
+              data-value="五至六年级"
+            >
+              <text>五至六年级</text>
+              <view wx:if="{{filters.gradeLevel === '五至六年级'}}" class="option-check">✓</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 状态筛选 -->
+        <view class="filter-section">
+          <text class="section-title">阅读状态</text>
+          <view class="filter-switches">
+            <view class="filter-switch">
+              <text>已购买</text>
+              <switch checked="{{filters.purchased}}" bindchange="togglePurchased" color="#52C41A" />
+            </view>
+            <view class="filter-switch">
+              <text>已阅读</text>
+              <switch checked="{{filters.read}}" bindchange="toggleRead" color="#1890FF" />
+            </view>
+            <view class="filter-switch">
+              <text>已精读</text>
+              <switch checked="{{filters.intensiveRead}}" bindchange="toggleIntensive" color="#FAAD14" />
+            </view>
+          </view>
+        </view>
+
+        <!-- 排序方式 -->
+        <view class="filter-section">
+          <text class="section-title">排序方式</text>
+          <view class="filter-options">
+            <view
+              class="filter-option {{sortField === 'serial' ? 'active' : ''}}"
+              bindtap="setSortField"
+              data-field="serial"
+            >
+              <text>按序号</text>
+              <view wx:if="{{sortField === 'serial'}}" class="option-check">✓</view>
+            </view>
+            <view
+              class="filter-option {{sortField === 'title' ? 'active' : ''}}"
+              bindtap="setSortField"
+              data-field="title"
+            >
+              <text>按书名</text>
+              <view wx:if="{{sortField === 'title'}}" class="option-check">✓</view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="filter-actions">
+        <view class="filter-btn reset" bindtap="resetFilters">重置</view>
+        <view class="filter-btn apply" bindtap="applyFilters">应用筛选</view>
+      </view>
+    </view>
+  </view>
+</view>

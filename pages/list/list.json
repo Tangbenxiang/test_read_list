@@ -1,0 +1,9 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "书籍列表",
+  "navigationBarBackgroundColor": "#A0D6FF",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#E6F4FF",
+  "onReachBottomDistance": 50
+}

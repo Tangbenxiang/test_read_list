@@ -1,0 +1,12 @@
+{
+  "name": "initDatabase",
+  "version": "1.0.0",
+  "description": "初始化数据库和检查集合",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

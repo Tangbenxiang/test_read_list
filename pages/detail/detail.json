@@ -1,0 +1,8 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "书籍详情",
+  "navigationBarBackgroundColor": "#A0D6FF",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#E6F4FF",
+  "enablePullDownRefresh": false
+}

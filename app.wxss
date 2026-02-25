@@ -1,0 +1,142 @@
+/* app.wxss - 全局样式 */
+/* 定义CSS变量（微信小程序支持） */
+page {
+  /* 主色调 - 冰雪蓝系列 */
+  --primary-blue: #A0D6FF;
+  --secondary-blue: #66B3FF;
+  --dark-blue: #0066CC;
+  --light-blue: #E6F4FF;
+
+  /* 辅助色 */
+  --snow-white: #FFFFFF;
+  --ice-blue: #C2E5FF;
+  --star-yellow: #FFD700;
+
+  /* 文字色 */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-light: #999999;
+
+  /* 阴影 */
+  --shadow-light: 0 4rpx 20rpx rgba(160, 214, 255, 0.2);
+  --shadow-medium: 0 8rpx 30rpx rgba(0, 102, 204, 0.15);
+
+  /* 圆角 */
+  --radius-small: 12rpx;
+  --radius-medium: 24rpx;
+  --radius-large: 40rpx;
+
+  /* 字体 */
+  font-family:
+    'PingFang SC',
+    'Microsoft YaHei',
+    'Hiragino Sans GB',
+    'WenQuanYi Micro Hei',
+    sans-serif;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  background-color: var(--light-blue);
+}
+
+/* 全局样式重置 */
+view, text, image {
+  box-sizing: border-box;
+}
+
+/* 常用工具类 */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 按钮基础样式 */
+.btn {
+  padding: 20rpx 40rpx;
+  border-radius: var(--radius-medium);
+  text-align: center;
+  font-size: 28rpx;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--secondary-blue) 0%, var(--dark-blue) 100%);
+  color: var(--snow-white);
+}
+
+.btn-secondary {
+  background: var(--snow-white);
+  color: var(--dark-blue);
+  border: 2rpx solid var(--primary-blue);
+}
+
+/* 卡片样式 */
+.card {
+  background: var(--snow-white);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-light);
+  padding: 30rpx;
+  margin: 20rpx;
+}
+
+/* 雪花飘落动画 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20rpx) rotate(180deg);
+  }
+}
+
+/* 页面加载动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.page-content {
+  animation: fadeIn 0.5s ease;
+}
+
+/* 状态颜色 */
+.status-purchased {
+  color: #52C41A; /* 绿色 */
+}
+
+.status-read {
+  color: #1890FF; /* 蓝色 */
+}
+
+.status-intensive {
+  color: #FAAD14; /* 金色 */
+}
