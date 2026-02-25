@@ -45,10 +45,16 @@ Page({
     const title = options.title || '书籍列表'
     wx.setNavigationBarTitle({ title })
 
-    this.setData({
+    // 更新分页大小（如果指定）
+    const updates = {
       pageTitle: title,
       queryParams: options
-    })
+    }
+    if (options.pageSize) {
+      updates.pageSize = parseInt(options.pageSize, 10) || 20
+    }
+
+    this.setData(updates)
 
     // 加载书籍列表
     this.loadBooks(true)

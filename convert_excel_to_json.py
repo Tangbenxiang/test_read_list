@@ -87,9 +87,17 @@ def convert_excel_to_json(excel_file, json_file=None):
                         return bool(x)
                     if isinstance(x, str):
                         x_lower = x.strip().lower()
-                        if x_lower in ['1', '是', 'yes', 'true', 't', 'y', '已购买', '已阅读', '已精读']:
+                        # 扩展识别范围，包括常见的中文和数字表示
+                        true_values = ['1', '是', 'yes', 'true', 't', 'y', '已购买', '已阅读', '已精读', '有', '完成', 'true', 'yes', '1', '已']
+                        false_values = ['0', '', '否', 'no', 'false', 'f', 'n', '未购买', '未阅读', '未精读', '无', '未完成', 'false', 'no', '0', '未']
+
+                        if x_lower in true_values:
                             return True
-                        elif x_lower in ['0', '', '否', 'no', 'false', 'f', 'n', '未购买', '未阅读', '未精读']:
+                        elif x_lower in false_values:
+                            return False
+                        else:
+                            # 无法识别的字符串，尝试转换为布尔值
+                            print(f"警告：无法识别的布尔值 '{x}'，默认返回False")
                             return False
                     # 默认转换为布尔值
                     try:
@@ -97,14 +105,46 @@ def convert_excel_to_json(excel_file, json_file=None):
                     except:
                         return False
 
+                # 记录转换前的值分布（前5个不同的值）
+                unique_values = df[field].dropna().unique()
+                if len(unique_values) > 0:
+                    print(f"字段 '{field}' 转换前示例值: {unique_values[:5]}")
+
                 df[field] = df[field].apply(convert_bool_value)
-                print(f"字段 '{field}' 转换完成: {df[field].sum()} 个True")
+                print(f"字段 '{field}' 转换完成: {df[field].sum()} 个True, {len(df) - df[field].sum()} 个False")
 
         # 处理文本字段的空值
         text_fields = ['title', 'type', 'author', 'description', 'gradeLevel']
         for field in text_fields:
             if field in df.columns:
                 df[field] = df[field].fillna('').astype(str).str.strip()
+
+        # 标准化年级字段为三种标准值
+        if 'gradeLevel' in df.columns:
+            def standardize_grade_level(value):
+                """标准化年级字段值"""
+                if pd.isna(value) or value == '':
+                    return '一至二年级'  # 默认值
+
+                value_str = str(value).strip()
+
+                # 模糊匹配逻辑
+                if '一' in value_str or '二' in value_str or '1' in value_str or '2' in value_str or '一年级' in value_str or '二年级' in value_str:
+                    return '一至二年级'
+                elif '三' in value_str or '四' in value_str or '3' in value_str or '4' in value_str or '三年级' in value_str or '四年级' in value_str:
+                    return '三至四年级'
+                elif '五' in value_str or '六' in value_str or '5' in value_str or '6' in value_str or '五年级' in value_str or '六年级' in value_str:
+                    return '五至六年级'
+                else:
+                    # 无法识别，使用默认值
+                    print(f"警告：无法识别的年级值 '{value_str}'，使用默认值")
+                    return '一至二年级'
+
+            df['gradeLevel'] = df['gradeLevel'].apply(standardize_grade_level)
+            print(f"年级字段标准化完成:")
+            print(f"  一至二年级: {(df['gradeLevel'] == '一至二年级').sum()}")
+            print(f"  三至四年级: {(df['gradeLevel'] == '三至四年级').sum()}")
+            print(f"  五至六年级: {(df['gradeLevel'] == '五至六年级').sum()}")
 
         # 处理数值字段
         if 'serial' in df.columns:

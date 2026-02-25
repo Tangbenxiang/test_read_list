@@ -102,10 +102,10 @@ Page({
     })
   },
 
-  // 跳转到已购买书籍
+  // 跳转到未购买书籍
   goToPurchased() {
     wx.navigateTo({
-      url: '/pages/list/list?purchased=true&title=已购买书籍'
+      url: '/pages/list/list?purchased=false&title=未购买书籍'
     })
   },
 
@@ -113,6 +113,13 @@ Page({
   goToIntensive() {
     wx.navigateTo({
       url: '/pages/list/list?intensiveRead=true&title=已精读书籍'
+    })
+  },
+
+  // 跳转到全部书籍
+  goToAllBooks() {
+    wx.navigateTo({
+      url: '/pages/list/list?title=全部书籍&pageSize=5'
     })
   },
 

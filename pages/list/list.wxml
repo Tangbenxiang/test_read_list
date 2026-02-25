@@ -34,8 +34,7 @@
     <block wx:for="{{books}}" wx:key="_id">
       <view class="book-item" bindtap="goToDetail" data-id="{{item._id}}">
         <view class="book-cover">
-          <text wx:if="{{!item.cover}}" class="cover-placeholder">📚</text>
-          <image wx:else src="{{item.cover}}" mode="aspectFill"></image>
+          <image src="{{item.cover || '/images/default-cover.png'}}" mode="aspectFill"></image>
         </view>
         <view class="book-info">
           <view class="book-header">

@@ -53,15 +53,21 @@
     </view>
 
     <view class="quick-entry" bindtap="goToPurchased">
-      <view class="entry-icon">💰</view>
-      <text class="entry-text">已购买</text>
-      <text class="entry-count">{{stats.purchased}}本</text>
+      <view class="entry-icon">🛒</view>
+      <text class="entry-text">未购买</text>
+      <text class="entry-count">{{(stats.grade1 + stats.grade2 + stats.grade3) - stats.purchased}}本</text>
     </view>
 
     <view class="quick-entry" bindtap="goToIntensive">
       <view class="entry-icon">⭐</view>
       <text class="entry-text">已精读</text>
       <text class="entry-count">{{stats.intensive}}本</text>
+    </view>
+
+    <view class="quick-entry" bindtap="goToAllBooks">
+      <view class="entry-icon">📚</view>
+      <text class="entry-text">全部书籍</text>
+      <text class="entry-count">{{stats.grade1 + stats.grade2 + stats.grade3}}本</text>
     </view>
   </view>
 

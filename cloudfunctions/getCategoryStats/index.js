@@ -23,13 +23,14 @@ exports.main = async (event, context) => {
 
   try {
     // 并行查询各分类数量
+    // 使用 _.in 同时匹配布尔值和字符串值，确保兼容性
     const [grade1, grade2, grade3, unread, purchased, intensive] = await Promise.all([
       db.collection('books').where({ gradeLevel: '一至二年级' }).count(),
       db.collection('books').where({ gradeLevel: '三至四年级' }).count(),
       db.collection('books').where({ gradeLevel: '五至六年级' }).count(),
-      db.collection('books').where({ read: false }).count(),
-      db.collection('books').where({ purchased: true }).count(),
-      db.collection('books').where({ intensiveRead: true }).count()
+      db.collection('books').where({ read: _.in([false, "false", "否", "0"]) }).count(),
+      db.collection('books').where({ purchased: _.in([true, "true", "是", "1"]) }).count(),
+      db.collection('books').where({ intensiveRead: _.in([true, "true", "是", "1"]) }).count()
     ])
 
     return {

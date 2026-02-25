@@ -3,8 +3,7 @@
   <!-- 书籍封面和标题 -->
   <view class="book-header">
     <view class="book-cover">
-      <text wx:if="{{!book.cover}}" class="cover-placeholder">📚</text>
-      <image wx:else src="{{book.cover}}" mode="aspectFill"></image>
+      <image src="{{book.cover || '/images/default-cover.png'}}" mode="aspectFill"></image>
     </view>
     <view class="book-header-info">
       <text class="book-title">{{book.title}}</text>
