@@ -205,12 +205,30 @@ Page({
           const original = value
           let result
 
-          if (value === true || value === 'true' || value === 1 || value === '1') {
-            result = true
-          } else if (value === false || value === 'false' || value === 0 || value === '0' || value === null || value === undefined) {
+          // 处理null/undefined
+          if (value === null || value === undefined) {
             result = false
+          } else if (typeof value === 'boolean') {
+            result = value
+          } else if (typeof value === 'number') {
+            result = value !== 0
+          } else if (typeof value === 'string') {
+            const strVal = value.trim().toLowerCase()
+            // 真值列表
+            const trueValues = ['true', '1', '是', 'yes', 'y', 't', '已购买', '已阅读', '已精读', '有', '完成', '已']
+            // 假值列表
+            const falseValues = ['false', '0', '否', 'no', 'n', 'f', '未购买', '未阅读', '未精读', '无', '未完成', '未', '']
+
+            if (trueValues.includes(strVal)) {
+              result = true
+            } else if (falseValues.includes(strVal)) {
+              result = false
+            } else {
+              // 其他字符串：非空字符串视为true
+              result = strVal.length > 0
+            }
           } else {
-            // 其他情况：如果存在值但不是false类，则视为true
+            // 其他类型：使用Boolean转换
             result = Boolean(value)
           }
 
@@ -516,10 +534,10 @@ Page({
         console.log(`  read: ${book.read} (类型: ${typeof book.read})`)
         console.log(`  intensiveRead: ${book.intensiveRead} (类型: ${typeof book.intensiveRead})`)
 
-        // 检查图标显示条件
-        const purchasedShow = book.purchased === true || book.purchased === 'true' || book.purchased === 1 || book.purchased === '1'
-        const readShow = book.read === true || book.read === 'true' || book.read === 1 || book.read === '1'
-        const intensiveShow = book.intensiveRead === true || book.intensiveRead === 'true' || book.intensiveRead === 1 || book.intensiveRead === '1'
+        // 检查图标显示条件（使用转换后的布尔值）
+        const purchasedShow = book.purchased === true
+        const readShow = book.read === true
+        const intensiveShow = book.intensiveRead === true
 
         console.log(`  图标显示预测: 购买=${purchasedShow}, 阅读=${readShow}, 精读=${intensiveShow}`)
       })

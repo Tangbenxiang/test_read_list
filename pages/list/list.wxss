@@ -93,6 +93,7 @@
   display: flex;
   padding: 30rpx 0;
   border-bottom: 1rpx solid #E6F4FF;
+  position: relative;
 }
 
 .book-cover {
@@ -105,6 +106,29 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* 旧的封面状态图标样式 - 已弃用 */
+.book-status-cover {
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  z-index: 10;
+}
+
+/* 屏幕右侧状态图标 */
+.book-status-right {
+  position: absolute;
+  right: 60rpx; /* 屏幕最右边缘往左空2个空格 */
+  top: 30rpx; /* 与书籍标题对齐 */
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  z-index: 10;
 }
 
 .cover-placeholder {
@@ -119,7 +143,7 @@
 
 .book-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
   margin-bottom: 10rpx;
 }
@@ -129,25 +153,29 @@
   font-weight: bold;
   color: #333;
   flex: 1;
+  min-width: 0;
   margin-right: 15rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.book-status {
+/* 原来的书状态样式已移除，现在使用 book-status-cover */
+/* .book-status {
   display: flex;
-  gap: 8rpx;
-}
+  flex-direction: column;
+  gap: 4rpx;
+  flex-shrink: 0;
+} */
 
 .status-icon {
-  width: 40rpx;
-  height: 40rpx;
+  width: 30rpx;
+  height: 30rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22rpx;
+  font-size: 18rpx;
 }
 
 .status-icon.purchased {

@@ -142,8 +142,11 @@
   font-weight: bold;
   color: #333;
   flex: 1;
+  min-width: 0;
   margin-right: 15rpx;
-  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .highlight {
@@ -153,7 +156,9 @@
 
 .result-status {
   display: flex;
-  gap: 8rpx;
+  flex-direction: column;
+  gap: 4rpx;
+  flex-shrink: 0;
 }
 
 .status-icon {

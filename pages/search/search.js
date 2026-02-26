@@ -43,8 +43,31 @@ Page({
       })
 
       if (res.result && res.result.success) {
+        // 转换状态字段为布尔值
+        const convertToBoolean = (value) => {
+          if (value === null || value === undefined) return false
+          if (typeof value === 'boolean') return value
+          if (typeof value === 'number') return value !== 0
+          if (typeof value === 'string') {
+            const strVal = value.trim().toLowerCase()
+            const trueValues = ['true', '1', '是', 'yes', 'y', 't', '已购买', '已阅读', '已精读', '有', '完成', '已']
+            const falseValues = ['false', '0', '否', 'no', 'n', 'f', '未购买', '未阅读', '未精读', '无', '未完成', '未', '']
+            if (trueValues.includes(strVal)) return true
+            if (falseValues.includes(strVal)) return false
+            return strVal.length > 0
+          }
+          return Boolean(value)
+        }
+
+        const convertedResults = (res.result.data || []).map(book => ({
+          ...book,
+          purchased: convertToBoolean(book.purchased),
+          read: convertToBoolean(book.read),
+          intensiveRead: convertToBoolean(book.intensiveRead)
+        }))
+
         this.setData({
-          results: res.result.data || [],
+          results: convertedResults,
           loading: false
         })
 

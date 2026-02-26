@@ -39,16 +39,17 @@
         <view class="book-info">
           <view class="book-header">
             <text class="book-title">{{item.title}}</text>
-            <view class="book-status">
-              <text wx:if="{{item.purchased}}" class="status-icon purchased">✓</text>
-              <text wx:if="{{item.read}}" class="status-icon read">👁</text>
-              <text wx:if="{{item.intensiveRead}}" class="status-icon intensive">★</text>
-            </view>
           </view>
           <text class="book-author">{{item.author}}</text>
           <text class="book-type">{{item.type}}</text>
           <text class="book-grade">{{item.gradeLevel}}</text>
           <text class="book-desc">{{item.description ? item.description.slice(0, 40) + '...' : '暂无简介'}}</text>
+        </view>
+        <!-- 状态图标 - 放在屏幕右侧 -->
+        <view class="book-status-right">
+          <text wx:if="{{item.purchased}}" class="status-icon purchased">✓</text>
+          <text wx:if="{{item.read}}" class="status-icon read">👁</text>
+          <text wx:if="{{item.intensiveRead}}" class="status-icon intensive">★</text>
         </view>
       </view>
     </block>
