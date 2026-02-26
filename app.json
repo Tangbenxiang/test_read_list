@@ -6,7 +6,8 @@
     "pages/search/search",
     "pages/feedback/feedback",
     "pages/addbook/addbook",
-    "pages/editbook/editbook"
+    "pages/editbook/editbook",
+    "pages/debug/debug"
   ],
   "window": {
     "backgroundTextStyle": "light",

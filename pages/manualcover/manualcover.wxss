@@ -1,0 +1,152 @@
+.container {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #E6F4FF 0%, #FFFFFF 100%);
+}
+
+.title {
+  display: block;
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 40rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #A0D6FF;
+}
+
+.book-list {
+  margin-bottom: 60rpx;
+}
+
+.book-item {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.book-info {
+  margin-bottom: 20rpx;
+}
+
+.book-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.book-author {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.book-serial {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.cover-section {
+  margin: 20rpx 0;
+  display: flex;
+  justify-content: center;
+}
+
+.cover-preview {
+  width: 200rpx;
+  height: 260rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
+}
+
+.cover-placeholder {
+  width: 200rpx;
+  height: 260rpx;
+  background: #F5F5F5;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 24rpx;
+}
+
+.input-section {
+  margin: 20rpx 0;
+}
+
+.input-label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.url-input {
+  background: #F9F9F9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  margin-bottom: 15rpx;
+  border: 1rpx solid #E0E0E0;
+}
+
+.update-btn {
+  background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+  color: white;
+  font-size: 26rpx;
+  padding: 15rpx 30rpx;
+  border-radius: 12rpx;
+}
+
+.quick-links {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.link-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-right: 15rpx;
+}
+
+.link-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #1890FF 0%, #66B3FF 100%);
+  color: white;
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+  margin-right: 15rpx;
+  margin-bottom: 10rpx;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 30rpx;
+}
+
+.btn {
+  flex: 1;
+  padding: 25rpx;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.refresh-btn {
+  background: linear-gradient(135deg, #FA8C16 0%, #FFA940 100%);
+  color: white;
+}
+
+.back-btn {
+  background: #F5F5F5;
+  color: #666;
+}

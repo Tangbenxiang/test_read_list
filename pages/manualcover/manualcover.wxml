@@ -1,0 +1,73 @@
+<view class="container">
+  <text class="title">手动更新封面</text>
+
+  <!-- 书籍列表 -->
+  <view class="book-list">
+    <view wx:for="{{books}}" wx:key="serial" class="book-item">
+      <view class="book-info">
+        <text class="book-title">{{item.title}}</text>
+        <text class="book-author">{{item.author}}</text>
+        <text class="book-serial">序号：{{item.serial}}</text>
+      </view>
+
+      <!-- 封面预览 -->
+      <view class="cover-section">
+        <image
+          wx:if="{{item.cover}}"
+          src="{{item.cover}}"
+          class="cover-preview"
+          mode="aspectFit"
+        />
+        <view wx:else class="cover-placeholder">
+          <text>暂无封面</text>
+        </view>
+      </view>
+
+      <!-- 封面输入 -->
+      <view class="input-section">
+        <text class="input-label">封面URL：</text>
+        <input
+          class="url-input"
+          placeholder="粘贴封面图片链接"
+          value="{{item.newCoverUrl}}"
+          bindinput="onInputChange"
+          data-index="{{index}}"
+        />
+        <button
+          class="update-btn"
+          bindtap="updateCover"
+          data-index="{{index}}"
+          size="mini"
+        >
+          更新
+        </button>
+      </view>
+
+      <!-- 快捷链接 -->
+      <view class="quick-links">
+        <text class="link-label">快速搜索：</text>
+        <text
+          class="link-btn"
+          bindtap="searchDouban"
+          data-title="{{item.title}}"
+          data-author="{{item.author}}"
+        >
+          豆瓣搜索
+        </text>
+        <text
+          class="link-btn"
+          bindtap="searchJD"
+          data-title="{{item.title}}"
+        >
+          京东搜索
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="btn refresh-btn" bindtap="loadBooks">刷新列表</button>
+    <button class="btn back-btn" bindtap="goBack">返回</button>
+  </view>
+</view>

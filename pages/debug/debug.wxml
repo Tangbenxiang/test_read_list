@@ -1,0 +1,29 @@
+<view class="container">
+  <text class="title">权限调试</text>
+
+  <view class="card">
+    <text class="label">您的openid：</text>
+    <text class="value">{{openid || '未获取'}}</text>
+  </view>
+
+  <view class="card">
+    <text class="label">管理员状态：</text>
+    <text class="status {{isAdmin ? 'admin' : 'not-admin'}}">
+      {{isAdmin ? '✅ 是管理员' : '❌ 不是管理员'}}
+    </text>
+  </view>
+
+  <button
+    class="btn add-btn {{loading ? 'disabled' : ''}}"
+    bindtap="addAdmin"
+    disabled="{{loading || isAdmin}}"
+  >
+    {{loading ? '添加中...' : '添加为管理员'}}
+  </button>
+
+  <button class="btn copy-btn" bindtap="copyOpenid" wx:if="{{openid}}">
+    复制openid
+  </button>
+
+  <button class="btn back-btn" bindtap="goBack">返回</button>
+</view>

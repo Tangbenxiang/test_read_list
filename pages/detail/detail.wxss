@@ -254,20 +254,24 @@
 /* 操作按钮 */
 .action-buttons {
   display: flex;
+  flex-wrap: wrap;
   padding: 0 30rpx;
-  gap: 30rpx;
+  gap: 20rpx;
 }
 
 .action-btn {
-  flex: 1;
-  padding: 25rpx;
-  border-radius: 20rpx;
+  flex: 0 0 calc(33.333% - 14rpx);
+  padding: 20rpx 10rpx;
+  border-radius: 16rpx;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 30rpx;
+  font-size: 24rpx;
   font-weight: bold;
   transition: all 0.3s ease;
+  min-height: 100rpx;
+  box-sizing: border-box;
 }
 
 .cover-btn {
@@ -285,9 +289,25 @@
   color: #666;
 }
 
+.edit-btn {
+  background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+  color: white;
+}
+
+.feedback-btn {
+  background: linear-gradient(135deg, #9254DE 0%, #B37FEB 100%);
+  color: white;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #FA8C16 0%, #FFA940 100%);
+  color: white;
+}
+
 .action-icon {
   font-size: 36rpx;
-  margin-right: 15rpx;
+  margin-right: 0;
+  margin-bottom: 10rpx;
 }
 
 /* 加载提示 */

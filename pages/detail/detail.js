@@ -369,6 +369,30 @@ Page({
     })
   },
 
+  // 跳转到意见建议页面
+  goToFeedback() {
+    wx.navigateTo({
+      url: '/pages/feedback/feedback'
+    })
+  },
+
+  // 跳转到新增书籍页面
+  goToAddBook() {
+    const { isAdmin } = this.data
+    if (!isAdmin) {
+      wx.showToast({
+        title: '没有新增书籍权限',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
+    wx.navigateTo({
+      url: '/pages/addbook/addbook'
+    })
+  },
+
   // 返回列表
   goBack() {
     wx.navigateBack()
