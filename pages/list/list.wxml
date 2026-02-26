@@ -157,4 +157,9 @@
       </view>
     </view>
   </view>
+
+  <!-- 调试按钮 -->
+  <view class="debug-btn" bindtap="debugData">
+    <text>🔍</text>
+  </view>
 </view>

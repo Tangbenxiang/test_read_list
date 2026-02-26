@@ -1,6 +1,10 @@
 // pages/list/list.js
+console.log('list.js 文件开始加载')
+
 const db = wx.cloud.database()
 const _ = db.command
+
+console.log('数据库对象初始化完成')
 
 Page({
   data: {
@@ -13,7 +17,7 @@ Page({
 
     // 分页参数
     page: 0,
-    pageSize: 20,
+    pageSize: 50, // 增加默认每页数量，确保看到更多书籍
 
     // 筛选条件
     filters: {
@@ -38,6 +42,8 @@ Page({
   },
 
   onLoad(options) {
+    console.log('列表页面 onLoad 被调用，参数:', options)
+
     // 解析页面参数
     this.parseQueryParams(options)
 
@@ -52,11 +58,13 @@ Page({
     }
     if (options.pageSize) {
       updates.pageSize = parseInt(options.pageSize, 10) || 20
+      console.log('设置 pageSize:', updates.pageSize)
     }
 
     this.setData(updates)
 
     // 加载书籍列表
+    console.log('开始调用 loadBooks(true)')
     this.loadBooks(true)
   },
 
@@ -142,6 +150,7 @@ Page({
   async loadBooks(reset = false) {
     if (this.data.loading) return
 
+    console.log('开始加载书籍列表，reset=', reset)
     this.setData({ loading: true })
 
     try {
@@ -179,13 +188,43 @@ Page({
         .limit(pageSize)
         .get()
 
-      const books = dataRes.data.map(book => ({
-        ...book,
-        // 确保状态字段是布尔值，处理字符串和布尔值
-        purchased: book.purchased === true || book.purchased === 'true',
-        read: book.read === true || book.read === 'true',
-        intensiveRead: book.intensiveRead === true || book.intensiveRead === 'true'
-      }))
+      // 先打印原始数据
+      console.log('原始数据库数据:', dataRes.data.map(book => ({
+        title: book.title,
+        purchased: book.purchased,
+        purchasedType: typeof book.purchased,
+        read: book.read,
+        readType: typeof book.read,
+        intensiveRead: book.intensiveRead,
+        intensiveReadType: typeof book.intensiveRead
+      })))
+
+      const books = dataRes.data.map(book => {
+        // 转换状态字段为布尔值，处理各种可能的值
+        const convertToBoolean = (value, fieldName, bookTitle) => {
+          const original = value
+          let result
+
+          if (value === true || value === 'true' || value === 1 || value === '1') {
+            result = true
+          } else if (value === false || value === 'false' || value === 0 || value === '0' || value === null || value === undefined) {
+            result = false
+          } else {
+            // 其他情况：如果存在值但不是false类，则视为true
+            result = Boolean(value)
+          }
+
+          console.log(`书籍 "${bookTitle}" 字段 ${fieldName}: 原始值=${original} (类型: ${typeof original}), 转换后=${result}`)
+          return result
+        }
+
+        return {
+          ...book,
+          purchased: convertToBoolean(book.purchased, 'purchased', book.title),
+          read: convertToBoolean(book.read, 'read', book.title),
+          intensiveRead: convertToBoolean(book.intensiveRead, 'intensiveRead', book.title)
+        }
+      })
       const hasMore = (page + 1) * pageSize < total
 
       // 调试：打印书籍状态
@@ -206,9 +245,18 @@ Page({
         page: reset ? 1 : page + 1,
         hasMore,
         loading: false
+      }, () => {
+        // setData 回调，确保数据已更新
+        console.log('数据已更新，当前 books 数据:', this.data.books.map(book => ({
+          title: book.title,
+          purchased: book.purchased,
+          read: book.read,
+          intensiveRead: book.intensiveRead
+        })))
       })
     } catch (error) {
       console.error('加载书籍失败:', error)
+      console.error('错误详情:', error.message, error.stack)
       this.setData({ loading: false })
 
       // 显示模拟数据（开发阶段使用）
@@ -235,6 +283,19 @@ Page({
       {
         _id: '1',
         serial: 1,
+        title: '《窗边的小豆豆》',
+        type: '儿童文学',
+        author: '黑柳彻子',
+        description: '日本作家黑柳彻子创作的儿童文学作品',
+        gradeLevel: '一至二年级',
+        purchased: true,
+        read: true,
+        intensiveRead: true, // 应该三个图标都显示
+        cover: ''
+      },
+      {
+        _id: '2',
+        serial: 2,
         title: '《安徒生童话》',
         type: '童话',
         author: '安徒生',
@@ -246,8 +307,8 @@ Page({
         cover: ''
       },
       {
-        _id: '2',
-        serial: 2,
+        _id: '3',
+        serial: 3,
         title: '《十万个为什么》',
         type: '科普',
         author: '少年儿童出版社',
@@ -259,8 +320,8 @@ Page({
         cover: ''
       },
       {
-        _id: '3',
-        serial: 3,
+        _id: '4',
+        serial: 4,
         title: '《西游记》青少版',
         type: '古典文学',
         author: '吴承恩',
@@ -439,5 +500,38 @@ Page({
     }
 
     return params.join('&')
+  },
+
+  // 调试函数
+  debugData() {
+    console.log('=== 调试信息开始 ===')
+    console.log('当前书籍数据:')
+
+    if (!this.data.books || this.data.books.length === 0) {
+      console.log('没有书籍数据')
+    } else {
+      this.data.books.forEach((book, index) => {
+        console.log(`书籍 ${index + 1}: "${book.title}"`)
+        console.log(`  purchased: ${book.purchased} (类型: ${typeof book.purchased})`)
+        console.log(`  read: ${book.read} (类型: ${typeof book.read})`)
+        console.log(`  intensiveRead: ${book.intensiveRead} (类型: ${typeof book.intensiveRead})`)
+
+        // 检查图标显示条件
+        const purchasedShow = book.purchased === true || book.purchased === 'true' || book.purchased === 1 || book.purchased === '1'
+        const readShow = book.read === true || book.read === 'true' || book.read === 1 || book.read === '1'
+        const intensiveShow = book.intensiveRead === true || book.intensiveRead === 'true' || book.intensiveRead === 1 || book.intensiveRead === '1'
+
+        console.log(`  图标显示预测: 购买=${purchasedShow}, 阅读=${readShow}, 精读=${intensiveShow}`)
+      })
+    }
+
+    console.log('=== 调试信息结束 ===')
+
+    // 同时显示在界面上方便查看
+    wx.showModal({
+      title: '调试信息',
+      content: `共 ${this.data.books?.length || 0} 本书籍\n点击确定查看控制台详细数据`,
+      showCancel: false
+    })
   }
 })

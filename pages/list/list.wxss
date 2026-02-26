@@ -353,3 +353,21 @@
 .stopPropagation {
   /* 空样式，仅用于catchtap */
 }
+
+/* 调试按钮 */
+.debug-btn {
+  position: fixed;
+  right: 30rpx;
+  bottom: 30rpx;
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(0, 102, 204, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: white;
+  z-index: 9999;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+}
