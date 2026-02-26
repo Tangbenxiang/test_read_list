@@ -19,8 +19,14 @@
   "simulatorPluginLibVersion": {},
   "packOptions": {
     "ignore": [
-      "scripts/**",
-      "*.py"
+      {
+        "value": "scripts/**",
+        "type": "folder"
+      },
+      {
+        "value": "*.py",
+        "type": "file"
+      }
     ],
     "include": []
   },
