@@ -20,12 +20,16 @@
   "packOptions": {
     "ignore": [
       {
-        "value": "scripts/**",
+        "value": "scripts/",
         "type": "folder"
       },
       {
+        "value": "scripts/**",
+        "type": "wildcard"
+      },
+      {
         "value": "*.py",
-        "type": "file"
+        "type": "suffix"
       }
     ],
     "include": []
