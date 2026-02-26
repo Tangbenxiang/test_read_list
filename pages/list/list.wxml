@@ -42,7 +42,7 @@
             <view class="book-status">
               <text wx:if="{{item.purchased}}" class="status-icon purchased">✓</text>
               <text wx:if="{{item.read}}" class="status-icon read">👁</text>
-              <text wx:if="{{item.intensiveRead}}" class="status-icon intensive">⭐</text>
+              <text wx:if="{{item.intensiveRead}}" class="status-icon intensive">★</text>
             </view>
           </view>
           <text class="book-author">{{item.author}}</text>

@@ -43,7 +43,7 @@
         class="status-btn {{book.intensiveRead ? 'active' : ''}}"
         bindtap="toggleIntensive"
       >
-        <view class="status-icon intensive">{{book.intensiveRead ? '⭐' : '☆'}}</view>
+        <view class="status-icon intensive">{{book.intensiveRead ? '★' : '☆'}}</view>
         <text class="status-text">已精读</text>
       </view>
     </view>

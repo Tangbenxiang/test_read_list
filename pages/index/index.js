@@ -90,6 +90,7 @@ Page({
 
   // 跳转到搜索页
   goToSearch() {
+    console.log('跳转到搜索页面')
     wx.navigateTo({
       url: '/pages/search/search'
     })

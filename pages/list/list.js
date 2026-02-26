@@ -179,8 +179,25 @@ Page({
         .limit(pageSize)
         .get()
 
-      const books = dataRes.data
+      const books = dataRes.data.map(book => ({
+        ...book,
+        // 确保状态字段是布尔值，处理字符串和布尔值
+        purchased: book.purchased === true || book.purchased === 'true',
+        read: book.read === true || book.read === 'true',
+        intensiveRead: book.intensiveRead === true || book.intensiveRead === 'true'
+      }))
       const hasMore = (page + 1) * pageSize < total
+
+      // 调试：打印书籍状态
+      console.log('加载的书籍数据:', books.map(book => ({
+        title: book.title,
+        purchased: book.purchased,
+        purchasedType: typeof book.purchased,
+        read: book.read,
+        readType: typeof book.read,
+        intensiveRead: book.intensiveRead,
+        intensiveReadType: typeof book.intensiveRead
+      })))
 
       // 更新数据
       this.setData({

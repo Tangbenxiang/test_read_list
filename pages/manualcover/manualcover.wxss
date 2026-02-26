@@ -150,3 +150,212 @@
   background: #F5F5F5;
   color: #666;
 }
+
+/* 权限检查样式 */
+.permission-checking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 32rpx;
+  color: #666;
+  text-align: center;
+}
+
+.permission-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 0 60rpx;
+}
+
+.permission-error text {
+  font-size: 32rpx;
+  color: #FF4D4F;
+  margin-bottom: 40rpx;
+  line-height: 1.5;
+}
+
+.permission-error .back-btn {
+  width: 200rpx;
+  margin-top: 30rpx;
+}
+
+/* 搜索表单样式 */
+.search-form {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+  margin-bottom: 25rpx;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 15rpx;
+}
+
+
+.search-input {
+  background: #F9F9F9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  border: 1rpx solid #E0E0E0;
+  margin-bottom: 15rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-btn {
+  background: linear-gradient(135deg, #1890FF 0%, #66B3FF 100%);
+  color: white;
+  font-size: 28rpx;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  width: 100%;
+  margin-top: 10rpx;
+}
+
+.search-btn:active {
+  opacity: 0.8;
+}
+
+/* 搜索结果样式 */
+.search-results {
+  margin-bottom: 40rpx;
+}
+
+.results-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 25rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx solid #A0D6FF;
+}
+
+.book-grade {
+  display: block;
+  font-size: 26rpx;
+  color: #888;
+  margin-top: 5rpx;
+}
+
+/* 按钮组样式 */
+.button-group {
+  display: flex;
+  gap: 15rpx;
+  margin-top: 15rpx;
+}
+
+.batch-update-btn {
+  background: linear-gradient(135deg, #FA8C16 0%, #FFA940 100%);
+  color: white;
+  font-size: 26rpx;
+  padding: 15rpx 20rpx;
+  border-radius: 12rpx;
+}
+
+/* 无结果提示 */
+.no-results {
+  background: #FFF7E6;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #D46B08;
+  margin: 30rpx 0;
+  border: 1rpx solid #FFD591;
+}
+
+/* 使用说明样式 */
+.tips {
+  background: #F6FFED;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 40rpx 0;
+  border: 1rpx solid #B7EB8F;
+}
+
+.tips-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #389E0D;
+  margin-bottom: 20rpx;
+}
+
+.tip {
+  display: block;
+  font-size: 26rpx;
+  color: #555;
+  margin-bottom: 10rpx;
+  line-height: 1.5;
+}
+
+.tip:last-child {
+  margin-bottom: 0;
+}
+
+/* 清除按钮样式 */
+.clear-btn {
+  background: linear-gradient(135deg, #FF4D4F 0%, #FF7875 100%);
+  color: white;
+}
+
+/* 搜索表单特殊样式 */
+.search-form .form-group:first-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15rpx;
+  margin-bottom: 25rpx;
+}
+
+.search-form .form-group:first-child .form-label {
+  flex-shrink: 0;
+  width: 120rpx;
+  margin-bottom: 0;
+}
+
+.search-form .form-group:first-child .search-input {
+  flex: 1;
+  margin-bottom: 0;
+  width: auto;
+}
+
+.search-form .form-group:first-child .search-btn {
+  flex-shrink: 0;
+  width: 140rpx;
+  margin-top: 0;
+  padding: 20rpx 25rpx;
+  font-size: 26rpx;
+}
+
+/* 批量URL输入样式 */
+.search-form .form-group:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-form .form-group:last-child .url-input {
+  width: 100%;
+  box-sizing: border-box;
+}

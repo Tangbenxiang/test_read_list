@@ -143,6 +143,7 @@
   color: #333;
   flex: 1;
   margin-right: 15rpx;
+  display: block;
 }
 
 .highlight {
@@ -198,9 +199,7 @@
   font-size: 26rpx;
   color: #666;
   line-height: 1.4;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  display: block;
   overflow: hidden;
 }
 

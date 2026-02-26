@@ -1,73 +1,143 @@
 <view class="container">
+  <!-- 权限检查提示 -->
+  <view wx:if="{{checkingAdmin}}" class="permission-checking">
+    <text>检查权限中...</text>
+  </view>
+  <view wx:elif="{{!isAdmin}}" class="permission-error">
+    <text>{{errorMessage || '您没有权限访问此页面'}}</text>
+    <button class="btn back-btn" bindtap="goBack">返回</button>
+  </view>
+
+  <view wx:else>
   <text class="title">手动更新封面</text>
 
-  <!-- 书籍列表 -->
-  <view class="book-list">
-    <view wx:for="{{books}}" wx:key="serial" class="book-item">
-      <view class="book-info">
-        <text class="book-title">{{item.title}}</text>
-        <text class="book-author">{{item.author}}</text>
-        <text class="book-serial">序号：{{item.serial}}</text>
-      </view>
+  <!-- 搜索表单 -->
+  <view class="search-form">
+    <view class="form-group">
+      <text class="form-label">书名搜索：</text>
+      <input
+        class="search-input"
+        placeholder="输入书名或部分书名"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        catchtouchstart="doNothing"
+        catchtap="doNothing"
+      />
+      <button class="search-btn" bindtap="searchBooks" size="mini">查找</button>
+    </view>
 
-      <!-- 封面预览 -->
-      <view class="cover-section">
-        <image
-          wx:if="{{item.cover}}"
-          src="{{item.cover}}"
-          class="cover-preview"
-          mode="aspectFit"
-        />
-        <view wx:else class="cover-placeholder">
-          <text>暂无封面</text>
+    <view class="form-group">
+      <text class="form-label">批量封面URL：</text>
+      <input
+        class="url-input"
+        placeholder="粘贴封面图片链接（用于批量更新）"
+        value="{{batchCoverUrl}}"
+        bindinput="onBatchUrlInput"
+      />
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view wx:if="{{searchResults.length > 0}}" class="search-results">
+    <text class="results-title">找到 {{searchResults.length}} 本书籍</text>
+
+    <view class="book-list">
+      <view wx:for="{{searchResults}}" wx:key="_id" class="book-item">
+        <view class="book-info">
+          <text class="book-title">{{item.title}}</text>
+          <text class="book-author">{{item.author}}</text>
+          <text class="book-serial">序号：{{item.serial}}</text>
+          <text class="book-grade">年级：{{item.gradeLevel || '未分类'}}</text>
         </view>
-      </view>
 
-      <!-- 封面输入 -->
-      <view class="input-section">
-        <text class="input-label">封面URL：</text>
-        <input
-          class="url-input"
-          placeholder="粘贴封面图片链接"
-          value="{{item.newCoverUrl}}"
-          bindinput="onInputChange"
-          data-index="{{index}}"
-        />
-        <button
-          class="update-btn"
-          bindtap="updateCover"
-          data-index="{{index}}"
-          size="mini"
-        >
-          更新
-        </button>
-      </view>
+        <!-- 封面预览 -->
+        <view class="cover-section">
+          <image
+            wx:if="{{item.cover}}"
+            src="{{item.cover}}"
+            class="cover-preview"
+            mode="aspectFit"
+            bindtap="previewCover"
+            data-url="{{item.cover}}"
+          />
+          <view wx:else class="cover-placeholder">
+            <text>暂无封面</text>
+          </view>
+        </view>
 
-      <!-- 快捷链接 -->
-      <view class="quick-links">
-        <text class="link-label">快速搜索：</text>
-        <text
-          class="link-btn"
-          bindtap="searchDouban"
-          data-title="{{item.title}}"
-          data-author="{{item.author}}"
-        >
-          豆瓣搜索
-        </text>
-        <text
-          class="link-btn"
-          bindtap="searchJD"
-          data-title="{{item.title}}"
-        >
-          京东搜索
-        </text>
+        <!-- 封面输入 -->
+        <view class="input-section">
+          <text class="input-label">新封面URL：</text>
+          <input
+            class="url-input"
+            placeholder="粘贴新封面链接"
+            value="{{item.newCoverUrl}}"
+            bindinput="onResultInput"
+            data-index="{{index}}"
+          />
+          <view class="button-group">
+            <button
+              class="update-btn"
+              bindtap="updateSingleCover"
+              data-index="{{index}}"
+              size="mini"
+            >
+              更新单本
+            </button>
+            <button
+              class="batch-update-btn"
+              bindtap="updateWithBatchUrl"
+              data-index="{{index}}"
+              size="mini"
+              wx:if="{{batchCoverUrl}}"
+            >
+              使用批量URL
+            </button>
+          </view>
+        </view>
+
+        <!-- 快捷链接 -->
+        <view class="quick-links">
+          <text class="link-label">快速搜索：</text>
+          <text
+            class="link-btn"
+            bindtap="searchDouban"
+            data-title="{{item.title}}"
+            data-author="{{item.author}}"
+          >
+            豆瓣搜索
+          </text>
+          <text
+            class="link-btn"
+            bindtap="searchJD"
+            data-title="{{item.title}}"
+          >
+            京东搜索
+          </text>
+        </view>
       </view>
     </view>
   </view>
 
+  <!-- 无结果提示 -->
+  <view wx:elif="{{hasSearched && searchResults.length === 0}}" class="no-results">
+    <text>未找到相关书籍，请尝试其他关键词</text>
+  </view>
+
+  <!-- 操作提示 -->
+  <view class="tips">
+    <text class="tips-title">使用说明：</text>
+    <text class="tip">1. 在"书名搜索"中输入书名或部分书名，点击"查找"</text>
+    <text class="tip">2. 在"批量封面URL"中输入一个URL，可用于批量更新所有搜索结果</text>
+    <text class="tip">3. 为每本书输入单独的新封面URL，或点击"使用批量URL"</text>
+    <text class="tip">4. 点击"更新单本"更新当前书籍，或使用批量URL同时更新</text>
+    <text class="tip">5. 使用"快速搜索"在豆瓣/京东查找正确封面</text>
+  </view>
+
   <!-- 操作按钮 -->
   <view class="action-buttons">
-    <button class="btn refresh-btn" bindtap="loadBooks">刷新列表</button>
+    <button class="btn clear-btn" bindtap="clearSearch">清除搜索</button>
     <button class="btn back-btn" bindtap="goBack">返回</button>
+  </view>
   </view>
 </view>
