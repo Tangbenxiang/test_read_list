@@ -197,19 +197,46 @@ Page({
     }
   },
 
+  // 显示权限不足提示
+  showPermissionDenied() {
+    wx.showToast({
+      title: '只有管理员可以修改状态',
+      icon: 'none',
+      duration: 2000
+    })
+  },
+
   // 切换购买状态
   async togglePurchased() {
-    await this.updateBookStatus('purchased', !this.data.book.purchased)
+    const { isAdmin, book } = this.data
+    if (!isAdmin) {
+      this.showPermissionDenied()
+      return
+    }
+    if (!book) return
+    await this.updateBookStatus('purchased', !book.purchased)
   },
 
   // 切换阅读状态
   async toggleRead() {
-    await this.updateBookStatus('read', !this.data.book.read)
+    const { isAdmin, book } = this.data
+    if (!isAdmin) {
+      this.showPermissionDenied()
+      return
+    }
+    if (!book) return
+    await this.updateBookStatus('read', !book.read)
   },
 
   // 切换精读状态
   async toggleIntensive() {
-    await this.updateBookStatus('intensiveRead', !this.data.book.intensiveRead)
+    const { isAdmin, book } = this.data
+    if (!isAdmin) {
+      this.showPermissionDenied()
+      return
+    }
+    if (!book) return
+    await this.updateBookStatus('intensiveRead', !book.intensiveRead)
   },
 
   // 获取书籍封面

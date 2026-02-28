@@ -137,6 +137,11 @@
   transform: translateY(-5rpx);
 }
 
+.status-btn.disabled {
+  opacity: 0.5;
+  filter: grayscale(50%);
+}
+
 .status-icon {
   width: 100rpx;
   height: 100rpx;

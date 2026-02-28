@@ -26,28 +26,28 @@
     <text class="section-title">阅读状态</text>
     <view class="status-buttons">
       <view
-        class="status-btn {{book.purchased ? 'active' : ''}}"
+        class="status-btn {{book.purchased ? 'active' : ''}} {{!isAdmin ? 'disabled' : ''}}"
         bindtap="togglePurchased"
       >
         <view class="status-icon purchased">{{book.purchased ? '✓' : '+'}}</view>
         <text class="status-text">已购买</text>
       </view>
       <view
-        class="status-btn {{book.read ? 'active' : ''}}"
+        class="status-btn {{book.read ? 'active' : ''}} {{!isAdmin ? 'disabled' : ''}}"
         bindtap="toggleRead"
       >
         <view class="status-icon read">{{book.read ? '👁' : '👁'}}</view>
         <text class="status-text">已阅读</text>
       </view>
       <view
-        class="status-btn {{book.intensiveRead ? 'active' : ''}}"
+        class="status-btn {{book.intensiveRead ? 'active' : ''}} {{!isAdmin ? 'disabled' : ''}}"
         bindtap="toggleIntensive"
       >
         <view class="status-icon intensive">{{book.intensiveRead ? '★' : '☆'}}</view>
         <text class="status-text">已精读</text>
       </view>
     </view>
-    <text class="status-hint">点击状态图标切换</text>
+    <text class="status-hint">{{isAdmin ? '点击状态图标切换' : '仅管理员可修改状态'}}</text>
   </view>
 
   <!-- 书籍信息 -->
