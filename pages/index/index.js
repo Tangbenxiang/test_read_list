@@ -9,16 +9,51 @@ Page({
       purchased: 0,
       intensive: 0
     },
-    loading: false
+    loading: false,
+    // 用户信息
+    userInfo: null
   },
 
   onLoad() {
+    this.checkUserStatus()
     this.loadStatistics()
   },
 
   onShow() {
     // 每次显示页面时刷新数据
     this.loadStatistics()
+  },
+
+  // 检查用户状态并跳转
+  async checkUserStatus() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'checkAdmin'
+      })
+
+      if (res.result && res.result.success) {
+        const { role, userInfo } = res.result
+
+        if (role === 'guest') {
+          // 未注册用户，跳转到注册页
+          wx.redirectTo({
+            url: '/pages/register/register'
+          })
+          return
+        }
+
+        // 已注册用户，保存用户信息
+        this.setData({
+          userInfo: userInfo
+        })
+      } else {
+        console.error('用户状态检查失败:', res.result)
+        // 失败时不跳转，让用户继续使用基本功能
+      }
+    } catch (error) {
+      console.error('检查用户状态失败:', error)
+      // 网络错误时不跳转，让用户继续使用
+    }
   },
 
   // 下拉刷新
@@ -136,6 +171,30 @@ Page({
     wx.navigateTo({
       url: '/pages/addbook/addbook'
     })
+  },
+
+  // 跳转到家长专区
+  goToParentZone() {
+    wx.showToast({
+      title: '家长专区功能正在开发中，敬请期待！',
+      icon: 'none',
+      duration: 2000
+    })
+  },
+
+  // 跳转到个人中心
+  goToProfile() {
+    if (this.data.userInfo) {
+      wx.navigateTo({
+        url: '/pages/profile/profile'
+      })
+    } else {
+      wx.showToast({
+        title: '正在加载用户信息...',
+        icon: 'none',
+        duration: 1000
+      })
+    }
   },
 
   // 分享功能

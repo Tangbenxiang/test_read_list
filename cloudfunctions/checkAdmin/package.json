@@ -1,7 +1,7 @@
 {
   "name": "checkAdmin",
   "version": "1.0.0",
-  "description": "检查用户是否为管理员",
+  "description": "检查用户角色和权限（支持多角色：student/parent/teacher/admin/guest）",
   "main": "index.js",
   "scripts": {},
   "author": "",

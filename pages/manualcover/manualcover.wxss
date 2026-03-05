@@ -359,3 +359,176 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+/* 图片上传样式 */
+.upload-buttons {
+  display: flex;
+  gap: 15rpx;
+  margin-bottom: 20rpx;
+}
+
+.upload-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #722ED1 0%, #9254DE 100%);
+  color: white;
+  font-size: 26rpx;
+  padding: 15rpx 20rpx;
+  border-radius: 12rpx;
+}
+
+.image-preview {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  margin: 20rpx auto;
+  display: block;
+  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
+}
+
+.upload-progress {
+  margin-top: 20rpx;
+  text-align: center;
+}
+
+.progress-text {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 10rpx;
+}
+
+/* 新样式 - 简化封面修改页面 */
+.book-info-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx solid #A0D6FF;
+}
+
+.book-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.book-header {
+  display: flex;
+  align-items: center;
+  gap: 30rpx;
+}
+
+.current-cover {
+  width: 180rpx;
+  height: 240rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
+}
+
+.book-details {
+  flex: 1;
+}
+
+.book-details .book-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.book-details .book-author {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.book-tags {
+  display: flex;
+  gap: 10rpx;
+  flex-wrap: wrap;
+}
+
+.book-tag {
+  padding: 8rpx 20rpx;
+  background: #E6F7FF;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: #1890FF;
+}
+
+.options-section {
+  margin-bottom: 40rpx;
+}
+
+.option-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.option-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.option-desc {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.option-btn {
+  background: linear-gradient(135deg, #1890FF 0%, #66B3FF 100%);
+  color: white;
+  font-size: 28rpx;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  width: 100%;
+  margin-bottom: 20rpx;
+}
+
+.url-input-group {
+  display: flex;
+  gap: 15rpx;
+  margin-bottom: 15rpx;
+}
+
+.url-input-group .url-input {
+  flex: 1;
+  background: #F9F9F9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  border: 1rpx solid #E0E0E0;
+}
+
+.url-confirm-btn {
+  background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+  color: white;
+  font-size: 26rpx;
+  padding: 20rpx 30rpx;
+  border-radius: 12rpx;
+  white-space: nowrap;
+}
+
+.url-hint {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 10rpx;
+}

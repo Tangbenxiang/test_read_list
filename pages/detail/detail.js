@@ -344,16 +344,18 @@ Page({
     } catch (error) {
       console.error('更新状态失败:', error)
 
-      // 如果云函数调用失败，更新本地数据（开发阶段）
-      const book = { ...this.data.book }
-      book[field] = value
-
-      this.setData({ book })
+      // 显示错误信息
+      let errorMessage = '状态更新失败'
+      if (error.message && error.message.includes('权限不足')) {
+        errorMessage = '只有管理员可以修改书籍状态'
+      } else if (error.message) {
+        errorMessage = error.message
+      }
 
       wx.showToast({
-        title: '本地更新成功',
+        title: errorMessage,
         icon: 'none',
-        duration: 1500
+        duration: 2000
       })
     } finally {
       wx.hideLoading()
@@ -417,6 +419,26 @@ Page({
 
     wx.navigateTo({
       url: '/pages/addbook/addbook'
+    })
+  },
+
+  // 跳转到手动修改封面页面
+  goToManualCover() {
+    const { isAdmin, book, bookId } = this.data
+    if (!isAdmin) {
+      wx.showToast({
+        title: '没有修改封面权限',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    if (!book) return
+
+    // 传递书籍标题作为搜索关键词，方便在manualcover页面直接搜索
+    const title = book.title.replace(/《|》/g, '') // 移除书名号
+    wx.navigateTo({
+      url: `/pages/manualcover/manualcover?title=${encodeURIComponent(title)}&id=${bookId}`
     })
   },
 

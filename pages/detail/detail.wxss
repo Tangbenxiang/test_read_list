@@ -284,6 +284,11 @@
   color: white;
 }
 
+.manual-cover-btn {
+  background: linear-gradient(135deg, #FF7A45 0%, #FF9A6C 100%);
+  color: white;
+}
+
 .share-btn {
   background: linear-gradient(135deg, #66B3FF 0%, #3388FF 100%);
   color: white;

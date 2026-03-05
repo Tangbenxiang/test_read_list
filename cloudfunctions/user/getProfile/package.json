@@ -1,0 +1,12 @@
+{
+  "name": "user-getProfile",
+  "version": "1.0.0",
+  "description": "获取用户详细信息云函数",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

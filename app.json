@@ -8,8 +8,19 @@
     "pages/addbook/addbook",
     "pages/editbook/editbook",
     "pages/manualcover/manualcover",
-    "pages/debug/debug"
+    "pages/debug/debug",
+    "pages/register/register",
+    "pages/profile/profile",
+    "pages/challenge/challenge",
+    "pages/challenge-list/challenge-list",
+    "pages/sharing/sharing",
+    "pages/sharing-detail/sharing-detail",
+    "pages/ranking/ranking",
+    "pages/parent/parent",
+    "pages/achievements/achievements",
+    "pages/family/family"
   ],
+  "entryPagePath": "pages/index/index",
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#A0D6FF",

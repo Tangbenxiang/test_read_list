@@ -1,0 +1,158 @@
+<!-- pages/profile/profile.wxml -->
+<view class="container page-content">
+  <!-- 顶部背景区域 -->
+  <view class="header-bg">
+    <view class="edit-btn" bindtap="editProfile">✏️</view>
+    <view class="user-avatar">
+      <image wx:if="{{userInfo && userInfo.avatar}}" class="avatar-image" src="{{userInfo.avatar}}" mode="aspectFill" />
+      <view wx:else class="avatar-placeholder">👤</view>
+    </view>
+    <text class="user-name">{{userInfo ? userInfo.anonymousName : '加载中...'}}</text>
+    <text class="user-role">{{userInfo ? (userInfo.role === 'student' ? '学生' : userInfo.role === 'parent' ? '家长' : userInfo.role === 'teacher' ? '老师' : '管理员') : ''}}</text>
+  </view>
+
+  <!-- 加载提示 -->
+  <view wx:if="{{loading && !refreshing}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载个人资料...</text>
+  </view>
+
+  <!-- 个人资料内容 -->
+  <view wx:if="{{userInfo && !loading}}" class="profile-content">
+    <!-- 基本信息卡片 -->
+    <view class="info-card">
+      <view class="card-header">
+        <view class="card-icon">👤</view>
+        <text class="card-title">基本信息</text>
+        <view class="points-badge">
+          <text class="points-icon">⭐</text>
+          <text class="points-value">{{userInfo.points || 0}}</text>
+        </view>
+      </view>
+
+      <view class="info-grid">
+        <view class="info-item">
+          <text class="info-label">年级</text>
+          <text class="info-value">{{userInfo.grade || '未设置'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">注册时间</text>
+          <text class="info-value">刚刚开始</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">阅读等级</text>
+          <text class="info-value">初级读者</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">已解锁成就</text>
+          <text class="info-value">{{userInfo.achievements ? userInfo.achievements.length : 0}}个</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 阅读统计 -->
+    <view class="info-card">
+      <view class="card-header">
+        <view class="card-icon">📊</view>
+        <text class="card-title">阅读统计</text>
+        <view class="refresh-btn" bindtap="refreshProfile">
+          <text class="refresh-text">{{refreshing ? '刷新中...' : '刷新'}}</text>
+          <view class="refresh-icon">🔄</view>
+        </view>
+      </view>
+
+      <view class="stats-grid">
+        <view class="stat-item">
+          <text class="stat-number">{{readingStats.booksRead}}</text>
+          <text class="stat-label">已读书籍</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{readingStats.challengesCompleted}}</text>
+          <text class="stat-label">完成挑战</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{readingStats.totalReadingTime}}h</text>
+          <text class="stat-label">阅读时长</text>
+        </view>
+      </view>
+
+      <view class="stats-progress">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{Math.min((readingStats.booksRead / 50) * 100, 100)}}%"></view>
+        </view>
+        <view class="progress-text">阅读进度：{{readingStats.booksRead}}/50 本书</view>
+      </view>
+    </view>
+
+    <!-- 成就预览 -->
+    <view class="info-card">
+      <view class="card-header">
+        <view class="card-icon">🏆</view>
+        <text class="card-title">成就预览</text>
+        <view class="view-all-btn" bindtap="goToAchievements">
+          <text class="view-all-text">查看全部</text>
+          <view class="view-all-icon">▶</view>
+        </view>
+      </view>
+
+      <view class="achievements-grid">
+        <view wx:for="{{achievementPreview}}" wx:key="id" class="achievement-item {{item.unlocked ? 'unlocked' : 'locked'}}">
+          <view class="achievement-icon">{{item.icon}}</view>
+          <text class="achievement-name">{{item.name}}</text>
+          <text class="achievement-status">{{item.unlocked ? '已解锁' : '待解锁'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 近期活动 -->
+    <view class="info-card">
+      <view class="card-header">
+        <view class="card-icon">🕒</view>
+        <text class="card-title">近期活动</text>
+      </view>
+
+      <view class="activities-list">
+        <view wx:for="{{recentActivities}}" wx:key="index" class="activity-item">
+          <view class="activity-icon">{{item.icon}}</view>
+          <view class="activity-content">
+            <text class="activity-title">{{item.title}}</text>
+            <text class="activity-time">{{item.time}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 快捷入口 -->
+    <view class="quick-actions">
+      <view class="section-title">
+        <view class="section-icon">⚡</view>
+        <text>快捷入口</text>
+      </view>
+
+      <view class="action-grid">
+        <view class="action-item" bindtap="goToChallenges">
+          <view class="action-icon">⚔️</view>
+          <text class="action-text">阅读挑战</text>
+        </view>
+        <view class="action-item" bindtap="goToRanking">
+          <view class="action-icon">📈</view>
+          <text class="action-text">排行榜</text>
+        </view>
+        <view class="action-item" bindtap="goToSettings">
+          <view class="action-icon">⚙️</view>
+          <text class="action-text">设置</text>
+        </view>
+        <view class="action-item">
+          <view class="action-icon">💬</view>
+          <text class="action-text">帮助反馈</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 隐私说明 -->
+    <view class="privacy-notice">
+      <text class="notice-icon">🔒</text>
+      <text class="notice-text">所有个人信息均已匿名处理，仅用于提供更好的阅读体验</text>
+    </view>
+  </view>
+</view>

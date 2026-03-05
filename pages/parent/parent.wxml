@@ -1,0 +1,8 @@
+<!-- pages/parent/parent.wxml -->
+<view class="container">
+  <view class="placeholder">
+    <view class="placeholder-icon">👨‍👩‍👧</view>
+    <text class="placeholder-title">家长老师专区</text>
+    <text class="placeholder-subtitle">功能正在开发中，敬请期待</text>
+  </view>
+</view>

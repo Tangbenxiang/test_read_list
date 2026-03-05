@@ -18,6 +18,7 @@ try {
 }
 
 exports.main = async (event, context) => {
+  const { OPENID } = cloud.getWXContext()
   const db = cloud.database()
   const { bookId, field, value } = event
 
@@ -39,6 +40,21 @@ exports.main = async (event, context) => {
   }
 
   try {
+    // 1. 检查管理员权限
+    const adminCheck = await db.collection('admins')
+      .where({
+        openid: OPENID,
+        role: 'admin'
+      })
+      .get()
+
+    if (adminCheck.data.length === 0) {
+      return {
+        success: false,
+        error: '权限不足',
+        message: '只有管理员可以修改书籍状态'
+      }
+    }
     // 更新书籍状态
     const updateData = {
       [field]: value,

@@ -1,0 +1,468 @@
+/* pages/register/register.wxss */
+@import '../../app.wxss';
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+  padding-bottom: 40rpx;
+}
+
+/* 顶部背景区域 */
+.header-bg {
+  height: 280rpx;
+  background: linear-gradient(135deg, #7BC6FF 0%, #4DA6FF 50%, #3388FF 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 0 0 60rpx 60rpx;
+  box-shadow: 0 4rpx 30rpx rgba(77, 166, 255, 0.3);
+  margin-bottom: 30rpx;
+}
+
+.help-icon {
+  position: absolute;
+  top: 40rpx;
+  right: 40rpx;
+  font-size: 48rpx;
+  color: white;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.help-icon:active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.title {
+  font-size: 46rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 0 2rpx 8rpx rgba(0, 102, 204, 0.4);
+  margin-bottom: 16rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #E6F4FF;
+  opacity: 0.9;
+}
+
+/* 加载容器 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 8rpx solid rgba(160, 214, 255, 0.3);
+  border-top: 8rpx solid var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 30rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 表单区域 */
+.registration-form {
+  padding: 0 30rpx;
+}
+
+.form-section {
+  background: white;
+  border-radius: var(--radius-medium);
+  padding: 40rpx 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: var(--shadow-light);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--dark-blue);
+}
+
+.section-icon {
+  font-size: 36rpx;
+  margin-right: 15rpx;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 8rpx 20rpx;
+  background: rgba(160, 214, 255, 0.1);
+  border-radius: 20rpx;
+  border: 2rpx solid var(--primary-blue);
+}
+
+.refresh-text {
+  font-size: 24rpx;
+  color: var(--dark-blue);
+  margin-right: 8rpx;
+}
+
+.refresh-icon {
+  font-size: 24rpx;
+  color: var(--dark-blue);
+}
+
+/* 名字推荐 */
+.name-recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.name-option {
+  padding: 30rpx;
+  background: #F8FBFF;
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--ice-blue);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.name-option.selected {
+  background: var(--primary-blue);
+  border-color: var(--secondary-blue);
+  transform: translateY(-4rpx);
+  box-shadow: var(--shadow-medium);
+}
+
+.name-text {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: var(--dark-blue);
+}
+
+.name-option.selected .name-text {
+  color: white;
+}
+
+.name-check {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+}
+
+/* 自定义名字 */
+.custom-name-section {
+  margin-top: 20rpx;
+}
+
+.custom-name-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: #F8FBFF;
+  border-radius: var(--radius-small);
+  border: 2rpx dashed var(--ice-blue);
+  color: var(--dark-blue);
+  font-size: 28rpx;
+}
+
+.custom-name-toggle.active {
+  background: var(--ice-blue);
+}
+
+.toggle-icon {
+  font-size: 24rpx;
+}
+
+.custom-name-input-container {
+  margin-top: 20rpx;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-name-input {
+  width: 100%;
+  height: 80rpx;
+  padding: 0 30rpx;
+  background: white;
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--ice-blue);
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.placeholder {
+  color: var(--text-light);
+}
+
+.input-hint {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--text-light);
+  text-align: center;
+}
+
+/* 头像选择 */
+.avatar-selection {
+  margin-top: 10rpx;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.avatar-item {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.avatar-item.selected {
+  border-color: var(--primary-blue);
+  transform: scale(1.1);
+  box-shadow: 0 8rpx 25rpx rgba(160, 214, 255, 0.5);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  background: #F8FBFF; /* 头像加载前的背景色 */
+}
+
+.avatar-emoji {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  background: #F8FBFF;
+  border-radius: 50%;
+}
+
+.avatar-check {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(160, 214, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  color: white;
+  font-weight: bold;
+}
+
+.avatar-hint {
+  display: block;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  margin-top: 10rpx;
+}
+
+/* 信息选择 */
+.info-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.picker-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.picker-label {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.picker {
+  flex: 2;
+}
+
+.picker-view {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background: #F8FBFF;
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--ice-blue);
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: var(--dark-blue);
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: var(--text-light);
+}
+
+/* 提交区域 */
+.submit-section {
+  margin-top: 40rpx;
+  padding: 40rpx 30rpx;
+  background: white;
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-light);
+  text-align: center;
+}
+
+.selected-info {
+  margin-bottom: 30rpx;
+}
+
+.info-text {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.info-highlight {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--dark-blue);
+  margin-top: 10rpx;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  border-radius: var(--radius-large);
+  color: white;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  margin-bottom: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.submit-btn[disabled] {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+}
+
+.privacy-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  background: #F8FBFF;
+  border-radius: var(--radius-small);
+}
+
+.notice-icon {
+  font-size: 24rpx;
+  margin-right: 10rpx;
+  color: var(--text-light);
+}
+
+.notice-text {
+  font-size: 24rpx;
+  color: var(--text-light);
+  flex: 1;
+}
+
+/* 已注册用户提示 */
+.already-registered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 30rpx;
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  color: #52C41A;
+  animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-20rpx); }
+}
+
+.success-title {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: var(--dark-blue);
+  margin-bottom: 20rpx;
+}
+
+.success-message {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 响应式调整 */
+@media (max-width: 375px) {
+  .avatar-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15rpx;
+  }
+
+  .avatar-item {
+    width: 100rpx;
+    height: 100rpx;
+  }
+
+  .form-section {
+    padding: 30rpx 20rpx;
+  }
+}

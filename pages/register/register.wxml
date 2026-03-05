@@ -1,0 +1,140 @@
+<!-- pages/register/register.wxml -->
+<view class="container page-content">
+  <!-- 顶部背景区域 -->
+  <view class="header-bg">
+    <view class="help-icon" bindtap="showHelp">❓</view>
+    <text class="title">匿名注册</text>
+    <text class="subtitle">选择一个有趣的身份开始阅读之旅</text>
+  </view>
+
+  <!-- 用户状态检查提示 -->
+  <view wx:if="{{userStatus == 'checking' || loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在检查用户状态...</text>
+  </view>
+
+  <!-- 注册表单（仅对新用户显示） -->
+  <view wx:if="{{userStatus == 'guest'}}" class="registration-form">
+    <!-- 第一步：选择名字 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="section-icon">📝</view>
+        <text>第一步：选择一个有趣的名字</text>
+        <view class="refresh-btn" bindtap="regenerateNames">
+          <text class="refresh-text">换一批</text>
+          <view class="refresh-icon">🔄</view>
+        </view>
+      </view>
+
+      <!-- 系统推荐名字 -->
+      <view class="name-recommendations">
+        <view wx:for="{{nameRecommendations}}" wx:key="index" class="name-option{{selectedName == item ? ' selected' : ''}}" bindtap="selectName" data-name="{{item}}">
+          <text class="name-text">{{item}}</text>
+          <view wx:if="{{selectedName == item}}" class="name-check">✓</view>
+        </view>
+      </view>
+
+      <!-- 自定义名字选项 -->
+      <view class="custom-name-section">
+        <view class="custom-name-toggle{{showCustomNameInput ? ' active' : ''}}" bindtap="toggleCustomNameInput">
+          <text>或使用自定义名字</text>
+          <view class="toggle-icon">{{showCustomNameInput ? '▼' : '▶'}}</view>
+        </view>
+
+        <view wx:if="{{showCustomNameInput}}" class="custom-name-input-container">
+          <input
+            class="custom-name-input"
+            placeholder="输入你的个性名字（最多20字）"
+            placeholder-class="placeholder"
+            maxlength="20"
+            value="{{customName}}"
+            bindinput="onCustomNameInput"
+            focus="{{showCustomNameInput}}"
+          />
+          <text class="input-hint">当前名字：{{selectedName || '未选择'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第二步：选择头像 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="section-icon">🖼️</view>
+        <text>第二步：选择一个喜欢的头像</text>
+      </view>
+
+      <view class="avatar-selection">
+        <view class="avatar-grid">
+          <view wx:for="{{avatars}}" wx:key="index" class="avatar-item{{selectedAvatarIndex == item.index ? ' selected' : ''}}" bindtap="selectAvatar" data-index="{{item.index}}">
+            <!-- 临时使用emoji作为头像，后续替换为图片 -->
+            <view class="avatar-emoji">{{item.emoji}}</view>
+            <!-- <image class="avatar-image" src="{{item.path}}" mode="aspectFill" /> -->
+            <view wx:if="{{selectedAvatarIndex == item.index}}" class="avatar-check">✓</view>
+          </view>
+        </view>
+        <text class="avatar-hint">已选择头像 {{selectedAvatarIndex + 1}}/30</text>
+      </view>
+    </view>
+
+    <!-- 第三步：选择年级和角色 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="section-icon">👤</view>
+        <text>第三步：完善你的信息（可选）</text>
+      </view>
+
+      <view class="info-selection">
+        <!-- 年级选择 -->
+        <view class="picker-group">
+          <text class="picker-label">选择年级：</text>
+          <picker class="picker" range="{{grades}}" range-key="label" value="{{selectedGrade}}" bindchange="onGradeChange">
+            <view class="picker-view">
+              <text class="picker-text">{{selectedGradeLabel}}</text>
+              <view class="picker-arrow">▼</view>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 角色选择 -->
+        <view class="picker-group">
+          <text class="picker-label">你的身份：</text>
+          <picker class="picker" range="{{roles}}" range-key="label" value="{{selectedRole}}" bindchange="onRoleChange">
+            <view class="picker-view">
+              <text class="picker-text">{{selectedRoleLabel}}</text>
+              <view class="picker-arrow">▼</view>
+            </view>
+          </picker>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-section">
+      <view class="selected-info">
+        <text class="info-text">你将注册为：</text>
+        <text class="info-highlight">{{selectedName}}</text>
+      </view>
+
+      <button
+        class="submit-btn"
+        bindtap="submitRegistration"
+        disabled="{{loading || !selectedName}}"
+        loading="{{loading}}"
+      >
+        {{loading ? '注册中...' : '完成注册，开始阅读'}}
+      </button>
+
+      <view class="privacy-notice">
+        <text class="notice-icon">🔒</text>
+        <text class="notice-text">你的个人信息将被匿名保护，仅用于提供更好的阅读体验</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已注册用户提示 -->
+  <view wx:if="{{userStatus == 'registered'}}" class="already-registered">
+    <view class="success-icon">✅</view>
+    <text class="success-title">您已完成注册！</text>
+    <text class="success-message">正在跳转到首页...</text>
+  </view>
+</view>

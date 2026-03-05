@@ -1,0 +1,65 @@
+# 微信小程序项目通用.gitignore
+
+# 依赖目录
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 敏感文件
+private.key
+*.pem
+*.key
+*.secret
+.env
+.env.local
+.env.*.local
+
+# 微信开发者工具生成文件
+project.config.json.user
+project.private.config.json
+
+# 云函数本地调试文件
+cloudfunctions/*/node_modules/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.temp
+
+# 日志文件
+*.log
+
+# 构建输出
+dist/
+build/
+
+# 上传文件
+.upload/
+.ci/
+
+# 自定义忽略
+.claude/settings.local.json  # Claude Code本地配置（可能包含权限设置）
+
+# 数据文件
+*.db
+*.sqlite
+
+# 备份文件
+*.bak
+*.backup
+
+# 图像处理中间文件
+*.psd
+*.ai

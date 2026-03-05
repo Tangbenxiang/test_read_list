@@ -2,7 +2,10 @@
 <view class="container page-content">
   <!-- 顶部背景区域 -->
   <view class="header-bg">
-    <view class="snowflake">❄️</view>
+    <view class="user-avatar" bindtap="goToProfile">
+      <image wx:if="{{userInfo && userInfo.avatar}}" class="avatar-image" src="{{userInfo.avatar}}" mode="aspectFill" />
+      <view wx:else class="avatar-placeholder">👤</view>
+    </view>
     <view class="admin-icon" bindtap="goToAddBook">➕</view>
     <text class="title">阅读记录小助手</text>
     <text class="subtitle">和Shelly一起探索书海，爱上阅读</text>
@@ -14,10 +17,10 @@
     <text class="search-placeholder">搜索书名、作者或类型</text>
   </view>
 
-  <!-- 年级分类 -->
+  <!-- 学生专区 -->
   <view class="section-title">
-    <view class="section-icon">📚</view>
-    <text>按年级选择</text>
+    <view class="section-icon">👦</view>
+    <text>学生专区</text>
   </view>
 
   <view class="grade-cards">
@@ -37,6 +40,20 @@
       <text class="grade-name">五至六年级</text>
       <text class="book-count">{{stats.grade3}}本</text>
       <view class="card-icon">👸</view>
+    </view>
+  </view>
+
+  <!-- 家长专区 -->
+  <view class="section-title">
+    <view class="section-icon">👨‍👩‍👧</view>
+    <text>家长专区</text>
+  </view>
+
+  <view class="parent-section">
+    <view class="parent-card" bindtap="goToParentZone">
+      <view class="parent-icon">📝</view>
+      <text class="parent-text">家长专区</text>
+      <text class="parent-desc">功能开发中，敬请期待</text>
     </view>
   </view>
 

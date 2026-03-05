@@ -87,6 +87,10 @@
       <view class="action-icon">🖼️</view>
       <text>获取封面</text>
     </view>
+    <view wx:if="{{isAdmin}}" class="action-btn manual-cover-btn" bindtap="goToManualCover">
+      <view class="action-icon">📷</view>
+      <text>手动修改封面</text>
+    </view>
     <view class="action-btn feedback-btn" bindtap="goToFeedback">
       <view class="action-icon">💬</view>
       <text>意见建议</text>

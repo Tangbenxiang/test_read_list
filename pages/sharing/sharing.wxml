@@ -1,0 +1,8 @@
+<!-- pages/sharing/sharing.wxml -->
+<view class="container">
+  <view class="placeholder">
+    <view class="placeholder-icon">💬</view>
+    <text class="placeholder-title">阅读分享</text>
+    <text class="placeholder-subtitle">功能正在开发中，敬请期待</text>
+  </view>
+</view>

@@ -7,18 +7,27 @@ Page({
     checkingAdmin: true,
     errorMessage: '',
 
-    // 搜索相关
-    searchKeyword: '',
-    batchCoverUrl: '',
-    searchResults: [],
-    hasSearched: false,
-    searching: false,
+    // 书籍信息
+    book: null,
+    bookId: '',
+    coverUrl: '',
+
+    // 图片上传相关
+    uploading: false,
+    uploadProgress: 0,
+    tempImagePath: '',
 
     // 状态
     loading: false
   },
 
-  onLoad() {
+  onLoad(options) {
+    // 从详情页获取书籍ID
+    if (options && options.id) {
+      const bookId = options.id
+      this.setData({ bookId })
+    }
+
     this.checkAdminPermission()
   },
 
@@ -36,7 +45,8 @@ Page({
           isAdmin: true,
           checkingAdmin: false
         })
-        // 不再自动加载书籍列表
+        // 权限检查成功后加载书籍信息
+        this.loadBookInfo()
       } else {
         this.setData({
           isAdmin: false,
@@ -54,14 +64,114 @@ Page({
     }
   },
 
-  // 搜索输入处理
-  onSearchInput(e) {
-    console.log('搜索输入框输入事件:', e)
-    console.log('输入值:', e.detail.value)
+  // 加载书籍信息
+  async loadBookInfo() {
+    const { bookId } = this.data
+    if (!bookId) {
+      wx.showToast({
+        title: '书籍ID缺失',
+        icon: 'error'
+      })
+      return
+    }
+
+    this.setData({ loading: true })
+
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('books').doc(bookId).get()
+      this.setData({
+        book: res.data,
+        loading: false
+      })
+    } catch (error) {
+      console.error('加载书籍信息失败:', error)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'error'
+      })
+      this.setData({ loading: false })
+    }
+  },
+
+  // URL输入处理
+  onUrlInput(e) {
     this.setData({
-      searchKeyword: e.detail.value
+      coverUrl: e.detail.value
     })
   },
+
+  // 使用输入的URL更新封面
+  async updateWithUrl() {
+    const { coverUrl, bookId, isAdmin } = this.data
+    if (!isAdmin) {
+      wx.showToast({
+        title: '没有操作权限',
+        icon: 'error',
+        duration: 2000
+      })
+      return
+    }
+
+    if (!coverUrl.trim()) {
+      wx.showToast({
+        title: '请输入封面URL',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 验证URL格式
+    if (!coverUrl.startsWith('http')) {
+      wx.showToast({
+        title: 'URL格式错误，请以http或https开头',
+        icon: 'none'
+      })
+      return
+    }
+
+    await this.updateCover(coverUrl)
+  },
+
+  // 更新封面到数据库
+  async updateCover(coverUrl) {
+    const { bookId, isAdmin } = this.data
+    if (!isAdmin || !bookId) return
+
+    wx.showLoading({ title: '更新中...' })
+
+    try {
+      const db = wx.cloud.database()
+      await db.collection('books').doc(bookId).update({
+        data: {
+          cover: coverUrl,
+          updateTime: db.serverDate()
+        }
+      })
+
+      // 更新本地数据
+      this.setData({
+        'book.cover': coverUrl,
+        coverUrl: '' // 清空输入框
+      })
+
+      wx.hideLoading()
+      wx.showToast({
+        title: '封面更新成功',
+        icon: 'success',
+        duration: 2000
+      })
+    } catch (error) {
+      console.error('更新封面失败:', error)
+      wx.hideLoading()
+      wx.showToast({
+        title: '更新失败',
+        icon: 'error',
+        duration: 2000
+      })
+    }
+  },
+
 
   // 批量URL输入处理
   onBatchUrlInput(e) {
@@ -79,6 +189,17 @@ Page({
     searchResults[index].newCoverUrl = value
 
     this.setData({ searchResults })
+  },
+
+  // 输入框获得焦点时设置当前编辑索引
+  onResultFocus(e) {
+    const { index } = e.currentTarget.dataset
+    this.setData({ currentEditIndex: index })
+  },
+
+  // 批量URL输入框获得焦点时清除当前编辑索引
+  onBatchUrlFocus(e) {
+    this.setData({ currentEditIndex: undefined })
   },
 
   // 空函数，用于阻止事件冒泡
@@ -372,6 +493,131 @@ Page({
       searchResults: [],
       hasSearched: false
     })
+  },
+
+  // 选择图片
+  chooseImage() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album'],
+      success: (res) => {
+        const tempImagePath = res.tempFilePaths[0]
+        this.setData({ tempImagePath })
+        this.uploadImage(tempImagePath)
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err)
+        wx.showToast({
+          title: '选择图片失败',
+          icon: 'error'
+        })
+      }
+    })
+  },
+
+  // 拍照
+  takePhoto() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['camera'],
+      success: (res) => {
+        const tempImagePath = res.tempFilePaths[0]
+        this.setData({ tempImagePath })
+        this.uploadImage(tempImagePath)
+      },
+      fail: (err) => {
+        console.error('拍照失败:', err)
+        wx.showToast({
+          title: '拍照失败',
+          icon: 'error'
+        })
+      }
+    })
+  },
+
+  // 上传图片到云存储
+  async uploadImage(filePath) {
+    if (!filePath) return
+
+    this.setData({
+      uploading: true,
+      uploadProgress: 0
+    })
+
+    try {
+      // 生成唯一文件名
+      const timestamp = new Date().getTime()
+      const randomStr = Math.random().toString(36).substr(2, 8)
+      const cloudPath = `book-covers/${timestamp}_${randomStr}.jpg`
+
+      // 上传文件
+      const uploadTask = wx.cloud.uploadFile({
+        cloudPath,
+        filePath,
+        success: (res) => {
+          // 获取文件ID
+          const fileID = res.fileID
+
+          // 获取临时URL（有效期2小时）
+          wx.cloud.getTempFileURL({
+            fileList: [fileID],
+            success: (urlRes) => {
+              const fileURL = urlRes.fileList[0].tempFileURL
+
+              // 自动填充到当前编辑的输入框
+              this.fillCoverUrl(fileURL)
+
+              this.setData({
+                uploading: false,
+                uploadProgress: 100,
+                tempImagePath: ''
+              })
+
+              wx.showToast({
+                title: '上传成功',
+                icon: 'success'
+              })
+            },
+            fail: (urlErr) => {
+              console.error('获取文件URL失败:', urlErr)
+              wx.showToast({
+                title: '获取URL失败',
+                icon: 'error'
+              })
+              this.setData({ uploading: false })
+            }
+          })
+        },
+        fail: (err) => {
+          console.error('上传失败:', err)
+          wx.showToast({
+            title: '上传失败',
+            icon: 'error'
+          })
+          this.setData({ uploading: false })
+        }
+      })
+
+      // 监听上传进度
+      uploadTask.onProgressUpdate((res) => {
+        this.setData({ uploadProgress: res.progress })
+      })
+    } catch (error) {
+      console.error('上传异常:', error)
+      wx.showToast({
+        title: '上传异常',
+        icon: 'error'
+      })
+      this.setData({ uploading: false })
+    }
+  },
+
+  // 填充封面URL到输入框
+  fillCoverUrl(url) {
+    // 上传成功后直接更新封面
+    this.updateCover(url)
   },
 
   // 返回
