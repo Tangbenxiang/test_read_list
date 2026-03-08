@@ -11,21 +11,44 @@ Page({
     },
     loading: false,
     // 用户信息
-    userInfo: null
+    userInfo: null,
+    // 计划阅读书籍
+    plannedBooks: []
   },
 
   onLoad() {
     this.checkUserStatus()
     this.loadStatistics()
+    this.loadPlannedBooks()
   },
 
   onShow() {
     // 每次显示页面时刷新数据
     this.loadStatistics()
+    this.loadPlannedBooks()
   },
 
   // 检查用户状态并跳转
   async checkUserStatus() {
+    const app = getApp()
+
+    // 优先使用全局用户信息
+    if (app.globalData.userInfo && app.globalData.loginStatus === 'loggedIn') {
+      this.setData({
+        userInfo: app.globalData.userInfo
+      })
+      return
+    }
+
+    // 如果全局状态是guest，直接跳转注册页
+    if (app.globalData.loginStatus === 'guest') {
+      wx.redirectTo({
+        url: '/pages/register/register'
+      })
+      return
+    }
+
+    // 否则调用云函数检查
     try {
       const res = await wx.cloud.callFunction({
         name: 'checkAdmin'
@@ -35,6 +58,8 @@ Page({
         const { role, userInfo } = res.result
 
         if (role === 'guest') {
+          // 更新全局状态
+          app.globalData.loginStatus = 'guest'
           // 未注册用户，跳转到注册页
           wx.redirectTo({
             url: '/pages/register/register'
@@ -42,7 +67,9 @@ Page({
           return
         }
 
-        // 已注册用户，保存用户信息
+        // 已注册用户，保存用户信息到全局和页面
+        app.globalData.userInfo = userInfo
+        app.globalData.loginStatus = 'loggedIn'
         this.setData({
           userInfo: userInfo
         })
@@ -197,6 +224,13 @@ Page({
     }
   },
 
+  // 跳转到挑战列表页面
+  goToChallenge() {
+    wx.navigateTo({
+      url: '/pages/challenge-list/challenge-list'
+    })
+  },
+
   // 分享功能
   onShareAppMessage() {
     return {
@@ -211,6 +245,44 @@ Page({
     return {
       title: '记录孩子的阅读成长',
       query: ''
+    }
+  },
+
+  // 加载计划阅读书籍
+  async loadPlannedBooks() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'getPlannedBooks'
+      })
+
+      if (res.result && res.result.success) {
+        this.setData({
+          plannedBooks: res.result.data
+        })
+      } else {
+        console.error('获取计划阅读书籍失败:', res.result)
+      }
+    } catch (error) {
+      console.error('调用计划阅读书籍云函数失败:', error)
+      // 失败时不显示错误，保持空列表
+    }
+  },
+
+  // 跳转到添加计划阅读书籍页面
+  goToAddPlannedBook() {
+    // 暂时使用现有的添加书籍页面，后续可以创建专门的添加计划书籍页面
+    wx.navigateTo({
+      url: '/pages/addbook/addbook?planned=true'
+    })
+  },
+
+  // 查看计划阅读书籍详情
+  viewPlannedBook(e) {
+    const bookId = e.currentTarget.dataset.bookId
+    if (bookId) {
+      wx.navigateTo({
+        url: `/pages/detail/detail?id=${bookId}`
+      })
     }
   }
 })

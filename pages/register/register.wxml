@@ -66,9 +66,7 @@
       <view class="avatar-selection">
         <view class="avatar-grid">
           <view wx:for="{{avatars}}" wx:key="index" class="avatar-item{{selectedAvatarIndex == item.index ? ' selected' : ''}}" bindtap="selectAvatar" data-index="{{item.index}}">
-            <!-- 临时使用emoji作为头像，后续替换为图片 -->
-            <view class="avatar-emoji">{{item.emoji}}</view>
-            <!-- <image class="avatar-image" src="{{item.path}}" mode="aspectFill" /> -->
+            <image class="avatar-image" src="{{item.path}}" mode="aspectFill" />
             <view wx:if="{{selectedAvatarIndex == item.index}}" class="avatar-check">✓</view>
           </view>
         </view>

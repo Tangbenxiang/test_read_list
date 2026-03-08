@@ -7,7 +7,11 @@
       "Bash(node:*)",
       "Bash(npm install:*)",
       "Bash(miniprogram-ci:*)",
-      "Bash(cli:*)"
+      "Bash(cli:*)",
+      "Bash(git push:*)",
+      "Bash(cloudbase env:list:*)",
+      "Bash(cloudbase login:*)",
+      "Bash(cloudbase fn list:*)"
     ]
   }
 }

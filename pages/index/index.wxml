@@ -5,6 +5,7 @@
     <view class="user-avatar" bindtap="goToProfile">
       <image wx:if="{{userInfo && userInfo.avatar}}" class="avatar-image" src="{{userInfo.avatar}}" mode="aspectFill" />
       <view wx:else class="avatar-placeholder">👤</view>
+      <text wx:if="{{userInfo && userInfo.anonymousName}}" class="avatar-name">{{userInfo.anonymousName}}</text>
     </view>
     <view class="admin-icon" bindtap="goToAddBook">➕</view>
     <text class="title">阅读记录小助手</text>
@@ -43,19 +44,21 @@
     </view>
   </view>
 
-  <!-- 家长专区 -->
+  <!-- 挑战专区（已隐藏） -->
+  <!--
   <view class="section-title">
-    <view class="section-icon">👨‍👩‍👧</view>
-    <text>家长专区</text>
+    <view class="section-icon">🏆</view>
+    <text>挑战专区</text>
   </view>
 
   <view class="parent-section">
-    <view class="parent-card" bindtap="goToParentZone">
-      <view class="parent-icon">📝</view>
-      <text class="parent-text">家长专区</text>
-      <text class="parent-desc">功能开发中，敬请期待</text>
+    <view class="parent-card" bindtap="goToChallenge">
+      <view class="parent-icon">🏆</view>
+      <text class="parent-text">挑战专区</text>
+      <text class="parent-desc">参与阅读挑战，赢取奖励</text>
     </view>
   </view>
+  -->
 
   <!-- 快捷入口 -->
   <view class="section-title">
@@ -91,6 +94,36 @@
     <view class="quick-entry" bindtap="goToFeedback">
       <view class="entry-icon">💬</view>
       <text class="entry-text">意见建议</text>
+    </view>
+    <!-- 个人中心入口（已隐藏）
+    <view class="quick-entry" bindtap="goToProfile">
+      <view class="entry-icon">👤</view>
+      <text class="entry-text">个人中心</text>
+    </view>
+    -->
+  </view>
+
+  <!-- 计划阅读书籍 -->
+  <view class="section-title">
+    <view class="section-icon">📚</view>
+    <text>计划阅读书籍</text>
+    <view class="add-book-btn" bindtap="goToAddPlannedBook">➕</view>
+  </view>
+
+  <view class="planned-books-section">
+    <view wx:if="{{plannedBooks && plannedBooks.length > 0}}" class="planned-books-list">
+      <view wx:for="{{plannedBooks}}" wx:key="bookId" class="planned-book-item" bindtap="viewPlannedBook" data-book-id="{{item.bookId}}">
+        <image wx:if="{{item.bookInfo.cover}}" class="book-cover" src="{{item.bookInfo.cover}}" mode="aspectFill" />
+        <view wx:else class="book-cover-placeholder">📖</view>
+        <view class="book-info">
+          <text class="book-title">{{item.bookInfo.title}}</text>
+          <text class="book-author">{{item.bookInfo.author}}</text>
+          <text class="book-status {{item.status}}">{{item.status === 'planned' ? '计划阅读' : item.status === 'reading' ? '正在阅读' : '已完成'}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty-planned-books">
+      <text>暂无计划阅读书籍，点击➕添加</text>
     </view>
   </view>
 

@@ -55,6 +55,34 @@ Page({
   // 检查用户状态
   async checkUserStatus() {
     this.setData({ loading: true, userStatus: 'checking' })
+    const app = getApp()
+
+    // 优先使用全局用户信息
+    if (app.globalData.loginStatus === 'loggedIn' && app.globalData.userInfo) {
+      // 已注册用户，跳转到首页
+      wx.showToast({
+        title: '您已完成注册，正在跳转首页',
+        icon: 'success',
+        duration: 1500
+      })
+
+      setTimeout(() => {
+        wx.switchTab({
+          url: '/pages/index/index'
+        })
+      }, 1500)
+      return
+    }
+
+    // 如果全局状态是guest，显示注册表单
+    if (app.globalData.loginStatus === 'guest') {
+      this.setData({
+        userStatus: 'guest',
+        openid: app.globalData.openid || '',
+        loading: false
+      })
+      return
+    }
 
     try {
       const res = await wx.cloud.callFunction({
@@ -64,16 +92,22 @@ Page({
       console.log('用户状态检查结果:', res.result)
 
       if (res.result && res.result.success) {
-        const { role, userInfo } = res.result
+        const { role, userInfo, openid } = res.result
 
         if (role === 'guest') {
+          // 更新全局状态
+          app.globalData.loginStatus = 'guest'
+          app.globalData.openid = openid
           // 新用户，显示注册表单
           this.setData({
             userStatus: 'guest',
-            openid: res.result.openid,
+            openid: openid,
             loading: false
           })
         } else {
+          // 更新全局状态
+          app.globalData.userInfo = userInfo
+          app.globalData.loginStatus = 'loggedIn'
           // 已注册用户，跳转到首页
           wx.showToast({
             title: '您已完成注册，正在跳转首页',
@@ -138,19 +172,11 @@ Page({
 
   // 生成头像列表
   generateAvatarList() {
-    // 30个动物和物品emoji作为临时头像
-    const emojiAvatars = [
-      '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯',
-      '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆',
-      '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌'
-    ]
-
     const avatars = []
     for (let i = 0; i < 30; i++) {
       avatars.push({
         index: i,
-        path: `/images/avatars/${i}.png`, // 实际图片路径（后续创建）
-        emoji: emojiAvatars[i] || '👤' // 临时emoji显示
+        path: `/images/avatars/${i}.png`, // 实际图片路径
       })
     }
     this.setData({ avatars })
@@ -230,10 +256,20 @@ Page({
       return
     }
 
+    // 检查头像索引是否有效（0-29）
+    if (this.data.selectedAvatarIndex < 0 || this.data.selectedAvatarIndex > 29) {
+      wx.showToast({
+        title: '请选择有效的头像',
+        icon: 'error',
+        duration: 2000
+      })
+      return
+    }
+
     this.setData({ loading: true })
 
     try {
-      // 调用注册云函数（下一步实现）
+      // 调用注册云函数
       const res = await wx.cloud.callFunction({
         name: 'user/register',
         data: {
@@ -258,8 +294,23 @@ Page({
           })
         }, 1500)
       } else {
+        // 错误码到友好消息的映射
+        const errorMessages = {
+          'NAME_TOO_LONG': '名字不能超过20个字符',
+          'INVALID_AVATAR': '请选择有效的头像编号 (0-29)',
+          'INVALID_ROLE': '请选择有效的身份',
+          'INVALID_GRADE': '请选择有效的年级',
+          'ALREADY_REGISTERED': '您已经注册过了，无需重复注册',
+          'NAME_EXISTS': '这个名字已经被使用了，请换一个',
+          'ADMIN_PERMISSION_DENIED': '管理员身份需要特殊授权',
+          'REGISTRATION_FAILED': '注册失败，请稍后重试'
+        }
+
+        const errorCode = res.result.code
+        const errorMessage = errorMessages[errorCode] || res.result.message || '注册失败，请重试'
+
         wx.showToast({
-          title: res.result.message || '注册失败，请重试',
+          title: errorMessage,
           icon: 'error',
           duration: 2000
         })

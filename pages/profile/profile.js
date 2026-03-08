@@ -25,6 +25,15 @@ Page({
       notificationEnabled: true,
       showReadingStats: true,
       showAchievements: true
+    },
+
+    // 隐私级别映射
+    privacyLevelIndex: 0,
+    privacyLevelText: '高 (完全匿名)',
+    privacyLevelMap: {
+      'high': { index: 0, text: '高 (完全匿名)' },
+      'medium': { index: 1, text: '中 (部分信息可见)' },
+      'low': { index: 2, text: '低 (更多信息可见)' }
     }
   },
 
@@ -47,19 +56,19 @@ Page({
 
     try {
       const res = await wx.cloud.callFunction({
-        name: 'checkAdmin'
+        name: 'user/getProfile'
       })
 
       if (res.result && res.result.success) {
-        const { userInfo, role } = res.result
+        const { userInfo } = res.result
 
-        if (role === 'guest') {
-          // 未注册用户，跳转到注册页
-          wx.redirectTo({
-            url: '/pages/register/register'
-          })
-          return
-        }
+        // 获取用户设置
+        const userSettings = userInfo.settings || this.data.settings
+
+        // 计算隐私级别索引和文本
+        const privacyLevel = userSettings.privacyLevel || 'high'
+        const privacyLevelMap = this.data.privacyLevelMap
+        const privacyLevelInfo = privacyLevelMap[privacyLevel] || privacyLevelMap['high']
 
         // 更新用户信息
         this.setData({
@@ -69,7 +78,9 @@ Page({
             challengesCompleted: 0,
             totalReadingTime: 0
           },
-          settings: userInfo.settings || this.data.settings,
+          settings: userSettings,
+          privacyLevelIndex: privacyLevelInfo.index,
+          privacyLevelText: privacyLevelInfo.text,
           loading: false
         })
 
@@ -80,7 +91,14 @@ Page({
         this.loadRecentActivities()
 
       } else {
-        this.showError('加载用户信息失败')
+        // 如果是用户未找到，跳转到注册页
+        if (res.result.code === 'USER_NOT_FOUND') {
+          wx.redirectTo({
+            url: '/pages/register/register'
+          })
+          return
+        }
+        this.showError(res.result.message || '加载用户信息失败')
       }
     } catch (error) {
       console.error('加载用户资料失败:', error)
@@ -94,7 +112,7 @@ Page({
 
     try {
       const res = await wx.cloud.callFunction({
-        name: 'checkAdmin'
+        name: 'user/getProfile'
       })
 
       if (res.result && res.result.success) {
@@ -112,7 +130,7 @@ Page({
           duration: 1000
         })
       } else {
-        this.showError('刷新失败')
+        this.showError(res.result.message || '刷新失败')
       }
     } catch (error) {
       console.error('刷新资料失败:', error)
@@ -193,7 +211,7 @@ Page({
     })
   },
 
-  // 切换设置选项
+  // 切换设置选项（本地更新）
   toggleSetting(e) {
     const settingKey = e.currentTarget.dataset.key
     const currentValue = this.data.settings[settingKey]
@@ -205,11 +223,79 @@ Page({
       this.setData({
         settings: newSettings
       })
+    }
+  },
 
+  // 隐私级别更改
+  onPrivacyLevelChange(e) {
+    const index = parseInt(e.detail.value)
+    const privacyLevelMap = this.data.privacyLevelMap
+    let privacyLevel = 'high'
+    let privacyLevelText = '高 (完全匿名)'
+
+    // 根据索引找到对应的隐私级别
+    for (const [key, value] of Object.entries(privacyLevelMap)) {
+      if (value.index === index) {
+        privacyLevel = key
+        privacyLevelText = value.text
+        break
+      }
+    }
+
+    // 更新本地设置
+    const newSettings = { ...this.data.settings }
+    newSettings.privacyLevel = privacyLevel
+
+    this.setData({
+      privacyLevelIndex: index,
+      privacyLevelText: privacyLevelText,
+      settings: newSettings
+    })
+  },
+
+  // 保存设置到云端
+  async saveSettings() {
+    wx.showLoading({
+      title: '保存中...',
+    })
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'user/updateProfile',
+        data: {
+          settings: this.data.settings
+        }
+      })
+
+      wx.hideLoading()
+
+      if (res.result && res.result.success) {
+        wx.showToast({
+          title: '设置保存成功',
+          icon: 'success',
+          duration: 1500
+        })
+
+        // 更新本地用户信息
+        if (res.result.userInfo) {
+          this.setData({
+            userInfo: res.result.userInfo
+          })
+        }
+      } else {
+        wx.showToast({
+          title: res.result.message || '保存失败，请重试',
+          icon: 'error',
+          duration: 2000
+        })
+      }
+    } catch (error) {
+      wx.hideLoading()
+      console.error('保存设置失败:', error)
       wx.showToast({
-        title: '设置已更新',
-        icon: 'success',
-        duration: 1000
+        title: '网络错误，请重试',
+        icon: 'error',
+        duration: 2000
       })
     }
   },

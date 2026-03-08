@@ -7,10 +7,10 @@
     </view>
   </view>
 
-  <view wx:elif="{{!isAdmin}}" class="permission-denied">
+  <view wx:elif="{{(!isPlanned && !isAdmin) || (isPlanned && !allowAdd)}}" class="permission-denied">
     <view class="denied-icon">🔒</view>
     <text class="denied-title">权限不足</text>
-    <text class="denied-message">{{errorMessage || '只有管理员可以添加书籍'}}</text>
+    <text class="denied-message">{{errorMessage || (isPlanned ? '请先登录以添加计划阅读书籍' : '只有管理员可以添加书籍')}}</text>
     <view class="back-btn" bindtap="goBack">
       <text>返回</text>
     </view>

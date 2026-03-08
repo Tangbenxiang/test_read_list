@@ -70,7 +70,13 @@ exports.main = async (event, context) => {
 
       // achievements集合索引
       { collection: 'achievements', field: 'category' },
-      { collection: 'achievements', field: 'rarity' }
+      { collection: 'achievements', field: 'rarity' },
+
+      // user_planned_books集合索引
+      { collection: 'user_planned_books', field: 'userId' },
+      { collection: 'user_planned_books', field: 'bookId' },
+      { collection: 'user_planned_books', field: 'status' },
+      { collection: 'user_planned_books', field: 'addedTime' }
     ]
 
     // 数据库结构说明 - 所有集合
@@ -197,6 +203,17 @@ exports.main = async (event, context) => {
           { name: 'rarity', type: 'string', description: '稀有度', enum: ['common', 'rare', 'epic', 'legendary'] },
           { name: 'category', type: 'string', description: '成就类别', enum: ['challenge', 'social', 'reading'] },
           { name: 'createTime', type: 'date', description: '创建时间', default: 'serverDate' }
+        ]
+      },
+      {
+        name: 'user_planned_books',
+        fields: [
+          { name: 'userId', type: 'string', description: '用户ID', required: true },
+          { name: 'bookId', type: 'string', description: '书籍ID', required: true },
+          { name: 'status', type: 'string', description: '阅读状态', required: true, enum: ['planned', 'reading', 'completed'] },
+          { name: 'addedTime', type: 'date', description: '添加时间', default: 'serverDate' },
+          { name: 'updatedTime', type: 'date', description: '更新时间', default: 'serverDate' },
+          { name: 'notes', type: 'string', description: '个人笔记' }
         ]
       }
     ]

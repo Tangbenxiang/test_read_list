@@ -21,6 +21,7 @@ exports.main = async (event, context) => {
   const db = cloud.database()
   const _ = db.command
 
+
   const {
     title,
     type,
@@ -34,20 +35,27 @@ exports.main = async (event, context) => {
   } = event
 
   try {
-    // 1. 检查管理员权限
-    const adminCheck = await db.collection('admins')
-      .where({
-        openid: OPENID,
-        role: 'admin'
-      })
-      .get()
+    // 硬编码管理员OPENID检查（不区分大小写）
+    const adminOpenIds = ['opj1C3VBfI94VgN5A_H41qrzqRm0']
+    const normalizedOpenId = OPENID ? OPENID.toLowerCase() : ''
+    if (!adminOpenIds.includes(normalizedOpenId)) {
+      // 1. 检查管理员权限
+      const adminCheck = await db.collection('admins')
+        .where({
+          openid: OPENID,
+          role: 'admin'
+        })
+        .get()
 
-    if (adminCheck.data.length === 0) {
-      return {
-        success: false,
-        error: '权限不足',
-        message: '只有管理员可以添加书籍'
+      if (adminCheck.data.length === 0) {
+        return {
+          success: false,
+          error: '权限不足',
+          message: '只有管理员可以添加书籍'
+        }
       }
+    } else {
+      console.log('硬编码管理员OPENID检测到，跳过管理员权限检查:', OPENID, '规范化:', normalizedOpenId)
     }
 
     // 2. 验证必要字段

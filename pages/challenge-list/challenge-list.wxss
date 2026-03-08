@@ -4,31 +4,474 @@
 .container {
   min-height: 100vh;
   background: var(--light-blue);
+  padding-bottom: 60rpx;
+}
+
+/* 头部样式 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx 30rpx 30rpx;
+  background: white;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.header-back {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.header-back .icon {
+  margin-right: 10rpx;
+  font-weight: bold;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--dark-blue);
+  flex: 1;
+  text-align: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 15rpx;
+}
+
+.filter-btn,
+.refresh-btn {
+  width: 60rpx;
+  height: 60rpx;
+  padding: 0;
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.placeholder {
-  text-align: center;
-  padding: 60rpx;
+.filter-icon,
+.refresh-icon {
+  font-size: 36rpx;
 }
 
-.placeholder-icon {
+/* 统计卡片 */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  padding: 30rpx;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
+}
+
+.stat-card.total {
+  border-top: 6rpx solid var(--primary-blue);
+}
+
+.stat-card.completed {
+  border-top: 6rpx solid var(--success);
+}
+
+.stat-card.rate {
+  border-top: 6rpx solid var(--warning);
+}
+
+.stat-card.score {
+  border-top: 6rpx solid var(--info);
+}
+
+.stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: var(--dark-blue);
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* 筛选面板 */
+.filter-panel {
+  background: white;
+  border-radius: 0 0 16rpx 16rpx;
+  padding: 0 30rpx;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1);
+}
+
+.filter-panel.show {
+  max-height: 300rpx;
+  padding: 30rpx;
+}
+
+.filter-section {
+  margin-bottom: 25rpx;
+}
+
+.filter-label {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 15rpx;
+}
+
+.filter-picker {
+  width: 100%;
+  padding: 20rpx 25rpx;
+  background: var(--light-gray);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.picker-value {
+  color: var(--text-primary);
+}
+
+.filter-apply {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  background: var(--primary-blue);
+  color: white;
+  border-radius: 12rpx;
+  border: none;
+  margin-top: 10rpx;
+}
+
+/* 本周挑战入口 */
+.weekly-entry {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 0 30rpx 30rpx;
+  color: white;
+}
+
+.weekly-icon {
+  font-size: 60rpx;
+  margin-right: 25rpx;
+}
+
+.weekly-info {
+  flex: 1;
+}
+
+.weekly-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.weekly-subtitle {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+.weekly-arrow {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+/* 按周分组 */
+.weekly-groups {
+  padding: 0 30rpx;
+}
+
+.week-group {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
+}
+
+.week-header {
+  margin-bottom: 25rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.week-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--dark-blue);
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.week-stats {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+/* 挑战列表 */
+.challenges-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.challenge-item {
+  display: flex;
+  align-items: center;
+  padding: 25rpx;
+  background: var(--light-gray);
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.2s ease;
+}
+
+.challenge-item.completed {
+  background: var(--success-light);
+  border-color: var(--success);
+}
+
+.challenge-item:active {
+  background: var(--gray);
+}
+
+.challenge-status {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  margin-right: 25rpx;
+  min-width: 120rpx;
+}
+
+.status-indicator {
+  font-size: 22rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 6rpx;
+  text-align: center;
+}
+
+.status-indicator.active {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.status-indicator.upcoming {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.status-indicator.ended {
+  background: var(--light-gray);
+  color: var(--text-secondary);
+}
+
+.difficulty-badge {
+  font-size: 22rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 6rpx;
+  text-align: center;
+}
+
+.difficulty-easy {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.difficulty-medium {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.difficulty-hard {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.challenge-content {
+  flex: 1;
+}
+
+.challenge-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--dark-blue);
+  display: block;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.challenge-book {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.challenge-meta {
+  display: flex;
+  gap: 20rpx;
+}
+
+.meta-item {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.challenge-result {
+  margin-left: 20rpx;
+}
+
+.result-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.result-icon .icon {
+  font-size: 36rpx;
+}
+
+.result-icon .score {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 60rpx;
+}
+
+.empty-icon {
   font-size: 120rpx;
   margin-bottom: 30rpx;
+  display: block;
   color: var(--primary-blue);
 }
 
-.placeholder-title {
-  display: block;
-  font-size: 42rpx;
+.empty-title {
+  font-size: 36rpx;
   font-weight: bold;
   color: var(--dark-blue);
-  margin-bottom: 20rpx;
+  display: block;
+  margin-bottom: 15rpx;
 }
 
-.placeholder-subtitle {
+.empty-subtitle {
   font-size: 28rpx;
   color: var(--text-secondary);
+  display: block;
+  margin-bottom: 40rpx;
+}
+
+.empty-btn {
+  width: 200rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  background: var(--primary-blue);
+  color: white;
+  border-radius: 12rpx;
+  border: none;
+}
+
+/* 加载更多 */
+.load-more {
+  padding: 40rpx 30rpx;
+}
+
+.load-more-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  background: var(--light-gray);
+  color: var(--text-primary);
+  border-radius: 12rpx;
+  border: none;
+}
+
+.load-more-btn:disabled {
+  opacity: 0.5;
+}
+
+/* 加载状态 */
+.loading-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--light-blue);
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid var(--light-gray);
+  border-top-color: var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 30rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container text {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 错误状态 */
+.error-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--light-blue);
+  padding: 60rpx;
+}
+
+.error-icon {
+  font-size: 100rpx;
+  margin-bottom: 30rpx;
+}
+
+.error-text {
+  font-size: 32rpx;
+  color: var(--danger);
+  text-align: center;
+  margin-bottom: 40rpx;
+  line-height: 1.5;
+}
+
+.error-btn {
+  width: 200rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  background: var(--primary-blue);
+  color: white;
+  border-radius: 12rpx;
+  border: none;
 }

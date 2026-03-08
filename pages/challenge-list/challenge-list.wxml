@@ -1,8 +1,174 @@
 <!-- pages/challenge-list/challenge-list.wxml -->
-<view class="container">
-  <view class="placeholder">
-    <view class="placeholder-icon">📋</view>
-    <text class="placeholder-title">挑战列表</text>
-    <text class="placeholder-subtitle">功能正在开发中，敬请期待</text>
+<view class="container" wx:if="{{!isLoading && !errorMessage}}">
+
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-back" bindtap="backToHome">
+      <text class="icon">←</text>
+      <text>首页</text>
+    </view>
+    <text class="header-title">历史挑战回顾</text>
+    <view class="header-actions">
+      <button class="filter-btn" bindtap="toggleFilterPanel">
+        <text class="filter-icon">⚙️</text>
+      </button>
+      <button class="refresh-btn" bindtap="refreshChallenges">
+        <text class="refresh-icon">🔄</text>
+      </button>
+    </view>
   </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-cards">
+    <view class="stat-card total">
+      <text class="stat-value">{{totalChallenges}}</text>
+      <text class="stat-label">总挑战数</text>
+    </view>
+    <view class="stat-card completed">
+      <text class="stat-value">{{completedChallenges}}</text>
+      <text class="stat-label">已完成</text>
+    </view>
+    <view class="stat-card rate">
+      <text class="stat-value">{{completionRate}}%</text>
+      <text class="stat-label">完成率</text>
+    </view>
+    <view class="stat-card score">
+      <text class="stat-value">{{averageScore}}%</text>
+      <text class="stat-label">平均分</text>
+    </view>
+  </view>
+
+  <!-- 筛选面板 -->
+  <view class="filter-panel {{showFilterPanel ? 'show' : ''}}">
+    <view class="filter-section">
+      <text class="filter-label">年份筛选</text>
+      <picker
+        class="filter-picker"
+        range="{{years}}"
+        value="{{filterYearIndex}}"
+        bindchange="onFilterYearChange"
+      >
+        <view class="picker-value">
+          {{filterYear ? filterYear : '全部年份'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="filter-section">
+      <text class="filter-label">状态筛选</text>
+      <picker
+        class="filter-picker"
+        range="{{statusOptions}}"
+        range-key="label"
+        value="{{filterStatusIndex}}"
+        bindchange="onFilterStatusChange"
+      >
+        <view class="picker-value">
+          {{statusOptions[filterStatusIndex] ? statusOptions[filterStatusIndex].label : '全部状态'}}
+        </view>
+      </picker>
+    </view>
+
+    <button class="filter-apply" bindtap="toggleFilterPanel">
+      应用筛选
+    </button>
+  </view>
+
+  <!-- 本周挑战入口 -->
+  <view class="weekly-entry" bindtap="viewWeeklyChallenges">
+    <view class="weekly-icon">🔥</view>
+    <view class="weekly-info">
+      <text class="weekly-title">查看本周挑战</text>
+      <text class="weekly-subtitle">立即参与最新阅读挑战，赢取积分</text>
+    </view>
+    <text class="weekly-arrow">→</text>
+  </view>
+
+  <!-- 按周分组列表 -->
+  <view class="weekly-groups" wx:if="{{weeklyGroups.length > 0}}">
+    <view
+      class="week-group"
+      wx:for="{{weeklyGroups}}"
+      wx:key="weekNumber"
+    >
+      <!-- 周标题 -->
+      <view class="week-header">
+        <text class="week-title">{{'第' + item.weekNumber + '周'}}</text>
+        <text class="week-stats">
+          {{item.totalChallenges}}个挑战 · 完成{{item.completedChallenges}}个
+        </text>
+      </view>
+
+      <!-- 挑战列表 -->
+      <view class="challenges-list">
+        <view
+          class="challenge-item {{challenge.userStatus && challenge.userStatus.submitted ? 'completed' : ''}}"
+          wx:for="{{item.challenges}}"
+          wx:key="challengeId"
+          bindtap="navigateToChallenge"
+          data-challenge-id="{{challenge.challengeId}}"
+          bindlongpress="showChallengeInfo"
+          data-challenge="{{challenge}}"
+        >
+          <view class="challenge-status">
+            <view class="status-indicator {{challenge.status}}">
+              {{challenge.status === 'active' ? '进行中' : challenge.status === 'upcoming' ? '未开始' : '已结束'}}
+            </view>
+            <view class="difficulty-badge difficulty-{{challenge.difficulty}}">
+              {{challenge.difficulty === 'easy' ? '简单' : challenge.difficulty === 'medium' ? '中等' : '困难'}}
+            </view>
+          </view>
+
+          <view class="challenge-content">
+            <text class="challenge-title">{{challenge.title}}</text>
+            <text class="challenge-book">{{challenge.bookInfo ? challenge.bookInfo.title : '未知书籍'}}</text>
+            <view class="challenge-meta">
+              <text class="meta-item">📚 {{challenge.totalQuestions}}题</text>
+              <text class="meta-item">⭐ {{challenge.totalPoints}}分</text>
+            </view>
+          </view>
+
+          <view class="challenge-result">
+            <view class="result-icon" wx:if="{{challenge.userStatus && challenge.userStatus.submitted}}">
+              <text class="icon">✅</text>
+              <text class="score">{{challenge.userStatus.totalScore}}%</text>
+            </view>
+            <view class="result-icon" wx:else>
+              <text class="icon">⏳</text>
+              <text class="score">未完成</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{weeklyGroups.length === 0 && !isLoading}}">
+    <text class="empty-icon">📭</text>
+    <text class="empty-title">暂无挑战记录</text>
+    <text class="empty-subtitle">快去参与本周的阅读挑战吧！</text>
+    <button class="empty-btn" bindtap="viewWeeklyChallenges">查看本周挑战</button>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore && weeklyGroups.length > 0}}">
+    <button class="load-more-btn" bindtap="loadMoreChallenges" disabled="{{isLoading}}">
+      {{isLoading ? '加载中...' : '加载更多'}}
+    </button>
+  </view>
+
+</view>
+
+<!-- 加载状态 -->
+<view class="loading-container" wx:if="{{isLoading && !isRefreshing}}">
+  <view class="loading-spinner"></view>
+  <text>加载挑战列表中...</text>
+</view>
+
+<!-- 错误状态 -->
+<view class="error-container" wx:if="{{errorMessage && !isLoading}}">
+  <text class="error-icon">⚠️</text>
+  <text class="error-text">{{errorMessage}}</text>
+  <button class="error-btn" bindtap="refreshChallenges">重新加载</button>
 </view>

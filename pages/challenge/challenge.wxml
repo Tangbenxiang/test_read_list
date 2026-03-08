@@ -1,8 +1,206 @@
 <!-- pages/challenge/challenge.wxml -->
-<view class="container">
-  <view class="placeholder">
-    <view class="placeholder-icon">⚔️</view>
-    <text class="placeholder-title">阅读挑战</text>
-    <text class="placeholder-subtitle">功能正在开发中，敬请期待</text>
+<view class="container" wx:if="{{!isLoading && !errorMessage}}">
+
+  <!-- 挑战头部信息 -->
+  <view class="challenge-header">
+    <view class="header-back" bindtap="backToList">
+      <text class="icon">←</text>
+      <text>返回</text>
+    </view>
+
+    <view class="challenge-title-section">
+      <text class="challenge-title">{{challenge.title}}</text>
+      <view class="challenge-meta">
+        <text class="meta-item difficulty-{{challenge.difficulty}}">{{challenge.difficulty === 'easy' ? '简单' : challenge.difficulty === 'medium' ? '中等' : '困难'}}</text>
+        <text class="meta-item">· {{challenge.totalQuestions}} 题</text>
+        <text class="meta-item">· {{challenge.totalPoints}} 积分</text>
+      </view>
+    </view>
   </view>
+
+  <!-- 书籍信息 -->
+  <view class="book-info" wx:if="{{bookInfo}}">
+    <image class="book-cover" src="{{bookInfo.cover || '/images/default-book.png'}}" mode="aspectFill"></image>
+    <view class="book-details">
+      <text class="book-title">{{bookInfo.title}}</text>
+      <text class="book-author">{{bookInfo.author}}</text>
+      <text class="book-grade">{{bookInfo.gradeLevel}}</text>
+    </view>
+  </view>
+
+  <!-- 挑战描述 -->
+  <view class="challenge-description" wx:if="{{challenge.description}}">
+    <text class="section-title">挑战说明</text>
+    <text class="description-text">{{challenge.description}}</text>
+  </view>
+
+  <!-- 计时器 -->
+  <view class="timer-section">
+    <text class="timer-label">答题用时:</text>
+    <text class="timer-value">{{(timeSpent - timeSpent % 60) / 60}}分{{timeSpent % 60}}秒</text>
+  </view>
+
+  <!-- 答题进度 -->
+  <view class="progress-section">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{(currentQuestionIndex + 1) / challenge.questions.length * 100}}%"></view>
+    </view>
+    <text class="progress-text">第 {{currentQuestionIndex + 1}} / {{challenge.questions.length}} 题</text>
+  </view>
+
+  <!-- 问题展示区域 -->
+  <view class="question-section">
+    <view wx:if="{{challenge.questions && challenge.questions.length > 0}}">
+      <view class="question-header">
+      <text class="question-number">Q{{currentQuestionIndex + 1}}</text>
+      <text class="question-points">{{currentQuestion.points}} 积分</text>
+    </view>
+
+    <text class="question-text">{{currentQuestion.text}}</text>
+
+    <!-- 选择题选项 -->
+    <view class="options-container" wx:if="{{currentQuestion && (currentQuestion.type === 'single_choice' || currentQuestion.type === 'multiple_choice')}}">
+      <view
+        class="option-item {{(currentQuestion.type === 'single_choice' && currentUserAnswer.value === index) || (currentQuestion.type === 'multiple_choice' && currentUserAnswer.value && currentUserAnswer.value.indexOf(index) > -1) ? 'selected' : ''}}"
+        wx:for="{{currentQuestion.options}}"
+        wx:key="index"
+        bindtap="selectOption"
+        data-question-index="{{currentQuestionIndex}}"
+        data-option-index="{{index}}"
+      >
+        <text class="option-letter">{{letters[index]}}</text>
+        <text class="option-text">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 判断题选项 -->
+    <view class="true-false-container" wx:if="{{currentQuestion && currentQuestion.type === 'true_false'}}">
+      <view
+        class="tf-option {{currentUserAnswer.value === true ? 'selected' : ''}}"
+        bindtap="selectTrueFalse"
+        data-question-index="{{currentQuestionIndex}}"
+        data-value="true"
+      >
+        <text>✅ 正确</text>
+      </view>
+      <view
+        class="tf-option {{currentUserAnswer.value === false ? 'selected' : ''}}"
+        bindtap="selectTrueFalse"
+        data-question-index="{{currentQuestionIndex}}"
+        data-value="false"
+      >
+        <text>❌ 错误</text>
+      </view>
+    </view>
+
+    <!-- 简答题输入 -->
+    <view class="short-answer-container" wx:if="{{currentQuestion && currentQuestion.type === 'short_answer'}}">
+      <textarea
+        class="short-answer-input"
+        placeholder="请输入您的答案..."
+        value="{{currentUserAnswer.value || ''}}"
+        bindinput="onShortAnswerInput"
+        data-question-index="{{currentQuestionIndex}}"
+        maxlength="500"
+        auto-height
+      ></textarea>
+      <text class="word-count">{{currentUserAnswer.value ? currentUserAnswer.value.length : 0}}/500</text>
+    </view>
+
+    <!-- 即时反馈 -->
+    <view class="feedback-message {{showFeedback ? 'show' : ''}} {{isAnswerCorrect ? 'correct' : 'incorrect'}}">
+      <text>{{feedbackMessage}}</text>
+    </view>
+    </view>
+    <view wx:else class="empty-question-state">
+      <text class="empty-icon">📝</text>
+      <text class="empty-title">暂无题目</text>
+      <text class="empty-subtitle">该挑战暂无题目，请联系管理员添加。</text>
+    </view>
+  </view>
+
+  <!-- 导航按钮 -->
+  <view class="navigation-buttons">
+    <button
+      class="nav-btn prev-btn {{currentQuestionIndex === 0 ? 'disabled' : ''}}"
+      bindtap="prevQuestion"
+      disabled="{{currentQuestionIndex === 0}}"
+    >
+      上一题
+    </button>
+
+    <button
+      class="nav-btn next-btn {{currentQuestionIndex === challenge.questions.length - 1 ? 'disabled' : ''}}"
+      bindtap="nextQuestion"
+      disabled="{{currentQuestionIndex === challenge.questions.length - 1}}"
+    >
+      下一题
+    </button>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section" wx:if="{{!submissionResult}}">
+    <button
+      class="submit-btn {{isSubmitting ? 'disabled' : ''}}"
+      bindtap="submitChallenge"
+      disabled="{{isSubmitting}}"
+    >
+      {{isSubmitting ? '提交中...' : '提交答案'}}
+    </button>
+  </view>
+
+  <!-- 提交结果 -->
+  <view class="result-section" wx:if="{{submissionResult}}">
+    <view class="result-header">
+      <text class="result-title">挑战完成！</text>
+      <text class="result-score">得分: {{submissionResult.totalScore || 0}}%</text>
+    </view>
+
+    <view class="result-details">
+      <view class="result-item">
+        <text class="result-label">用时:</text>
+        <text class="result-value">{{(timeSpent - timeSpent % 60) / 60}}分{{timeSpent % 60}}秒</text>
+      </view>
+      <view class="result-item">
+        <text class="result-label">获得积分:</text>
+        <text class="result-value">{{submissionResult.pointsEarned || 0}}</text>
+      </view>
+      <view class="result-item">
+        <text class="result-label">正确率:</text>
+        <text class="result-value">{{submissionResult.correctRate || 0}}%</text>
+      </view>
+    </view>
+
+    <view class="result-actions">
+      <button class="action-btn retry-btn" bindtap="retryChallenge">重新挑战</button>
+      <button class="action-btn list-btn" bindtap="backToList">返回列表</button>
+    </view>
+  </view>
+
+  <!-- 题目解析弹窗 -->
+  <view class="explanation-modal {{showExplanation ? 'show' : ''}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">题目解析</text>
+        <text class="modal-close" bindtap="hideExplanation">×</text>
+      </view>
+      <view class="modal-body">
+        <text>{{explanationText}}</text>
+      </view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 加载状态 -->
+<view class="loading-container" wx:if="{{isLoading}}">
+  <view class="loading-spinner"></view>
+  <text>加载挑战中...</text>
+</view>
+
+<!-- 错误状态 -->
+<view class="error-container" wx:if="{{errorMessage && !isLoading}}">
+  <text class="error-icon">⚠️</text>
+  <text class="error-text">{{errorMessage}}</text>
+  <button class="error-btn" bindtap="backToList">返回列表</button>
 </view>

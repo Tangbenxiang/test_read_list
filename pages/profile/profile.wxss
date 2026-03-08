@@ -448,6 +448,89 @@
   text-align: center;
 }
 
+/* 设置卡片样式 */
+.settings-card {
+  margin-top: 20rpx;
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25rpx;
+  padding: 20rpx 0;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid var(--ice-blue);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-label {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+}
+
+.setting-icon {
+  font-size: 32rpx;
+}
+
+.setting-picker {
+  min-width: 200rpx;
+}
+
+.picker-view {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15rpx 25rpx;
+  background: #F8FBFF;
+  border: 2rpx solid var(--ice-blue);
+  border-radius: var(--radius-small);
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: var(--text-light);
+  margin-left: 10rpx;
+}
+
+.setting-switch {
+  transform: scale(0.9);
+}
+
+.save-settings-btn {
+  margin-top: 30rpx;
+  padding: 25rpx;
+  background: linear-gradient(135deg, #7BC6FF 0%, #4DA6FF 100%);
+  border-radius: var(--radius-medium);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.save-settings-btn:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 6rpx 15rpx rgba(77, 166, 255, 0.3);
+}
+
+.save-btn-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+}
+
 /* 响应式调整 */
 @media (max-width: 375px) {
   .info-grid {
@@ -469,5 +552,9 @@
 
   .achievement-icon {
     font-size: 40rpx;
+  }
+
+  .setting-picker {
+    min-width: 150rpx;
   }
 }

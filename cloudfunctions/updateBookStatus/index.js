@@ -40,19 +40,49 @@ exports.main = async (event, context) => {
   }
 
   try {
-    // 1. 检查管理员权限
-    const adminCheck = await db.collection('admins')
-      .where({
-        openid: OPENID,
-        role: 'admin'
-      })
-      .get()
+    // 1. 检查权限：管理员或书籍添加者
+    let hasPermission = false
+    let isAdmin = false
 
-    if (adminCheck.data.length === 0) {
+    // 硬编码管理员OPENID检查
+    const adminOpenIds = ['opj1C3VBfI94VgN5A_H41qrzqRm0']
+    if (adminOpenIds.includes(OPENID)) {
+      console.log('硬编码管理员OPENID检测到，赋予管理员权限:', OPENID)
+      hasPermission = true
+      isAdmin = true
+    } else {
+      // 检查是否为管理员
+      const adminCheck = await db.collection('admins')
+        .where({
+          openid: OPENID,
+          role: 'admin'
+        })
+        .get()
+
+      if (adminCheck.data.length > 0) {
+        hasPermission = true
+        isAdmin = true
+      } else {
+        // 不是管理员，检查是否是书籍的添加者
+        const bookRecord = await db.collection('books')
+          .doc(bookId)
+          .get()
+
+        if (bookRecord.data) {
+          const addedBy = bookRecord.data.addedBy
+          if (addedBy && addedBy === OPENID) {
+            hasPermission = true
+            isAdmin = false
+          }
+        }
+      }
+    }
+
+    if (!hasPermission) {
       return {
         success: false,
         error: '权限不足',
-        message: '只有管理员可以修改书籍状态'
+        message: '只有管理员或书籍添加者可以修改书籍状态'
       }
     }
     // 更新书籍状态
