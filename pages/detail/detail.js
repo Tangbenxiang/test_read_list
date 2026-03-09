@@ -1,5 +1,6 @@
 // pages/detail/detail.js
 const db = wx.cloud.database()
+const app = getApp()
 
 Page({
   data: {
@@ -9,7 +10,8 @@ Page({
     coverStatus: '', // 封面状态：'empty', 'loading', 'loaded', 'error'
     coverRetryCount: 0, // 封面获取重试次数
     isAdmin: false, // 是否是管理员
-    checkingAdmin: false // 是否正在检查管理员权限
+    checkingAdmin: false, // 是否正在检查管理员权限
+    planned: false // 是否在计划阅读列表中
   },
 
   onLoad(options) {
@@ -50,6 +52,9 @@ Page({
 
       // 检查管理员权限
       this.checkAdminPermission()
+
+      // 检查计划阅读状态
+      this.checkPlannedStatus()
     } catch (error) {
       console.error('加载书籍详情失败:', error)
       this.setData({ loading: false })
@@ -134,6 +139,40 @@ Page({
         isAdmin: false,
         checkingAdmin: false
       })
+    }
+  },
+
+  // 检查计划阅读状态
+  async checkPlannedStatus() {
+    const { bookId } = this.data
+    if (!bookId) return
+
+    try {
+      // 获取当前用户openid
+      const openid = app.globalData.openid
+      if (!openid) {
+        console.log('用户未登录，无法检查计划阅读状态')
+        this.setData({ planned: false })
+        return
+      }
+
+      // 查询user_planned_books集合
+      const res = await db.collection('user_planned_books')
+        .where({
+          userId: openid,
+          bookId: bookId
+        })
+        .limit(1)
+        .get()
+
+      if (res.data && res.data.length > 0) {
+        this.setData({ planned: true })
+      } else {
+        this.setData({ planned: false })
+      }
+    } catch (error) {
+      console.error('检查计划阅读状态失败:', error)
+      this.setData({ planned: false })
     }
   },
 
@@ -237,6 +276,108 @@ Page({
     }
     if (!book) return
     await this.updateBookStatus('intensiveRead', !book.intensiveRead)
+  },
+
+  // 切换计划阅读状态
+  async togglePlanned() {
+    const { book, planned, bookId } = this.data
+    if (!book) return
+
+    // 检查用户是否登录
+    const openid = app.globalData.openid
+    if (!openid) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
+    wx.showLoading({
+      title: '处理中...',
+      mask: true
+    })
+
+    try {
+      if (!planned) {
+        // 添加到计划阅读列表
+        const addRes = await wx.cloud.callFunction({
+          name: 'addPlannedBook',
+          data: {
+            title: book.title,
+            type: book.type,
+            author: book.author,
+            description: book.description || '',
+            gradeLevel: book.gradeLevel,
+            purchased: book.purchased || false,
+            read: book.read || false,
+            intensiveRead: book.intensiveRead || false,
+            cover: book.cover || '',
+            status: 'planned'
+          }
+        })
+
+        if (addRes.result && addRes.result.success) {
+          this.setData({ planned: true })
+          wx.showToast({
+            title: '已添加到计划阅读',
+            icon: 'success',
+            duration: 1500
+          })
+        } else {
+          throw new Error(addRes.result?.message || '添加失败')
+        }
+      } else {
+        // 从计划阅读列表删除
+        // 首先需要获取计划阅读记录ID
+        const queryRes = await db.collection('user_planned_books')
+          .where({
+            userId: openid,
+            bookId: bookId
+          })
+          .limit(1)
+          .get()
+
+        if (queryRes.data && queryRes.data.length > 0) {
+          const recordId = queryRes.data[0]._id
+          const deleteRes = await wx.cloud.callFunction({
+            name: 'deletePlannedBook',
+            data: {
+              recordId: recordId
+            }
+          })
+
+          if (deleteRes.result && deleteRes.result.success) {
+            this.setData({ planned: false })
+            wx.showToast({
+              title: '已从计划阅读移除',
+              icon: 'success',
+              duration: 1500
+            })
+          } else {
+            throw new Error(deleteRes.result?.message || '删除失败')
+          }
+        } else {
+          // 记录不存在，直接更新本地状态
+          this.setData({ planned: false })
+          wx.showToast({
+            title: '已从计划阅读移除',
+            icon: 'success',
+            duration: 1500
+          })
+        }
+      }
+    } catch (error) {
+      console.error('切换计划阅读状态失败:', error)
+      wx.showToast({
+        title: error.message || '操作失败',
+        icon: 'none',
+        duration: 2000
+      })
+    } finally {
+      wx.hideLoading()
+    }
   },
 
   // 获取书籍封面

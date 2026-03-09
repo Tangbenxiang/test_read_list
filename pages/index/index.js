@@ -276,6 +276,34 @@ Page({
     })
   },
 
+  // 更新计划阅读书籍状态
+  async updatePlannedBookStatus(e) {
+    console.log('updatePlannedBookStatus函数被调用，事件对象:', e)
+    const { bookId } = e.currentTarget.dataset
+    console.log('从dataset获取的参数 - bookId:', bookId)
+
+    if (!bookId) {
+      console.error('缺少bookId参数')
+      return
+    }
+
+    // 提示用户去详情页管理计划阅读状态
+    wx.showActionSheet({
+      itemList: ['查看书籍详情'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 跳转到书籍详情页
+          wx.navigateTo({
+            url: `/pages/detail/detail?id=${bookId}`
+          })
+        }
+      },
+      fail: (err) => {
+        console.log('用户取消操作')
+      }
+    })
+  },
+
   // 查看计划阅读书籍详情
   viewPlannedBook(e) {
     const bookId = e.currentTarget.dataset.bookId

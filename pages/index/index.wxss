@@ -437,6 +437,15 @@
   color: #52C41A;
 }
 
+.book-status-container {
+  display: inline-block;
+}
+
+.book-status:active {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+
 .empty-planned-books {
   text-align: center;
   padding: 60rpx 30rpx;

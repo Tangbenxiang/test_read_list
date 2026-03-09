@@ -187,6 +187,17 @@
   border-color: #FAAD14;
 }
 
+.status-icon.planned {
+  background: #F0E6FF;
+  color: #9254DE;
+  border: 3rpx solid #F0E6FF;
+}
+
+.status-btn.active .status-icon.planned {
+  background: white;
+  border-color: #9254DE;
+}
+
 .status-text {
   font-size: 28rpx;
   color: #333;
@@ -311,6 +322,11 @@
 
 .add-btn {
   background: linear-gradient(135deg, #FA8C16 0%, #FFA940 100%);
+  color: white;
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #FF4D4F 0%, #FF7875 100%);
   color: white;
 }
 

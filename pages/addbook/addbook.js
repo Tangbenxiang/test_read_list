@@ -19,6 +19,9 @@ Page({
       '奇幻童话/敦煌文化启蒙', '侦探小说（青少版）', '奇幻小说',
       '儿童散文/成长观察', '儿童文学', '其他'
     ],
+    // 自定义类型相关
+    customTypeVisible: false,
+    customTypeValue: '',
     // 年级选项
     gradeOptions: ['一至二年级', '三至四年级', '五至六年级'],
     // 状态
@@ -190,14 +193,27 @@ Page({
     const value = e.detail.value
 
     if (field === 'type') {
+      const selectedType = this.data.typeOptions[value]
+      const isOtherType = selectedType === '其他'
+
       this.setData({
-        [`formData.${field}`]: this.data.typeOptions[value]
+        [`formData.${field}`]: selectedType,
+        customTypeVisible: isOtherType,
+        customTypeValue: isOtherType ? this.data.customTypeValue : ''
       })
     } else if (field === 'gradeLevel') {
       this.setData({
         [`formData.${field}`]: this.data.gradeOptions[value]
       })
     }
+  },
+
+  // 自定义类型输入处理
+  onCustomTypeInput(e) {
+    const value = e.detail.value
+    this.setData({
+      customTypeValue: value
+    })
   },
 
   // 开关切换处理
@@ -256,7 +272,19 @@ Page({
       return
     }
 
-    if (!formData.type.trim()) {
+    // 处理书籍类型：如果选择"其他"则使用自定义类型
+    let finalType = formData.type.trim()
+    if (finalType === '其他') {
+      if (!this.data.customTypeValue.trim()) {
+        wx.showToast({
+          title: '请输入自定义书籍类型',
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+      finalType = this.data.customTypeValue.trim()
+    } else if (!finalType) {
       wx.showToast({
         title: '请选择书籍类型',
         icon: 'none',
@@ -289,7 +317,8 @@ Page({
         res = await wx.cloud.callFunction({
           name: 'addPlannedBook',
           data: {
-            ...formData
+            ...formData,
+            type: finalType
             // 移除testMode参数，使用实际用户OPENID
           }
         })
@@ -297,7 +326,10 @@ Page({
         // 调用普通添加云函数
         res = await wx.cloud.callFunction({
           name: 'addBook',
-          data: formData
+          data: {
+            ...formData,
+            type: finalType
+          }
         })
       }
 
@@ -322,7 +354,9 @@ Page({
             read: false,
             intensiveRead: false,
             cover: ''
-          }
+          },
+          customTypeVisible: false,
+          customTypeValue: ''
         })
 
         // 延迟返回

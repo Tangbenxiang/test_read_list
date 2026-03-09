@@ -59,6 +59,18 @@
           </picker>
         </view>
 
+        <!-- 自定义类型（当选择"其他"时显示） -->
+        <view wx:if="{{customTypeVisible}}" class="form-item">
+          <text class="form-label required">自定义类型：</text>
+          <input
+            class="form-input"
+            placeholder="请输入书籍类型"
+            value="{{customTypeValue}}"
+            bindinput="onCustomTypeInput"
+            maxlength="50"
+          />
+        </view>
+
         <!-- 作者 -->
         <view class="form-item">
           <text class="form-label required">作者：</text>

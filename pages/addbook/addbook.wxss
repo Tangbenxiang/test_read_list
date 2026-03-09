@@ -141,13 +141,34 @@
   border-radius: 16rpx;
   font-size: 28rpx;
   color: #333;
-  background: #F8FBFF;
+  background: #FFFFFF;
   box-sizing: border-box;
+  transition: all 0.3s ease;
+  min-height: 80rpx;
+  line-height: 1.5;
 }
 
 .form-input:focus {
   border-color: #4DA6FF;
   outline: none;
+  box-shadow: 0 0 0 3rpx rgba(77, 166, 255, 0.2);
+  background: #FFFFFF;
+}
+
+.form-input::placeholder {
+  color: #999999;
+}
+
+/* 输入框选中状态增强 */
+.form-input:hover {
+  border-color: #B3D9FF;
+}
+
+/* 禁用状态 */
+.form-input:disabled {
+  background: #F5F5F5;
+  color: #999;
+  border-color: #E0E0E0;
 }
 
 /* 选择器 */

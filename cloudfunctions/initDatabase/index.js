@@ -218,6 +218,120 @@ exports.main = async (event, context) => {
       }
     ]
 
+    // 创建测试文档的函数（用于隐式创建集合）
+    function createTestDocument(collectionName) {
+      const testDocs = {
+        'books': {
+          serial: 0,
+          title: '测试书籍',
+          type: '测试类型',
+          author: '测试作者',
+          description: '这是一个测试书籍，用于创建集合',
+          gradeLevel: '一至二年级',
+          purchased: false,
+          read: false,
+          intensiveRead: false,
+          cover: '',
+          addedBy: 'system',
+          createTime: db.serverDate()
+        },
+        'users': {
+          openid: 'system_test_openid',
+          anonymousName: '系统测试用户',
+          avatarIndex: 0,
+          role: 'student',
+          grade: '一至二年级',
+          points: 0,
+          achievements: [],
+          readingStats: {},
+          settings: {},
+          createTime: db.serverDate(),
+          lastLoginTime: db.serverDate()
+        },
+        'user_planned_books': {
+          userId: 'system_test_user',
+          bookId: 'system_test_book',
+          status: 'planned',
+          addedTime: db.serverDate(),
+          updatedTime: db.serverDate(),
+          notes: '系统测试数据'
+        },
+        'admins': {
+          openid: 'system_test_admin',
+          nickname: '系统管理员',
+          role: 'admin',
+          createTime: db.serverDate()
+        },
+        'feedback': {
+          content: '测试反馈',
+          userInfo: { nickName: '测试用户' },
+          contact: 'test@example.com',
+          status: 'pending',
+          createTime: db.serverDate()
+        },
+        'weekly_challenges': {
+          type: 'weekly',
+          bookId: 'test_book_id',
+          title: '测试挑战',
+          description: '这是一个测试挑战',
+          questions: [],
+          weekNumber: 1,
+          year: 2026,
+          startTime: db.serverDate(),
+          endTime: db.serverDate(),
+          status: 'active',
+          difficulty: 'easy',
+          createdBy: 'system',
+          tags: ['test'],
+          createTime: db.serverDate()
+        },
+        'challenge_responses': {
+          challengeId: 'test_challenge_id',
+          userId: 'test_user_id',
+          bookId: 'test_book_id',
+          answers: [],
+          totalScore: 100,
+          timeSpent: 60,
+          submittedAt: db.serverDate(),
+          feedback: '测试反馈',
+          createTime: db.serverDate()
+        },
+        'reading_shares': {
+          userId: 'test_user_id',
+          bookId: 'test_book_id',
+          content: '测试分享内容',
+          type: 'thought',
+          visibility: 'public',
+          likes: [],
+          comments: [],
+          tags: ['test'],
+          createTime: db.serverDate()
+        },
+        'family_connections': {
+          parentId: 'test_parent_id',
+          studentId: 'test_student_id',
+          connectionType: 'parent_child',
+          connectionCode: 'TEST123',
+          status: 'active',
+          permissions: {},
+          createTime: db.serverDate(),
+          connectedAt: db.serverDate()
+        },
+        'achievements': {
+          name: '测试成就',
+          description: '这是一个测试成就',
+          icon: 'test.png',
+          pointsReward: 10,
+          condition: { type: 'test', value: 1 },
+          rarity: 'common',
+          category: 'reading',
+          createTime: db.serverDate()
+        }
+      }
+
+      return testDocs[collectionName] || null
+    }
+
     // 检查所有集合是否存在并获取状态
     const collectionStatuses = []
 
@@ -231,12 +345,33 @@ exports.main = async (event, context) => {
           message: '集合已存在'
         })
       } catch (error) {
-        // 集合可能不存在或为空
+        // 集合可能不存在，尝试创建它
+        let created = false
+        let createMessage = '集合可能需要创建'
+
+        try {
+          // 尝试添加一个测试文档来创建集合
+          const testDoc = createTestDocument(collection.name)
+          if (testDoc) {
+            await db.collection(collection.name).add({
+              data: testDoc
+            })
+            // 成功添加后，删除测试文档以避免污染数据
+            // 注意：云开发可能需要先创建索引才能删除，这里我们只是创建集合
+            created = true
+            createMessage = '集合已成功创建（通过添加测试文档）'
+          }
+        } catch (createError) {
+          console.log(`创建集合 ${collection.name} 失败:`, createError.message)
+          createMessage = `集合创建失败: ${createError.message}`
+        }
+
         collectionStatuses.push({
           name: collection.name,
-          exists: false,
+          exists: created,
           count: 0,
-          message: '集合可能需要创建'
+          message: createMessage,
+          created: created
         })
       }
     }

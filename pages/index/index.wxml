@@ -118,7 +118,11 @@
         <view class="book-info">
           <text class="book-title">{{item.bookInfo.title}}</text>
           <text class="book-author">{{item.bookInfo.author}}</text>
-          <text class="book-status {{item.status}}">{{item.status === 'planned' ? '计划阅读' : item.status === 'reading' ? '正在阅读' : '已完成'}}</text>
+          <view class="book-status-container">
+            <view class="book-status {{item.status}}" catchtap="updatePlannedBookStatus" data-book-id="{{item.bookId}}" data-current-status="{{item.status}}">
+              {{item.status === 'planned' ? '计划阅读' : item.status === 'reading' ? '正在阅读' : '已完成'}}
+            </view>
+          </view>
         </view>
       </view>
     </view>

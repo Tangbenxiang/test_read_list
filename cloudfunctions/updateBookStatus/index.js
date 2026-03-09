@@ -40,7 +40,7 @@ exports.main = async (event, context) => {
   }
 
   try {
-    // 1. 检查权限：管理员或书籍添加者
+    // 1. 检查权限：仅管理员
     let hasPermission = false
     let isAdmin = false
 
@@ -62,19 +62,6 @@ exports.main = async (event, context) => {
       if (adminCheck.data.length > 0) {
         hasPermission = true
         isAdmin = true
-      } else {
-        // 不是管理员，检查是否是书籍的添加者
-        const bookRecord = await db.collection('books')
-          .doc(bookId)
-          .get()
-
-        if (bookRecord.data) {
-          const addedBy = bookRecord.data.addedBy
-          if (addedBy && addedBy === OPENID) {
-            hasPermission = true
-            isAdmin = false
-          }
-        }
       }
     }
 
@@ -82,7 +69,7 @@ exports.main = async (event, context) => {
       return {
         success: false,
         error: '权限不足',
-        message: '只有管理员或书籍添加者可以修改书籍状态'
+        message: '只有管理员可以修改书籍状态'
       }
     }
     // 更新书籍状态

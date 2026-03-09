@@ -97,8 +97,8 @@
 }
 
 .book-cover {
-  width: 140rpx;
-  height: 180rpx;
+  width: 100rpx;
+  height: 140rpx;
   background: linear-gradient(135deg, #C2E5FF 0%, #A0D6FF 100%);
   border-radius: 12rpx;
   margin-right: 25rpx;
@@ -107,6 +107,7 @@
   justify-content: center;
   flex-shrink: 0;
   position: relative;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 /* 旧的封面状态图标样式 - 已弃用 */

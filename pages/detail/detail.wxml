@@ -46,6 +46,13 @@
         <view class="status-icon intensive">{{book.intensiveRead ? '★' : '☆'}}</view>
         <text class="status-text">已精读</text>
       </view>
+      <view
+        class="status-btn {{planned ? 'active' : ''}}"
+        bindtap="togglePlanned"
+      >
+        <view class="status-icon planned">{{planned ? '✓' : '+'}}</view>
+        <text class="status-text">计划阅读</text>
+      </view>
     </view>
     <text class="status-hint">{{isAdmin ? '点击状态图标切换' : '仅管理员可修改状态'}}</text>
   </view>
