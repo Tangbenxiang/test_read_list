@@ -161,28 +161,28 @@ Page({
   // 跳转到未阅读书籍
   goToUnread() {
     wx.navigateTo({
-      url: '/pages/list/list?read=false&title=未阅读书籍'
+      url: '/pages/list/list?read=false&title=未阅读书籍&pageSize=100'
     })
   },
 
   // 跳转到未购买书籍
   goToPurchased() {
     wx.navigateTo({
-      url: '/pages/list/list?purchased=false&title=未购买书籍'
+      url: '/pages/list/list?purchased=false&title=未购买书籍&pageSize=100'
     })
   },
 
   // 跳转到已精读书籍
   goToIntensive() {
     wx.navigateTo({
-      url: '/pages/list/list?intensiveRead=true&title=已精读书籍'
+      url: '/pages/list/list?intensiveRead=true&title=已精读书籍&pageSize=100'
     })
   },
 
   // 跳转到全部书籍
   goToAllBooks() {
     wx.navigateTo({
-      url: '/pages/list/list?title=全部书籍&pageSize=5'
+      url: '/pages/list/list?title=全部书籍&pageSize=100'
     })
   },
 

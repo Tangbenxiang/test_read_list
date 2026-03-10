@@ -63,3 +63,7 @@ build/
 # 图像处理中间文件
 *.psd
 *.ai
+
+# 会话记录文件
+SESSION_SUMMARY_*.md
+*_20260308.md

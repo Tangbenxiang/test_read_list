@@ -400,3 +400,11 @@
   z-index: 9999;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
 }
+
+/* 书籍封面图片样式 */
+.book-cover image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+  object-fit: cover;
+}

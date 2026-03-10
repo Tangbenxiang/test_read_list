@@ -136,16 +136,16 @@
 /* 输入框 */
 .form-input {
   width: 100%;
-  padding: 25rpx 30rpx;
+  padding: 30rpx 30rpx;
   border: 2rpx solid #E6F4FF;
   border-radius: 16rpx;
-  font-size: 28rpx;
+  font-size: 32rpx;
   color: #333;
   background: #FFFFFF;
   box-sizing: border-box;
   transition: all 0.3s ease;
-  min-height: 80rpx;
-  line-height: 1.5;
+  min-height: 90rpx;
+  line-height: 1.6;
 }
 
 .form-input:focus {
@@ -202,14 +202,14 @@
 /* 文本域 */
 .form-textarea {
   width: 100%;
-  min-height: 200rpx;
-  padding: 25rpx 30rpx;
+  min-height: 220rpx;
+  padding: 30rpx 30rpx;
   border: 2rpx solid #E6F4FF;
   border-radius: 16rpx;
-  font-size: 28rpx;
+  font-size: 32rpx;
   color: #333;
   background: #F8FBFF;
-  line-height: 1.5;
+  line-height: 1.6;
   box-sizing: border-box;
 }
 

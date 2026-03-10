@@ -17,7 +17,7 @@ Page({
 
     // 分页参数
     page: 0,
-    pageSize: 50, // 增加默认每页数量，确保看到更多书籍
+    pageSize: 100, // 增加默认每页数量，确保看到更多书籍
 
     // 筛选条件
     filters: {
@@ -82,7 +82,12 @@ Page({
 
   // 解析查询参数
   parseQueryParams(options) {
-    const filters = {}
+    const filters = {
+      gradeLevel: null,
+      purchased: null,
+      read: null,
+      intensiveRead: null
+    }
 
     if (options.gradeLevel) {
       filters.gradeLevel = options.gradeLevel
@@ -161,45 +166,147 @@ Page({
       let query = db.collection('books')
 
       // 添加筛选条件
-      if (filters.gradeLevel) {
+      if (filters.gradeLevel != null) {
         query = query.where({ gradeLevel: filters.gradeLevel })
       }
 
-      if (filters.purchased !== null) {
-        query = query.where({ purchased: filters.purchased })
+      if (filters.purchased != null) {
+        // 使用更灵活的查询条件，匹配数据库中可能存储的各种格式
+        const trueValues = [true, 'true', '1', '是', '已购买', '有', '完成', '已']
+        const falseValues = [false, 'false', '0', '否', '未购买', '无', '未完成', '未', '']
+
+        const targetValues = filters.purchased ? trueValues : falseValues
+
+        // 使用_.in()查询字段值是否在目标值数组中
+        query = query.where({
+          purchased: _.in(targetValues)
+        })
       }
 
-      if (filters.read !== null) {
-        query = query.where({ read: filters.read })
+      if (filters.read != null) {
+        // 使用更灵活的查询条件，匹配数据库中可能存储的各种格式
+        const trueValues = [true, 'true', '1', '是', '已阅读', '有', '完成', '已']
+        const falseValues = [false, 'false', '0', '否', '未阅读', '无', '未完成', '未', '']
+
+        const targetValues = filters.read ? trueValues : falseValues
+
+        // 使用_.in()查询字段值是否在目标值数组中
+        query = query.where({
+          read: _.in(targetValues)
+        })
       }
 
-      if (filters.intensiveRead !== null) {
-        query = query.where({ intensiveRead: filters.intensiveRead })
+      if (filters.intensiveRead != null) {
+        // 使用更灵活的查询条件，匹配数据库中可能存储的各种格式
+        const trueValues = [true, 'true', '1', '是', '已精读', '有', '完成', '已']
+        const falseValues = [false, 'false', '0', '否', '未精读', '无', '未完成', '未', '']
+
+        const targetValues = filters.intensiveRead ? trueValues : falseValues
+
+        // 使用_.in()查询字段值是否在目标值数组中
+        query = query.where({
+          intensiveRead: _.in(targetValues)
+        })
       }
 
       // 获取总数
       const countRes = await query.count()
       const total = countRes.total
+      console.log('查询总数结果: total=', total, 'countRes=', countRes)
+
+      // 调试：专门检查哈利波特与魔法石这本书
+      const harryPotterId = '9eb36515699fc9fa038fc1ed07023426'
+      try {
+        const harryPotterBook = await db.collection('books').doc(harryPotterId).get()
+        console.log('=== 哈利波特检查 ===')
+        console.log('书名:', harryPotterBook.data.title, '序号:', harryPotterBook.data.serial)
+
+        // 检查是否匹配当前查询条件
+        if (filters.intensiveRead != null) {
+          const trueValues = [true, 'true', '1', '是', '已精读', '有', '完成', '已']
+          const falseValues = [false, 'false', '0', '否', '未精读', '无', '未完成', '未', '']
+          const targetValues = filters.intensiveRead ? trueValues : falseValues
+          const fieldValue = harryPotterBook.data.intensiveRead
+          const matches = targetValues.some(val => {
+            if (typeof fieldValue === 'string' && typeof val === 'string') {
+              return fieldValue.trim().toLowerCase() === val.trim().toLowerCase()
+            }
+            return fieldValue == val // 宽松比较
+          })
+          console.log('intensiveRead匹配结果:', matches ? '匹配' : '不匹配', '字段值:', fieldValue)
+        }
+      } catch (error) {
+        console.log('查询哈利波特书籍失败:', error)
+      }
+
+      // 调试：对比统计云函数的查询条件
+      if (filters.intensiveRead != null && filters.intensiveRead === true) {
+        try {
+          // 使用与统计云函数完全相同的查询条件
+          let statsQuery = db.collection('books')
+          // 复制当前所有筛选条件（除了intensiveRead，我们将使用统计云函数条件）
+          if (filters.gradeLevel != null) {
+            statsQuery = statsQuery.where({ gradeLevel: filters.gradeLevel })
+          }
+          if (filters.purchased != null) {
+            const trueValues = [true, 'true', '1', '是', '已购买', '有', '完成', '已']
+            const falseValues = [false, 'false', '0', '否', '未购买', '无', '未完成', '未', '']
+            const targetValues = filters.purchased ? trueValues : falseValues
+            statsQuery = statsQuery.where({ purchased: _.in(targetValues) })
+          }
+          if (filters.read != null) {
+            const trueValues = [true, 'true', '1', '是', '已阅读', '有', '完成', '已']
+            const falseValues = [false, 'false', '0', '否', '未阅读', '无', '未完成', '未', '']
+            const targetValues = filters.read ? trueValues : falseValues
+            statsQuery = statsQuery.where({ read: _.in(targetValues) })
+          }
+          // 使用统计云函数完全相同的intensiveRead条件
+          statsQuery = statsQuery.where({ intensiveRead: _.in([true, "true", "是", "1"]) })
+
+          const statsCountRes = await statsQuery.count()
+          console.log('对比查询: 列表页=', total, '统计云函数=', statsCountRes.total, '差异=', total - statsCountRes.total)
+        } catch (error) {
+          console.log('对比查询失败:', error)
+        }
+      }
 
       // 获取分页数据
-      const dataRes = await query
-        .orderBy(sortField, sortOrder)
-        .skip(page * pageSize)
-        .limit(pageSize)
-        .get()
+      const BATCH_SIZE = 20 // 云开发数据库每批查询最大限制
+      let allData = []
+      let currentSkip = page * pageSize
+      let remaining = pageSize
 
-      // 先打印原始数据
-      console.log('原始数据库数据:', dataRes.data.map(book => ({
-        title: book.title,
-        purchased: book.purchased,
-        purchasedType: typeof book.purchased,
-        read: book.read,
-        readType: typeof book.read,
-        intensiveRead: book.intensiveRead,
-        intensiveReadType: typeof book.intensiveRead
-      })))
+      // 分批获取数据，避免数据库查询限制
+      while (remaining > 0) {
+        const batchLimit = Math.min(BATCH_SIZE, remaining)
 
-      const books = dataRes.data.map(book => {
+        const batchRes = await query
+          .orderBy(sortField, sortOrder)
+          .skip(currentSkip)
+          .limit(batchLimit)
+          .get()
+
+        const batchData = batchRes.data
+
+        if (batchData.length === 0) {
+          // 没有更多数据
+          break
+        }
+
+        allData = allData.concat(batchData)
+        currentSkip += batchData.length
+        remaining -= batchData.length
+
+        // 如果获取的数据少于请求的limit，可能已经到达数据末尾
+        if (batchData.length < batchLimit) {
+          break
+        }
+      }
+
+      console.log('分页数据结果: 总共获取数据长度=', allData.length, '请求skip=', page * pageSize, '请求limit=', pageSize)
+      console.log('数据库查询诊断: 请求limit=', pageSize, '实际返回=', allData.length, '是否可能被限制?', allData.length < pageSize && allData.length > 0 ? '是' : '否')
+
+      const books = allData.map(book => {
         // 转换状态字段为布尔值，处理各种可能的值
         const convertToBoolean = (value, fieldName, bookTitle) => {
           const original = value
@@ -232,7 +339,6 @@ Page({
             result = Boolean(value)
           }
 
-          console.log(`书籍 "${bookTitle}" 字段 ${fieldName}: 原始值=${original} (类型: ${typeof original}), 转换后=${result}`)
           return result
         }
 
@@ -243,18 +349,8 @@ Page({
           intensiveRead: convertToBoolean(book.intensiveRead, 'intensiveRead', book.title)
         }
       })
-      const hasMore = (page + 1) * pageSize < total
-
-      // 调试：打印书籍状态
-      console.log('加载的书籍数据:', books.map(book => ({
-        title: book.title,
-        purchased: book.purchased,
-        purchasedType: typeof book.purchased,
-        read: book.read,
-        readType: typeof book.read,
-        intensiveRead: book.intensiveRead,
-        intensiveReadType: typeof book.intensiveRead
-      })))
+      const hasMore = (page * pageSize + allData.length) < total
+      console.log('分页调试: total=', total, 'page=', page, 'pageSize=', pageSize, 'allData.length=', allData.length, 'hasMore=', hasMore, 'skip + allData.length=', (page * pageSize + allData.length))
 
       // 更新数据
       this.setData({
@@ -523,6 +619,20 @@ Page({
   // 调试函数
   debugData() {
     console.log('=== 调试信息开始 ===')
+
+    // 检查哈利波特与魔法石是否在当前列表中
+    const harryPotterId = '9eb36515699fc9fa038fc1ed07023426'
+    const harryPotterInList = this.data.books?.find(book => book._id === harryPotterId)
+    console.log('哈利波特与魔法石是否在列表中:', harryPotterInList ? '是' : '否')
+    if (harryPotterInList) {
+      console.log('哈利波特书籍详情:')
+      console.log('  title:', harryPotterInList.title)
+      console.log('  serial:', harryPotterInList.serial)
+      console.log('  purchased:', harryPotterInList.purchased)
+      console.log('  read:', harryPotterInList.read)
+      console.log('  intensiveRead:', harryPotterInList.intensiveRead)
+    }
+
     console.log('当前书籍数据:')
 
     if (!this.data.books || this.data.books.length === 0) {
