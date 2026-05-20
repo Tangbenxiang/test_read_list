@@ -13,7 +13,10 @@ Page({
     // 用户信息
     userInfo: null,
     // 计划阅读书籍
-    plannedBooks: []
+    plannedBooks: [],
+    // 菜园状态（首页卡片）
+    gardenStatus: null,
+    gardenLoading: false
   },
 
   onLoad() {
@@ -26,6 +29,16 @@ Page({
     // 每次显示页面时刷新数据
     this.loadStatistics()
     this.loadPlannedBooks()
+    this.loadGardenStatus()
+
+    // 处理 switchTab 传递的 tab 标记（如来自挑战列表页）
+    const app = getApp()
+    if (app.globalData.pendingTab) {
+      const tab = app.globalData.pendingTab
+      delete app.globalData.pendingTab
+      // 预留：挑战专区启用后可在此处理 tab 切换
+      console.log('pendingTab:', tab)
+    }
   },
 
   // 检查用户状态并跳转
@@ -40,11 +53,10 @@ Page({
       return
     }
 
-    // 如果全局状态是guest，直接跳转注册页
+    // 如果全局状态是guest，不跳转注册页（个人使用场景，所有访问者可见）
     if (app.globalData.loginStatus === 'guest') {
-      wx.redirectTo({
-        url: '/pages/register/register'
-      })
+      console.log('游客状态，保持首页显示')
+      // 不再跳转注册页，让游客也能查看首页内容
       return
     }
 
@@ -60,10 +72,8 @@ Page({
         if (role === 'guest') {
           // 更新全局状态
           app.globalData.loginStatus = 'guest'
-          // 未注册用户，跳转到注册页
-          wx.redirectTo({
-            url: '/pages/register/register'
-          })
+          // 未注册用户，不跳转注册页（个人使用场景，所有访问者可见）
+          console.log('游客状态，保持首页显示')
           return
         }
 
@@ -80,6 +90,23 @@ Page({
     } catch (error) {
       console.error('检查用户状态失败:', error)
       // 网络错误时不跳转，让用户继续使用
+    }
+  },
+
+  // 加载菜园状态（首页卡片）
+  async loadGardenStatus() {
+    this.setData({ gardenLoading: true })
+    try {
+      const res = await wx.cloud.callFunction({ name: 'getStatus' })
+      if (res.result && res.result.success) {
+        this.setData({ gardenStatus: res.result.data, gardenLoading: false })
+      } else {
+        // 静默失败，不影响读书功能
+        this.setData({ gardenStatus: null, gardenLoading: false })
+      }
+    } catch (err) {
+      console.error('加载菜园状态失败:', err)
+      this.setData({ gardenStatus: null, gardenLoading: false })
     }
   },
 
@@ -193,6 +220,13 @@ Page({
     })
   },
 
+  // 跳转到菜园主页
+  goToGarden() {
+    wx.switchTab({
+      url: '/pages/garden/index'
+    })
+  },
+
   // 跳转到添加书籍页面
   goToAddBook() {
     wx.navigateTo({
@@ -261,10 +295,13 @@ Page({
         })
       } else {
         console.error('获取计划阅读书籍失败:', res.result)
+        // 显示模拟数据（个人使用场景）
+        this.showPlannedBooksMockData()
       }
     } catch (error) {
       console.error('调用计划阅读书籍云函数失败:', error)
-      // 失败时不显示错误，保持空列表
+      // 显示模拟数据（个人使用场景）
+      this.showPlannedBooksMockData()
     }
   },
 
@@ -312,5 +349,46 @@ Page({
         url: `/pages/detail/detail?id=${bookId}`
       })
     }
+  },
+
+  // 显示计划阅读书籍模拟数据（个人使用场景）
+  showPlannedBooksMockData() {
+    const mockData = [
+      {
+        bookId: 'mock1',
+        status: 'planned',
+        bookInfo: {
+          title: '小王子',
+          author: '[法] 圣埃克苏佩里',
+          cover: ''
+        }
+      },
+      {
+        bookId: 'mock2',
+        status: 'reading',
+        bookInfo: {
+          title: '哈利·波特与魔法石',
+          author: '[英] J.K.罗琳',
+          cover: ''
+        }
+      },
+      {
+        bookId: 'mock3',
+        status: 'completed',
+        bookInfo: {
+          title: '夏洛的网',
+          author: '[美] E.B.怀特',
+          cover: ''
+        }
+      }
+    ]
+    this.setData({
+      plannedBooks: mockData
+    })
+    wx.showToast({
+      title: '使用模拟数据',
+      icon: 'none',
+      duration: 2000
+    })
   }
 })

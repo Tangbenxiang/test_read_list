@@ -149,6 +149,16 @@
       </view>
     </view>
 
+    <!-- 菜园管理入口（仅管理员可见） -->
+    <view wx:if="{{isAdmin}}" class="info-card garden-admin-card" bindtap="goToGardenAdmin">
+      <view class="card-header">
+        <view class="card-icon">🌱</view>
+        <text class="card-title">菜园管理</text>
+        <view class="admin-arrow">›</view>
+      </view>
+      <text class="admin-desc">发布任务 · 审核完成 · 更新状态</text>
+    </view>
+
     <!-- 设置选项 -->
     <view class="info-card settings-card">
       <view class="card-header">

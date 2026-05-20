@@ -1,0 +1,12 @@
+{
+  "name": "approveTask",
+  "version": "1.0.0",
+  "description": "管理员审核任务，通过后自动加健康值和积分",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

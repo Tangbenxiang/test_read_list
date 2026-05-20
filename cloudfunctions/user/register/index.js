@@ -75,8 +75,8 @@ exports.main = async (event, context) => {
   const _ = db.command
 
   try {
-    // 1. 验证参数
-    const { anonymousName, avatarIndex, grade = '', role = 'student' } = event
+    // 1. 验证参数（role 固定为 parent，不接受前端传入）
+    const { anonymousName, avatarIndex, grade = '', child_name = '' } = event
 
     // 处理名字：如果为空则生成推荐名字
     let finalName = anonymousName ? anonymousName.trim() : ''
@@ -96,6 +96,23 @@ exports.main = async (event, context) => {
       }
     }
 
+    // 验证孩子姓名（必填）
+    const finalChildName = child_name.trim()
+    if (finalChildName === '') {
+      return {
+        success: false,
+        code: 'CHILD_NAME_REQUIRED',
+        message: '请填写孩子的姓名'
+      }
+    }
+    if (finalChildName.length > 10) {
+      return {
+        success: false,
+        code: 'CHILD_NAME_TOO_LONG',
+        message: '孩子姓名不能超过10个字符'
+      }
+    }
+
     // 验证头像索引 (0-29)
     const avatarIndexNum = parseInt(avatarIndex)
     if (isNaN(avatarIndexNum) || avatarIndexNum < 0 || avatarIndexNum > 29) {
@@ -106,17 +123,7 @@ exports.main = async (event, context) => {
       }
     }
 
-    // 验证角色
-    const validRoles = ['student', 'parent', 'teacher', 'admin']
-    if (!validRoles.includes(role)) {
-      return {
-        success: false,
-        code: 'INVALID_ROLE',
-        message: '请选择有效的身份'
-      }
-    }
-
-    // 验证年级（如果是学生）
+    // 验证年级
     const validGrades = ['一至二年级', '三至四年级', '五至六年级', 'grade1-2', 'grade3-4', 'grade5-6', 'middle-school', 'high-school']
     if (grade && !validGrades.includes(grade)) {
       return {
@@ -158,7 +165,10 @@ exports.main = async (event, context) => {
       openid: OPENID,
       anonymousName: finalName,
       avatarIndex: avatarIndexNum,
-      role: role,
+      role: 'parent',
+      child_name: finalChildName,
+      class_id: '2026_class1',
+      real_name: '',
       grade: grade,
       points: 0,
       achievements: [],
@@ -178,21 +188,6 @@ exports.main = async (event, context) => {
       createTime: db.serverDate(),
       lastLoginTime: db.serverDate(),
       updateTime: db.serverDate()
-    }
-
-    // 如果是管理员，需要额外检查（只能从现有管理员升级）
-    if (role === 'admin') {
-      const adminCheck = await db.collection('admins')
-        .where({ openid: OPENID, role: 'admin' })
-        .get()
-
-      if (adminCheck.data.length === 0) {
-        return {
-          success: false,
-          code: 'ADMIN_PERMISSION_DENIED',
-          message: '管理员身份需要特殊授权'
-        }
-      }
     }
 
     const result = await db.collection('users').add({

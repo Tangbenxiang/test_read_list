@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>儿童阅读记录 - 微信小程序</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7;
+    color: #1a1a2e;
+    background: #f0f4f8;
+    padding: 0;
+  }
+  .header {
+    background: linear-gradient(135deg, #A0D6FF 0%, #66B3FF 50%, #0066CC 100%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .header h1 { font-size: 2em; margin-bottom: 8px; }
+  .header p { font-size: 1.1em; opacity: 0.9; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 24px 20px; }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card h2 {
+    font-size: 1.3em;
+    color: #0066CC;
+    border-bottom: 2px solid #e8f0fe;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+  }
+  .card h3 {
+    font-size: 1.1em;
+    color: #333;
+    margin: 18px 0 10px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.92em;
+  }
+  th, td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  th {
+    background: #f5f8fc;
+    color: #555;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  tr:hover td { background: #fafcff; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .tag-core     { background: #e3f2fd; color: #1565c0; }
+  .tag-mgmt     { background: #fff3e0; color: #e65100; }
+  .tag-func     { background: #e8f5e9; color: #2e7d32; }
+  .tag-tool     { background: #f3e5f5; color: #7b1fa2; }
+  .tag-user     { background: #fce4ec; color: #c62828; }
+  .tag-challenge{ background: #fff8e1; color: #f57f17; }
+  .tag-placeholder { background: #f5f5f5; color: #999; }
+  .tag-active   { background: #e8f5e9; color: #2e7d32; }
+  .tag-inactive { background: #f5f5f5; color: #999; }
+  .tag-created  { background: #e3f2fd; color: #1565c0; }
+
+  code {
+    background: #f0f4f8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #c62828;
+    font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  }
+  pre {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.85em;
+    line-height: 1.5;
+    margin: 12px 0;
+    font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  }
+  .comment { color: #6a9955; }
+  .keyword { color: #569cd6; }
+  .string  { color: #ce9178; }
+
+  ul { padding-left: 20px; }
+  li { margin: 4px 0; }
+  strong { color: #1a1a2e; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  .flow-step {
+    background: #f5f8fc;
+    border-left: 3px solid #66B3FF;
+    padding: 10px 16px;
+    margin: 8px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.93em;
+  }
+  .flow-arrow {
+    text-align: center;
+    color: #66B3FF;
+    font-size: 1.2em;
+    margin: 2px 0;
+  }
+
+  .warn {
+    background: #fff8e1;
+    border-left: 3px solid #f57f17;
+    padding: 10px 16px;
+    margin: 8px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.93em;
+  }
+
+  a { color: #0066CC; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <h1>儿童阅读记录</h1>
+  <p>基于微信云开发的儿童阅读记录管理工具</p>
+</div>
+
+<div class="container">
+
+<!-- ===== 项目概况 ===== -->
+<div class="card">
+  <h2>项目概况</h2>
+  <table>
+    <tr><th style="width:120px">平台</th><td>微信小程序（原生开发）</td></tr>
+    <tr><th>后端</th><td>微信云开发（云函数 + 云数据库）</td></tr>
+    <tr><th>AppID</th><td><code>wxc2d712752b0caacc</code></td></tr>
+    <tr><th>云环境</th><td><code>cloudbase-4gnknimqbe0440c9</code></td></tr>
+    <tr><th>定位</th><td>班级阅读记录 + 菜园互动管理工具</td></tr>
+    <tr><th>主题</th><td>冰雪蓝色系 (#A0D6FF / #66B3FF / #0066CC)</td></tr>
+  </table>
+
+  <h3>已实现功能</h3>
+  <div class="two-col">
+    <ul>
+      <li><strong>书籍管理</strong> - 批量导入、增删改查、封面管理</li>
+      <li><strong>分类浏览</strong> - 按年级分类（一至二年级 / 三至四年级 / 五至六年级）</li>
+      <li><strong>搜索筛选</strong> - 书名/作者/类型模糊搜索，多条件组合筛选</li>
+      <li><strong>状态跟踪</strong> - 购买、阅读、精读三种状态标记</li>
+    </ul>
+    <ul>
+      <li><strong>计划阅读</strong> - 添加书籍到计划列表，在详情页切换状态</li>
+      <li><strong>数据统计</strong> - 首页展示各分类书籍数量统计</li>
+      <li><strong>用户系统</strong> - 家长注册（含孩子姓名）、多角色权限（admin硬编码）</li>
+      <li><strong>阅读挑战</strong> - 创建/参与挑战，答题评分（已开发，未启用）</li>
+      <li><strong>意见反馈</strong> - 用户提交反馈到云数据库</li>
+      <li><strong>班级菜园</strong> - 共享菜园健康值管理、任务认领、成长相册（开发中）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 开发进度 ===== -->
+<div class="card">
+  <h2>菜园模块开发进度</h2>
+  <table>
+    <tr><th>阶段</th><th>状态</th><th>内容</th></tr>
+    <tr><td>第零步：注册流程改造</td><td><span class="tag tag-active">已完成</span></td><td><code>user/register</code> 增加 child_name/class_id，role 固定 parent；<code>checkAdmin</code> 改造支持 guest 状态</td></tr>
+    <tr><td>第一期：基础可用</td><td><span class="tag tag-core">开发中</span></td><td>7个云函数已完成，待开发页面（菜园主页、任务大厅、管理后台）</td></tr>
+    <tr><td>第二期：任务闭环</td><td><span class="tag tag-inactive">待开发</span></td><td>拍照上传、审核流程、健康值联动</td></tr>
+    <tr><td>第三期：体验提升</td><td><span class="tag tag-inactive">待开发</span></td><td>成长相册、健康值动画、定时衰减</td></tr>
+  </table>
+
+<!-- ===== 目录结构 ===== -->
+<div class="card">
+  <h2>目录结构</h2>
+
+  <h3>页面 (pages/ - 19个)</h3>
+  <table>
+    <tr><th>页面</th><th>类别</th><th>说明</th></tr>
+    <tr><td><code>pages/index/</code></td><td><span class="tag tag-core">核心</span></td><td>首页 - 统计面板、分类导航、计划阅读</td></tr>
+    <tr><td><code>pages/list/</code></td><td><span class="tag tag-core">核心</span></td><td>书籍列表 - 分类展示、筛选、分页</td></tr>
+    <tr><td><code>pages/detail/</code></td><td><span class="tag tag-core">核心</span></td><td>书籍详情 - 信息展示、状态切换、计划阅读</td></tr>
+    <tr><td><code>pages/search/</code></td><td><span class="tag tag-core">核心</span></td><td>搜索 - 模糊搜索、历史记录、结果高亮</td></tr>
+    <tr><td><code>pages/addbook/</code></td><td><span class="tag tag-mgmt">管理</span></td><td>添加书籍 - 支持普通模式和计划阅读模式</td></tr>
+    <tr><td><code>pages/editbook/</code></td><td><span class="tag tag-mgmt">管理</span></td><td>编辑书籍信息</td></tr>
+    <tr><td><code>pages/manualcover/</code></td><td><span class="tag tag-mgmt">管理</span></td><td>手动上传封面</td></tr>
+    <tr><td><code>pages/feedback/</code></td><td><span class="tag tag-func">功能</span></td><td>意见反馈</td></tr>
+    <tr><td><code>pages/debug/</code></td><td><span class="tag tag-tool">工具</span></td><td>调试页面</td></tr>
+    <tr><td><code>pages/register/</code></td><td><span class="tag tag-user">用户</span></td><td>匿名注册 - 名字推荐、头像选择</td></tr>
+    <tr><td><code>pages/profile/</code></td><td><span class="tag tag-user">用户</span></td><td>个人中心</td></tr>
+    <tr><td><code>pages/challenge/</code></td><td><span class="tag tag-challenge">挑战</span></td><td>答题界面（已实现）</td></tr>
+    <tr><td><code>pages/challenge-list/</code></td><td><span class="tag tag-challenge">挑战</span></td><td>挑战列表（已实现）</td></tr>
+    <tr><td><code>pages/sharing/</code></td><td><span class="tag tag-placeholder">占位</span></td><td>阅读分享墙</td></tr>
+    <tr><td><code>pages/sharing-detail/</code></td><td><span class="tag tag-placeholder">占位</span></td><td>分享详情</td></tr>
+    <tr><td><code>pages/ranking/</code></td><td><span class="tag tag-placeholder">占位</span></td><td>排行榜</td></tr>
+    <tr><td><code>pages/parent/</code></td><td><span class="tag tag-placeholder">占位</span></td><td>家长监控面板</td></tr>
+    <tr><td><code>pages/achievements/</code></td><td><span class="tag tag-placeholder">占位</span></td><td>成就系统</td></tr>
+    <tr><td><code>pages/family/</code></td><td><span class="tag tag-placeholder">占位</span></td><td>家庭关联</td></tr>
+  </table>
+
+  <h3>云函数 (cloudfunctions/ - 28个)</h3>
+  <table>
+    <tr><th>云函数</th><th>类别</th><th>说明</th></tr>
+    <tr><td><code>checkAdmin</code></td><td><span class="tag tag-core">核心</span></td><td>用户身份与权限检查（多角色支持）</td></tr>
+    <tr><td><code>initDatabase</code></td><td><span class="tag tag-core">核心</span></td><td>数据库初始化、集合创建、索引建议</td></tr>
+    <tr><td><code>getCategoryStats</code></td><td><span class="tag tag-core">书籍</span></td><td>分类统计数据</td></tr>
+    <tr><td><code>searchBooks</code></td><td><span class="tag tag-core">书籍</span></td><td>模糊搜索</td></tr>
+    <tr><td><code>addBook</code></td><td><span class="tag tag-core">书籍</span></td><td>添加书籍（管理员）</td></tr>
+    <tr><td><code>updateBookStatus</code></td><td><span class="tag tag-core">书籍</span></td><td>更新书籍状态</td></tr>
+    <tr><td><code>updateBookInfo</code></td><td><span class="tag tag-core">书籍</span></td><td>更新书籍信息</td></tr>
+    <tr><td><code>getBookCoverFromDouban</code></td><td><span class="tag tag-tool">工具</span></td><td>从豆瓣获取封面</td></tr>
+    <tr><td><code>batchUpdateCovers</code></td><td><span class="tag tag-tool">工具</span></td><td>批量更新封面</td></tr>
+    <tr><td><code>importTestBooks</code></td><td><span class="tag tag-tool">工具</span></td><td>导入测试数据</td></tr>
+    <tr><td><code>user/register</code></td><td><span class="tag tag-user">用户</span></td><td>匿名注册（含名字推荐算法）</td></tr>
+    <tr><td><code>user/getProfile</code></td><td><span class="tag tag-user">用户</span></td><td>获取用户信息</td></tr>
+    <tr><td><code>user/updateProfile</code></td><td><span class="tag tag-user">用户</span></td><td>更新用户信息</td></tr>
+    <tr><td><code>addPlannedBook</code></td><td><span class="tag tag-func">计划</span></td><td>添加计划阅读书籍</td></tr>
+    <tr><td><code>getPlannedBooks</code></td><td><span class="tag tag-func">计划</span></td><td>获取计划阅读列表</td></tr>
+    <tr><td><code>deletePlannedBook</code></td><td><span class="tag tag-func">计划</span></td><td>删除计划阅读书籍</td></tr>
+    <tr><td><code>challenge/create</code></td><td><span class="tag tag-challenge">挑战</span></td><td>创建挑战（管理员）</td></tr>
+    <tr><td><code>challenge/getWeekly</code></td><td><span class="tag tag-challenge">挑战</span></td><td>获取本周挑战</td></tr>
+    <tr><td><code>challenge/getHistory</code></td><td><span class="tag tag-challenge">挑战</span></td><td>获取历史挑战</td></tr>
+    <tr><td><code>challenge/getDetail</code></td><td><span class="tag tag-challenge">挑战</span></td><td>获取挑战详情</td></tr>
+    <tr><td><code>challenge/submit</code></td><td><span class="tag tag-challenge">挑战</span></td><td>提交挑战答案</td></tr>
+    <tr><td><code>garden/getStatus</code></td><td><span class="tag tag-core">菜园</span></td><td>获取菜园当前状态 + 健康值档位 + 任务概览</td></tr>
+    <tr><td><code>garden/getTasks</code></td><td><span class="tag tag-core">菜园</span></td><td>获取任务列表 + 认领状态 + 认领数</td></tr>
+    <tr><td><code>garden/claimTask</code></td><td><span class="tag tag-core">菜园</span></td><td>家长认领任务（含完整校验链）</td></tr>
+    <tr><td><code>garden/submitTask</code></td><td><span class="tag tag-core">菜园</span></td><td>提交任务完成 + 照片</td></tr>
+    <tr><td><code>garden/approveTask</code></td><td><span class="tag tag-core">菜园</span></td><td>管理员审核 + 加健康值/积分/同步相册</td></tr>
+    <tr><td><code>garden/updateConfig</code></td><td><span class="tag tag-core">菜园</span></td><td>管理员更新菜园配置（阶段/健康值等）</td></tr>
+    <tr><td><code>garden/publishTask</code></td><td><span class="tag tag-core">菜园</span></td><td>管理员发布/编辑任务</td></tr>
+  </table>
+
+  <h3>运维脚本 (scripts/)</h3>
+  <table>
+    <tr><th>脚本</th><th>说明</th></tr>
+    <tr><td><code>deploy-function.js</code></td><td>云函数部署（通过 TencentCloud API 上传代码，解决开发者工具 Bug）</td></tr>
+    <tr><td><code>delete-failed-functions.js</code></td><td>清理 CreateFailed 状态的云函数</td></tr>
+    <tr><td><code>debug-function.js</code></td><td>查询云函数详细配置</td></tr>
+  </table>
+
+  <h3>其他文件</h3>
+  <table>
+    <tr><th>路径</th><th>说明</th></tr>
+    <tr><td><code>app.js</code></td><td>小程序入口：云初始化、登录状态管理</td></tr>
+    <tr><td><code>app.json</code></td><td>全局配置：19个页面、云开发启用</td></tr>
+    <tr><td><code>app.wxss</code></td><td>全局样式：蓝色主题、CSS变量</td></tr>
+    <tr><td><code>images/avatars/</code></td><td>30个预设头像 (0.png ~ 29.png，待替换为真实图片)</td></tr>
+    <tr><td><code>images/default-cover.png</code></td><td>默认书籍封面</td></tr>
+    <tr><td><code>scripts/fetch-book-covers.js</code></td><td>Node.js脚本：批量获取书籍封面</td></tr>
+    <tr><td><code>convert_excel_to_json.py</code></td><td>Python工具：Excel书籍数据转JSON</td></tr>
+    <tr><td><code>deploy-*.sh / deploy-*.bat</code></td><td>云函数部署脚本（挑战 / 计划阅读）</td></tr>
+    <tr><td><code>archive/</code></td><td>历史归档文件（.gitignore已忽略）</td></tr>
+  </table>
+</div>
+
+<!-- ===== 数据库设计 ===== -->
+<div class="card">
+  <h2>数据库设计</h2>
+
+  <h3>集合总览</h3>
+  <table>
+    <tr><th>集合</th><th>状态</th><th>用途</th></tr>
+    <tr><td><code>books</code></td><td><span class="tag tag-active">使用中</span></td><td>书籍信息</td></tr>
+    <tr><td><code>admins</code></td><td><span class="tag tag-active">使用中</span></td><td>管理员openid列表</td></tr>
+    <tr><td><code>feedback</code></td><td><span class="tag tag-active">使用中</span></td><td>用户反馈</td></tr>
+    <tr><td><code>users</code></td><td><span class="tag tag-active">使用中</span></td><td>用户档案（家长注册，含child_name、class_id）</td></tr>
+    <tr><td><code>user_planned_books</code></td><td><span class="tag tag-active">使用中</span></td><td>计划阅读记录</td></tr>
+    <tr><td><code>weekly_challenges</code></td><td><span class="tag tag-created">已建表</span></td><td>阅读挑战定义</td></tr>
+    <tr><td><code>challenge_responses</code></td><td><span class="tag tag-created">已建表</span></td><td>挑战答题记录</td></tr>
+    <tr><td><code>reading_shares</code></td><td><span class="tag tag-inactive">已建表</span></td><td>阅读分享（功能未启用）</td></tr>
+    <tr><td><code>family_connections</code></td><td><span class="tag tag-inactive">已建表</span></td><td>家庭关联（功能未启用）</td></tr>
+    <tr><td><code>achievements</code></td><td><span class="tag tag-inactive">已建表</span></td><td>成就定义（功能未启用）</td></tr>
+    <tr><td><code>garden_config</code></td><td><span class="tag tag-active">使用中</span></td><td>菜园全局状态（仅1条记录，固定 _id）</td></tr>
+    <tr><td><code>garden_tasks</code></td><td><span class="tag tag-active">使用中</span></td><td>菜园任务库</td></tr>
+    <tr><td><code>task_records</code></td><td><span class="tag tag-active">使用中</span></td><td>任务认领和完成记录</td></tr>
+    <tr><td><code>garden_photos</code></td><td><span class="tag tag-active">使用中</span></td><td>成长相册</td></tr>
+  </table>
+
+  <h3>核心集合字段</h3>
+  <div class="two-col">
+    <div>
+      <h4 style="color:#0066CC; margin-bottom:8px;">books</h4>
+      <pre><span class="keyword">serial</span>: number          <span class="comment"># 序号</span>
+<span class="keyword">title</span>: string           <span class="comment"># 书名（必填）</span>
+<span class="keyword">type</span>: string            <span class="comment"># 书籍类型（必填）</span>
+<span class="keyword">author</span>: string          <span class="comment"># 作者（必填）</span>
+<span class="keyword">description</span>: string     <span class="comment"># 简介</span>
+<span class="keyword">gradeLevel</span>: string      <span class="comment"># 一至二年级/三至四年级/五至六年级</span>
+<span class="keyword">purchased</span>: boolean      <span class="comment"># 是否购买</span>
+<span class="keyword">read</span>: boolean           <span class="comment"># 是否阅读</span>
+<span class="keyword">intensiveRead</span>: boolean  <span class="comment"># 是否精读</span>
+<span class="keyword">cover</span>: string           <span class="comment"># 封面图片URL</span>
+<span class="keyword">createTime</span>: date        <span class="comment"># 创建时间</span></pre>
+    </div>
+    <div>
+      <h4 style="color:#0066CC; margin-bottom:8px;">users</h4>
+      <pre><span class="keyword">openid</span>: string          <span class="comment"># 微信openid（唯一）</span>
+<span class="keyword">anonymousName</span>: string   <span class="comment"># 匿名昵称（唯一）</span>
+<span class="keyword">avatarIndex</span>: number     <span class="comment"># 预设头像编号 0-29</span>
+<span class="keyword">role</span>: string            <span class="comment"># parent / admin</span>
+<span class="keyword">child_name</span>: string      <span class="comment"># 孩子姓名（注册时必填）</span>
+<span class="keyword">class_id</span>: string        <span class="comment"># 班级ID（当前固定 "2026_class1"）</span>
+<span class="keyword">real_name</span>: string       <span class="comment"># 家长称呼（选填）</span>
+<span class="keyword">points</span>: number          <span class="comment"># 积分（读书+菜园共用）</span>
+<span class="keyword">achievements</span>: array     <span class="comment"># 已解锁成就ID列表</span>
+<span class="keyword">readingStats</span>: object    <span class="comment"># 阅读统计</span>
+<span class="keyword">settings</span>: object        <span class="comment"># 用户设置</span>
+<span class="keyword">createTime</span>: date
+<span class="keyword">lastLoginTime</span>: date</pre>
+    </div>
+  </div>
+  <h4 style="color:#0066CC; margin-bottom:8px;">user_planned_books</h4>
+  <pre><span class="keyword">userId</span>: string          <span class="comment"># 用户ID</span>
+<span class="keyword">bookId</span>: string          <span class="comment"># 书籍ID</span>
+<span class="keyword">status</span>: string          <span class="comment"># planned / reading / completed</span>
+<span class="keyword">addedTime</span>: date
+<span class="keyword">updatedTime</span>: date
+<span class="keyword">notes</span>: string           <span class="comment"># 个人笔记</span></pre>
+</div>
+
+<!-- ===== 核心架构 ===== -->
+<div class="card">
+  <h2>核心架构说明</h2>
+
+  <h3>用户身份与权限</h3>
+  <p>身份检查统一通过 <code>checkAdmin</code> 云函数完成，调用链路：</p>
+  <div class="flow-step"><code>app.js</code> onLaunch</div>
+  <div class="flow-arrow">&#8595;</div>
+  <div class="flow-step"><code>checkLogin()</code> &rarr; <code>wx.cloud.callFunction({ name: 'checkAdmin' })</code></div>
+  <div class="flow-arrow">&#8595;</div>
+  <div class="flow-step">返回 <code>{ role, userInfo, openid, isAdmin }</code></div>
+  <div class="flow-arrow">&#8595;</div>
+  <div class="flow-step">存入 <code>globalData.loginStatus / userInfo / openid</code></div>
+
+  <h3>权限判断优先级（从高到低）</h3>
+  <table>
+    <tr><th>#</th><th>来源</th><th>说明</th></tr>
+    <tr><td>1</td><td><strong>硬编码管理员</strong></td><td>openid 匹配 <code>opj1C3VBfI94VgN5A_H41qrzqRm0</code>（不区分大小写）</td></tr>
+    <tr><td>2</td><td><strong>users 集合</strong></td><td>查询已注册用户的 role 字段</td></tr>
+    <tr><td>3</td><td><strong>admins 集合</strong></td><td>查询管理员表（向后兼容）</td></tr>
+    <tr><td>4</td><td><strong>guest</strong></td><td>未注册用户返回 guest 状态（不再自动创建）</td></tr>
+  </table>
+
+  <h3>数据流</h3>
+  <div class="flow-step">用户操作</div>
+  <div class="flow-arrow">&#8595;</div>
+  <div class="flow-step"><code>pages/*.js</code> &rarr; <code>wx.cloud.callFunction({ name, data })</code></div>
+  <div class="flow-arrow">&#8595;</div>
+  <div class="flow-step"><code>cloudfunctions/*/index.js</code></div>
+  <div class="flow-arrow">&#8595;</div>
+  <div class="flow-step"><code>cloud.database().collection('xxx')</code></div>
+  <div class="flow-arrow">&#8595;</div>
+  <div class="flow-step">返回结果 &rarr; <code>this.setData()</code> 更新 UI</div>
+
+  <h3>云数据库查询限制</h3>
+  <div class="warn">微信云数据库单次查询最多返回 <strong>20条记录</strong>。涉及超过20条数据的场景（如书籍列表），已实现批量查询逻辑。</div>
+  <pre><span class="comment">// 批量查询模式（pages/list/list.js）</span>
+<span class="keyword">const</span> BATCH_SIZE = <span class="string">20</span>
+<span class="keyword">let</span> allData = []
+<span class="keyword">let</span> query = collection.where(condition)
+<span class="keyword">let</span> result = <span class="keyword">await</span> query.limit(BATCH_SIZE).get()
+<span class="keyword">while</span> (result.data.length > <span class="string">0</span>) {
+  allData = allData.concat(result.data)
+  result = <span class="keyword">await</span> query.skip(allData.length).limit(BATCH_SIZE).get()
+}</pre>
+</div>
+
+<!-- ===== 开发注意事项 ===== -->
+<div class="card">
+  <h2>开发注意事项</h2>
+
+  <h3>云函数部署流程</h3>
+  <div class="warn">微信开发者工具对嵌套目录部署存在 Bug（<code>CreateFailed</code> 状态），使用 API 脚本部署替代：</div>
+  <ol>
+    <li>在云开发控制台手动创建空白云函数（函数名如 <code>getStatus</code>，运行环境 Nodejs18.15）<br>控制台地址：<code>https://console.cloud.tencent.com/tcb/scf/index</code></li>
+    <li>用脚本上传代码：<code>node scripts/deploy-function.js getStatus garden</code></li>
+    <li>查看所有函数状态：<code>node scripts/deploy-function.js list</code></li>
+    <li>清理失败函数：<code>node scripts/delete-failed-functions.js</code></li>
+  </ol>
+  <ul>
+    <li>腾讯云 TCB 环境禁止通过 <code>CreateFunction</code> API 创建新函数（报 <code>InvalidParameterValue.Stamp</code>），必须先在控制台手动创建</li>
+    <li><code>UpdateFunctionCode</code> API 正常可用，脚本通过此接口上传代码</li>
+    <li>嵌套云函数在 SCF 侧是<strong>扁平命名</strong>的（如 <code>garden/getStatus</code> &rarr; SCF 函数名 <code>getStatus</code>）</li>
+  </ul>
+
+  <h3>已知限制</h3>
+  <table>
+    <tr><th>限制</th><th>说明</th></tr>
+    <tr><td>单次查询20条</td><td>需使用批量查询分页获取</td></tr>
+    <tr><td>WXML表达式限制</td><td>避免复杂数组索引，改为JS中计算变量后绑定</td></tr>
+    <tr><td>OpenID大小写</td><td>云函数返回的openid大小写可能不一致，比较时需 <code>.toLowerCase()</code></td></tr>
+    <tr><td>头像占位</td><td><code>images/avatars/</code> 中30个头像文件为 1x1 像素占位图</td></tr>
+  </table>
+
+  <h3>敏感信息管理</h3>
+  <ul>
+    <li><code>private.key</code> 已删除且加入 <code>.gitignore</code>，部署时需重新配置</li>
+    <li>管理员 openid 硬编码在 <code>cloudfunctions/checkAdmin/index.js</code> 中</li>
+    <li>云环境ID和AppID存在于多个文件中（用户决定保留）</li>
+  </ul>
+</div>
+
+<!-- ===== 技术参考 ===== -->
+<div class="card">
+  <h2>技术参考</h2>
+  <table>
+    <tr><th>文档</th><th>路径</th></tr>
+    <tr><td>菜园模块开发计划</td><td><a href="plan/菜园模块开发计划.html">plan/菜园模块开发计划.html</a></td></tr>
+    <tr><td>微信小程序文档</td><td><a href="https://developers.weixin.qq.com/miniprogram/dev/" target="_blank">developers.weixin.qq.com</a></td></tr>
+    <tr><td>云开发文档</td><td><a href="https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html" target="_blank">云开发 getting-started</a></td></tr>
+  </table>
+</div>
+
+</div>
+</body>
+</html>

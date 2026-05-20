@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌱 菜园模块开发计划</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --green-deep:   #1B4332;
+    --green-mid:    #2D6A4F;
+    --green-light:  #40916C;
+    --green-pale:   #B7E4C7;
+    --green-mist:   #D8F3DC;
+    --green-fog:    #F0FAF2;
+    --amber:        #F4A261;
+    --amber-light:  #FDEBD0;
+    --red-soft:     #E76F51;
+    --blue-soft:    #457B9D;
+    --blue-pale:    #A8DADC;
+    --purple-soft:  #6C5CE7;
+    --purple-pale:  #EDE9FF;
+    --gold:         #E9C46A;
+    --gold-pale:    #FFF8E1;
+    --text-dark:    #1A1A2E;
+    --text-mid:     #3D405B;
+    --text-light:   #6B7280;
+    --border:       #D1FAE5;
+    --white:        #FFFFFF;
+    --shadow-sm: 0 2px 8px rgba(27,67,50,0.08);
+    --shadow-md: 0 8px 24px rgba(27,67,50,0.12);
+    --shadow-lg: 0 20px 48px rgba(27,67,50,0.15);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--green-fog);
+    color: var(--text-dark);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    width: 220px; height: 100vh;
+    background: var(--green-deep);
+    padding: 28px 0 20px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+  .sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 16px;
+  }
+  .sidebar-logo .emoji { font-size: 28px; }
+  .sidebar-logo .title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--green-pale);
+    line-height: 1.3;
+    margin-top: 6px;
+  }
+  .nav-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+  .nav-section-label {
+    font-size: 10px; font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 8px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    color: rgba(255,255,255,0.65);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .nav-item:hover, .nav-item.active {
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+  }
+  .nav-item .nav-icon { font-size: 15px; flex-shrink: 0; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--green-light);
+    color: white;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    margin-left: 220px;
+    padding: 40px 48px;
+    max-width: 1100px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 60%, var(--green-light) 100%);
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    color: white;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: var(--green-pale);
+    font-size: 12px; font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 32px; font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    max-width: 560px;
+    margin-bottom: 28px;
+  }
+  .hero-meta {
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .hero-meta-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+  .hero-meta-item span:first-child { font-size: 16px; }
+  .hero-meta-item strong { color: white; }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 48px;
+    scroll-margin-top: 24px;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--green-pale);
+  }
+  .section-icon {
+    width: 40px; height: 40px;
+    background: var(--green-mist);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--green-deep);
+  }
+  .section-subtitle {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .card-sm {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+  }
+  .card-sm .card-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .card-sm .card-value {
+    font-size: 22px; font-weight: 700;
+    color: var(--green-deep);
+    font-family: 'Noto Serif SC', serif;
+  }
+  .card-sm .card-desc {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+
+  /* ── PHASE TIMELINE ── */
+  .phase-list { display: flex; flex-direction: column; gap: 0; }
+  .phase-item {
+    display: flex; gap: 0;
+    position: relative;
+  }
+  .phase-left {
+    display: flex; flex-direction: column; align-items: center;
+    width: 48px; flex-shrink: 0;
+  }
+  .phase-dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    z-index: 1;
+    border: 3px solid var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+  .phase-line {
+    width: 2px;
+    flex: 1;
+    min-height: 24px;
+    background: var(--green-pale);
+    margin: 4px 0;
+  }
+  .phase-item:last-child .phase-line { display: none; }
+  .phase-content {
+    flex: 1;
+    padding: 0 0 28px 16px;
+  }
+  .phase-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .phase-name {
+    font-weight: 700; font-size: 15px;
+    color: var(--green-deep);
+  }
+  .phase-time {
+    font-size: 12px;
+    color: var(--text-light);
+    background: var(--green-fog);
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+  .phase-status {
+    font-size: 11px; font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+  .status-now   { background: #FEF3C7; color: #92400E; }
+  .status-next  { background: var(--green-mist); color: var(--green-deep); }
+  .status-later { background: #F3F4F6; color: #6B7280; }
+  .phase-tasks {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .phase-task {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 13px; color: var(--text-mid);
+    background: var(--green-fog);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--green-pale);
+  }
+  .phase-task .task-check { color: var(--green-light); font-size: 14px; flex-shrink: 0; }
+
+  /* ── DB TABLES ── */
+  .db-collection {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .db-collection-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px;
+    background: var(--green-deep);
+    color: white;
+  }
+  .db-collection-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600;
+    color: var(--green-pale);
+  }
+  .db-collection-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-left: auto;
+  }
+  .db-fields { padding: 0; }
+  .db-field {
+    display: grid;
+    grid-template-columns: 180px 90px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--green-fog);
+    font-size: 13px;
+  }
+  .db-field:last-child { border-bottom: none; }
+  .db-field > div {
+    padding: 10px 16px;
+    border-right: 1px solid var(--green-fog);
+  }
+  .db-field > div:last-child { border-right: none; }
+  .db-field-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    color: var(--green-mid);
+    background: var(--green-fog);
+  }
+  .db-field-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--blue-soft);
+    background: #F0F7FF;
+  }
+  .db-field-desc { color: var(--text-mid); }
+  .db-field.new .db-field-name {
+    color: var(--amber);
+    background: var(--amber-light);
+  }
+  .db-field.new .db-field-desc::after {
+    content: ' ★ 新增';
+    font-size: 11px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #0D1117;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin: 12px 0;
+    box-shadow: var(--shadow-md);
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: #161B22;
+    border-bottom: 1px solid #30363D;
+  }
+  .code-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #8B949E;
+  }
+  .code-lang {
+    font-size: 11px; font-weight: 700;
+    color: #3FB950;
+    background: rgba(63,185,80,0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .code-body {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #E6EDF3;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code-comment { color: #8B949E; }
+  .code-key     { color: #79C0FF; }
+  .code-str     { color: #A5D6FF; }
+  .code-val     { color: #FF7B72; }
+  .code-fn      { color: #D2A8FF; }
+  .code-new     { color: #3FB950; font-weight: 600; }
+
+  /* ── FUNCTION LIST ── */
+  .fn-list { display: flex; flex-direction: column; gap: 10px; }
+  .fn-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 220px 80px 1fr auto;
+    gap: 12px;
+    align-items: start;
+    box-shadow: var(--shadow-sm);
+  }
+  .fn-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--green-deep);
+  }
+  .fn-path {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .fn-method {
+    font-size: 11px; font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+    align-self: flex-start;
+  }
+  .method-new  { background: #D1FAE5; color: #065F46; }
+  .method-mod  { background: #FEF3C7; color: #92400E; }
+  .method-keep { background: #F3F4F6; color: #6B7280; }
+  .fn-desc { font-size: 13px; color: var(--text-mid); }
+  .fn-params {
+    font-size: 11px;
+    color: var(--text-light);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 6px;
+  }
+  .fn-priority {
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+  }
+  .p1 { background: #FFE4E1; color: #9B2335; }
+  .p2 { background: #FFF3CD; color: #856404; }
+  .p3 { background: #E8F5E9; color: #2E7D32; }
+
+  /* ── PAGE STRUCTURE ── */
+  .page-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .page-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .page-card-header {
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .page-card-icon { font-size: 22px; }
+  .page-card-name {
+    font-weight: 700; font-size: 14px;
+    color: var(--green-deep);
+  }
+  .page-card-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-light);
+    margin-top: 1px;
+  }
+  .page-card-body { padding: 0 18px 16px; }
+  .page-feature {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; color: var(--text-mid);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--green-fog);
+  }
+  .page-feature:last-child { border-bottom: none; }
+  .page-feature-dot { color: var(--green-light); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── SPRINT BOARD ── */
+  .sprint-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .sprint-col {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .sprint-col-header {
+    padding: 14px 18px;
+    font-weight: 700; font-size: 13px;
+    color: white;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sprint-1 .sprint-col-header { background: var(--green-mid); }
+  .sprint-2 .sprint-col-header { background: var(--blue-soft); }
+  .sprint-3 .sprint-col-header { background: var(--purple-soft); }
+  .sprint-col-body { padding: 12px; }
+  .sprint-task {
+    background: var(--green-fog);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .sprint-2 .sprint-task { background: #F0F7FF; }
+  .sprint-3 .sprint-task { background: var(--purple-pale); }
+  .sprint-task-title { font-weight: 600; color: var(--text-dark); margin-bottom: 3px; }
+  .sprint-task-sub { color: var(--text-light); }
+  .sprint-task-day {
+    font-size: 10px; font-weight: 700;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+  .sprint-col-footer {
+    padding: 10px 14px;
+    font-size: 11px; color: var(--text-light);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+  }
+
+  /* ── NOTES ── */
+  .note {
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 13px;
+    display: flex; gap: 10px;
+    margin: 12px 0;
+  }
+  .note-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .note-warn { background: #FEF9C3; border-left: 3px solid var(--gold); color: #713F12; }
+  .note-info { background: #EFF6FF; border-left: 3px solid var(--blue-soft); color: #1E3A5F; }
+  .note-tip  { background: var(--green-mist); border-left: 3px solid var(--green-light); color: var(--green-deep); }
+  .note-danger { background: #FEF2F2; border-left: 3px solid var(--red-soft); color: #7F1D1D; }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: var(--text-mid);
+    background: var(--white);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+  .checklist li .chk {
+    width: 18px; height: 18px;
+    border: 2px solid var(--green-pale);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+  }
+  th {
+    background: var(--green-deep);
+    color: white;
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--green-fog);
+    color: var(--text-mid);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--green-fog); }
+  td code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #F0F9F4;
+    color: var(--green-mid);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 20px; }
+    .code-block { page-break-inside: avoid; }
+  }
+
+  /* ── SCROLL NAV ── */
+  html { scroll-behavior: smooth; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--green-pale); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="emoji">🌱</div>
+    <div class="title">菜园模块<br>开发计划</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">概览</div>
+    <a class="nav-item active" href="#overview">
+      <span class="nav-icon">📋</span> 项目概览
+    </a>
+    <a class="nav-item" href="#phases">
+      <span class="nav-icon">🗓️</span> 开发阶段
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">第零步（必做）</div>
+    <a class="nav-item" href="#step0-register">
+      <span class="nav-icon">👤</span> 注册流程改造
+    </a>
+    <a class="nav-item" href="#step0-users">
+      <span class="nav-icon">🗄️</span> users集合改造
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">第一期</div>
+    <a class="nav-item" href="#p1-db">
+      <span class="nav-icon">🗃️</span> 数据库设计
+    </a>
+    <a class="nav-item" href="#p1-fn">
+      <span class="nav-icon">☁️</span> 云函数
+    </a>
+    <a class="nav-item" href="#p1-pages">
+      <span class="nav-icon">📱</span> 页面结构
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">第二期 / 第三期</div>
+    <a class="nav-item" href="#p2">
+      <span class="nav-icon">✅</span> 任务闭环
+    </a>
+    <a class="nav-item" href="#p3">
+      <span class="nav-icon">✨</span> 体验提升
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">参考</div>
+    <a class="nav-item" href="#sprint">
+      <span class="nav-icon">⚡</span> 开发排期
+    </a>
+    <a class="nav-item" href="#notes">
+      <span class="nav-icon">⚠️</span> 注意事项
+    </a>
+    <a class="nav-item" href="#checklist">
+      <span class="nav-icon">☑️</span> 上线清单
+    </a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">微信小程序 · 菜园子模块 · 新增功能</div>
+    <h1>班级共享菜园<br>互动管理模块</h1>
+    <p>在现有阅读记录小程序中新增菜园子模块，让全班家长和孩子共同维护一个虚拟+现实结合的班级菜园，通过任务领取、健康值维护、成长相册打造班级凝聚力。</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span>🏗️</span><span>基于 <strong>微信云开发</strong></span></div>
+      <div class="hero-meta-item"><span>📦</span><span>新增 <strong>4个集合</strong></span></div>
+      <div class="hero-meta-item"><span>☁️</span><span>新增 <strong>8个云函数</strong></span></div>
+      <div class="hero-meta-item"><span>📱</span><span>新增 <strong>4个页面</strong></span></div>
+      <div class="hero-meta-item"><span>🗓️</span><span>预计 <strong>3期开发</strong>，约3周</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ 项目概览 ═══ -->
+  <section class="section" id="overview">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div>
+        <div class="section-title">项目概览</div>
+        <div class="section-subtitle">核心设计决策与技术背景</div>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <div class="card-label">游戏化机制</div>
+        <div class="card-value">班级共同体</div>
+        <div class="card-desc">菜园有一个整体「健康值」，全班孩子共同维护，任务没人认领健康值下降，大家都完成则进入繁荣状态</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">任务颗粒度</div>
+        <div class="card-value">班级任务</div>
+        <div class="card-desc">「本周班级需要浇水2次」，家长自愿认领，每个任务可多个家庭认领，体现共享精神</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">完成核实</div>
+        <div class="card-value">家长拍照</div>
+        <div class="card-desc">家长完成任务后上传1~3张照片，管理员（老师/班委）轻量审核，通过后自动加健康值</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">任务频率</div>
+        <div class="card-value">每周3~5个</div>
+        <div class="card-desc">系统按种植周期预设任务，管理员后台可随时调整增删，固定必选任务+选做任务</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong style="color:var(--green-deep);font-size:14px;">与现有系统的关系</strong>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;">
+        <div>
+          <div style="font-weight:700;color:var(--green-mid);margin-bottom:8px;">✅ 直接复用</div>
+          <div style="color:var(--text-mid);line-height:2;">
+            • <code>users</code> 集合（加3个字段）<br>
+            • <code>achievements</code> 集合（追加菜园成就）<br>
+            • <code>checkAdmin</code> 云函数（权限复用）<br>
+            • <code>pages/register</code>（改造注册流程）<br>
+            • <code>pages/profile</code>（展示菜园积分）<br>
+            • <code>pages/achievements</code>（展示菜园成就）
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;color:var(--amber);margin-bottom:8px;">🆕 全新创建</div>
+          <div style="color:var(--text-mid);line-height:2;">
+            • <code>garden_config</code> 集合<br>
+            • <code>garden_tasks</code> 集合<br>
+            • <code>task_records</code> 集合<br>
+            • <code>garden_photos</code> 集合<br>
+            • <code>pages/garden/*</code> 4个页面<br>
+            • <code>cloudfunctions/garden/*</code> 8个云函数
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note note-warn">
+      <span class="note-icon">⚠️</span>
+      <div><strong>开始前必读：</strong>现有小程序一直是个人使用，现在要开放给30+个家庭。<strong>第零步（注册流程改造）必须在开发菜园模块之前完成</strong>，否则后续所有用户数据都没有孩子姓名和班级信息，任务记录无法关联到具体的人。</div>
+    </div>
+  </section>
+
+  <!-- ═══ 开发阶段 ═══ -->
+  <section class="section" id="phases">
+    <div class="section-header">
+      <div class="section-icon">🗓️</div>
+      <div>
+        <div class="section-title">开发阶段总览</div>
+        <div class="section-subtitle">分三期迭代，每期都是可独立使用的版本</div>
+      </div>
+    </div>
+
+    <div class="phase-list">
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot" style="background:#FEF3C7;font-size:18px;">🔧</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-header">
+            <span class="phase-name">第零步：注册流程改造</span>
+            <span class="phase-time">开始前必做，约2小时</span>
+            <span class="phase-status status-now">⚡ 立即开始</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="phase-task"><span class="task-check">▸</span>修改 <code>user/register</code> 云函数，新增 child_name、class_id 字段，固定 role 为 parent</div>
+            <div class="phase-task"><span class="task-check">▸</span>修改 <code>pages/register</code> 注册页面，加入「孩子姓名」必填输入框</div>
+            <div class="phase-task"><span class="task-check">▸</span>手动在云控制台给自己的 users 记录补充 child_name 和 class_id 字段</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot" style="background:#D1FAE5;">🌱</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-header">
+            <span class="phase-name">第一期：基础可用</span>
+            <span class="phase-time">约 1~2 周</span>
+            <span class="phase-status status-next">第一期</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="phase-task"><span class="task-check">▸</span>建立4个新数据库集合，初始化菜园数据</div>
+            <div class="phase-task"><span class="task-check">▸</span>开发菜园主页：健康值动态显示 + 当前种植阶段 + 本周任务入口</div>
+            <div class="phase-task"><span class="task-check">▸</span>开发任务大厅：任务列表 + 认领功能</div>
+            <div class="phase-task"><span class="task-check">▸</span>管理员后台：手动调整健康值、发布/修改任务</div>
+            <div class="phase-task"><span class="task-check">▸</span><strong>此时可以发给家长使用：</strong>看菜园状态 + 认领任务</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot" style="background:#DBEAFE;">✅</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-header">
+            <span class="phase-name">第二期：任务闭环</span>
+            <span class="phase-time">约 1 周</span>
+            <span class="phase-status status-later">第二期</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="phase-task"><span class="task-check">▸</span>家长拍照上传：完成任务后上传照片 + 备注</div>
+            <div class="phase-task"><span class="task-check">▸</span>管理员审核页面：一键通过/驳回</div>
+            <div class="phase-task"><span class="task-check">▸</span>审核通过后自动加健康值 + 更新用户积分</div>
+            <div class="phase-task"><span class="task-check">▸</span>健康值低于50时推送微信消息提醒全班家长</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot" style="background:#EDE9FF;">✨</div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-header">
+            <span class="phase-name">第三期：体验提升</span>
+            <span class="phase-time">约 1 周</span>
+            <span class="phase-status status-later">第三期</span>
+          </div>
+          <div class="phase-tasks">
+            <div class="phase-task"><span class="task-check">▸</span>成长相册：按周分组的时间轴展示</div>
+            <div class="phase-task"><span class="task-check">▸</span>健康值状态动画（欣欣向荣/有点疲惫/紧急求救等5种状态）</div>
+            <div class="phase-task"><span class="task-check">▸</span>孩子个人积分展示 + 菜园成就解锁</div>
+            <div class="phase-task"><span class="task-check">▸</span>健康值定时自动衰减（云函数定时触发器）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 第零步：注册改造 ═══ -->
+  <section class="section" id="step0-register">
+    <div class="section-header">
+      <div class="section-icon">👤</div>
+      <div>
+        <div class="section-title">第零步 · 注册云函数改造</div>
+        <div class="section-subtitle">cloudfunctions/user/register/index.js — 改动约15行</div>
+      </div>
+    </div>
+
+    <div class="note note-info">
+      <span class="note-icon">ℹ️</span>
+      <div>现有 register 云函数允许前端传入 <code>role</code> 字段，这是安全隐患。改造时同时修复这个问题：<strong>新注册用户 role 固定为 parent，不接受前端传入。</strong></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">cloudfunctions/user/register/index.js — 修改部分</span>
+        <span class="code-lang">JavaScript</span>
+      </div>
+      <div class="code-body"><span class="code-comment">// ── 第1处修改：参数解构，新增 child_name，移除 role 接收 ──</span>
+<span class="code-comment">// 原来：</span>
+<span class="code-comment">// const { anonymousName, avatarIndex, grade = '', role = 'student' } = event</span>
+<span class="code-comment">// 改为：</span>
+<span class="code-key">const</span> { anonymousName, avatarIndex, grade = <span class="code-str">''</span>, child_name = <span class="code-str">''</span> } = event
+
+<span class="code-comment">// ── 第2处修改：child_name 验证 ──</span>
+<span class="code-key">const</span> finalChildName = child_name.trim()
+<span class="code-key">if</span> (finalChildName === <span class="code-str">''</span>) {
+  <span class="code-key">return</span> {
+    success: <span class="code-val">false</span>,
+    code: <span class="code-str">'CHILD_NAME_REQUIRED'</span>,
+    message: <span class="code-str">'请填写孩子的姓名'</span>
+  }
+}
+<span class="code-key">if</span> (finalChildName.length > <span class="code-val">10</span>) {
+  <span class="code-key">return</span> {
+    success: <span class="code-val">false</span>,
+    code: <span class="code-str">'CHILD_NAME_TOO_LONG'</span>,
+    message: <span class="code-str">'孩子姓名不能超过10个字符'</span>
+  }
+}
+
+<span class="code-comment">// ── 第3处修改：userData 新增3个字段，role 固定为 parent ──</span>
+<span class="code-key">const</span> userData = {
+  openid: OPENID,
+  anonymousName: finalName,
+  avatarIndex: avatarIndexNum,
+  <span class="code-new">role: 'parent',           // ★ 固定，不再接受前端传入</span>
+  <span class="code-new">child_name: finalChildName, // ★ 新增</span>
+  <span class="code-new">class_id: '2026_class1',  // ★ 新增，暂时写死</span>
+  <span class="code-new">real_name: '',            // ★ 新增，选填，可后续完善</span>
+  grade: grade,
+  points: <span class="code-val">0</span>,
+  achievements: [],
+  <span class="code-comment">// ... 其余字段不变</span>
+}</div>
+    </div>
+
+    <div class="note note-tip">
+      <span class="note-icon">💡</span>
+      <div>改完云函数后记得<strong>重新部署</strong>：微信开发者工具 → 右键云函数目录 → 上传并部署（云端安装依赖）。</div>
+    </div>
+  </section>
+
+  <!-- ═══ 第零步：users 集合 ═══ -->
+  <section class="section" id="step0-users">
+    <div class="section-header">
+      <div class="section-icon">🗄️</div>
+      <div>
+        <div class="section-title">第零步 · users 集合字段改造</div>
+        <div class="section-subtitle">在现有集合基础上新增3个字段，不影响已有数据</div>
+      </div>
+    </div>
+
+    <div class="db-collection">
+      <div class="db-collection-header">
+        <span>🗃️</span>
+        <span class="db-collection-name">users</span>
+        <span class="db-collection-desc">现有集合，新增3个字段</span>
+      </div>
+      <div class="db-fields">
+        <div class="db-field"><div class="db-field-name">openid</div><div class="db-field-type">string</div><div class="db-field-desc">微信openid（唯一），已有</div></div>
+        <div class="db-field"><div class="db-field-name">anonymousName</div><div class="db-field-type">string</div><div class="db-field-desc">匿名昵称，已有</div></div>
+        <div class="db-field"><div class="db-field-name">role</div><div class="db-field-type">string</div><div class="db-field-desc">角色，新注册固定为 parent，已有</div></div>
+        <div class="db-field new"><div class="db-field-name">child_name</div><div class="db-field-type">string</div><div class="db-field-desc">孩子姓名，注册时必填，用于任务记录展示</div></div>
+        <div class="db-field new"><div class="db-field-name">class_id</div><div class="db-field-type">string</div><div class="db-field-desc">班级ID，暂写死 "2026_class1"，方便未来多班扩展</div></div>
+        <div class="db-field new"><div class="db-field-name">real_name</div><div class="db-field-type">string</div><div class="db-field-desc">家长称呼（选填），如"张明妈妈"，可在个人中心后续填写</div></div>
+        <div class="db-field"><div class="db-field-name">points</div><div class="db-field-type">number</div><div class="db-field-desc">积分，读书+菜园共用，已有</div></div>
+        <div class="db-field"><div class="db-field-name">achievements</div><div class="db-field-type">array</div><div class="db-field-desc">成就列表，读书+菜园共用，已有</div></div>
+      </div>
+    </div>
+
+    <div class="note note-warn">
+      <span class="note-icon">⚠️</span>
+      <div><strong>你自己的记录需要手动补充：</strong>云开发控制台 → 数据库 → users 集合 → 找到你的记录（openid 是 opj1C3VBfI94VgN5A_H41qrzqRm0）→ 手动添加 <code>child_name</code>、<code>class_id: "2026_class1"</code>、<code>real_name</code> 三个字段。</div>
+    </div>
+  </section>
+
+  <!-- ═══ 第一期：数据库 ═══ -->
+  <section class="section" id="p1-db">
+    <div class="section-header">
+      <div class="section-icon">🗃️</div>
+      <div>
+        <div class="section-title">第一期 · 数据库设计</div>
+        <div class="section-subtitle">新增4个集合，全部在云开发控制台手动创建后再开发</div>
+      </div>
+    </div>
+
+    <!-- garden_config -->
+    <div class="db-collection">
+      <div class="db-collection-header">
+        <span>⚙️</span>
+        <span class="db-collection-name">garden_config</span>
+        <span class="db-collection-desc">菜园全局状态，只有1条记录</span>
+      </div>
+      <div class="db-fields">
+        <div class="db-field"><div class="db-field-name">health_point</div><div class="db-field-type">number</div><div class="db-field-desc">当前健康值 0~100，初始值设为 80</div></div>
+        <div class="db-field"><div class="db-field-name">current_stage</div><div class="db-field-type">string</div><div class="db-field-desc">当前阶段名称，如"开荒整地期"</div></div>
+        <div class="db-field"><div class="db-field-name">stage_desc</div><div class="db-field-type">string</div><div class="db-field-desc">阶段描述，显示在主页给家长和孩子看</div></div>
+        <div class="db-field"><div class="db-field-name">stage_image</div><div class="db-field-type">string</div><div class="db-field-desc">阶段配图的云存储URL（可先用占位图）</div></div>
+        <div class="db-field"><div class="db-field-name">week_no</div><div class="db-field-type">number</div><div class="db-field-desc">当前第几周，从1开始，管理员手动更新</div></div>
+        <div class="db-field"><div class="db-field-name">last_updated</div><div class="db-field-type">date</div><div class="db-field-desc">最后更新时间</div></div>
+      </div>
+    </div>
+
+    <!-- garden_tasks -->
+    <div class="db-collection">
+      <div class="db-collection-header">
+        <span>📋</span>
+        <span class="db-collection-name">garden_tasks</span>
+        <span class="db-collection-desc">任务库，管理员发布和管理</span>
+      </div>
+      <div class="db-fields">
+        <div class="db-field"><div class="db-field-name">title</div><div class="db-field-type">string</div><div class="db-field-desc">任务名称，如"本周浇水第1次"</div></div>
+        <div class="db-field"><div class="db-field-name">icon</div><div class="db-field-type">string</div><div class="db-field-desc">任务图标 emoji，如 💧 🌿 📸</div></div>
+        <div class="db-field"><div class="db-field-name">type</div><div class="db-field-type">string</div><div class="db-field-desc">required（必选）/ optional（选做）</div></div>
+        <div class="db-field"><div class="db-field-name">health_value</div><div class="db-field-type">number</div><div class="db-field-desc">完成后恢复的健康值，如 15</div></div>
+        <div class="db-field"><div class="db-field-name">points_reward</div><div class="db-field-type">number</div><div class="db-field-desc">完成后用户获得的积分，如 10</div></div>
+        <div class="db-field"><div class="db-field-name">week_no</div><div class="db-field-type">number</div><div class="db-field-desc">属于第几周的任务</div></div>
+        <div class="db-field"><div class="db-field-name">deadline</div><div class="db-field-type">date</div><div class="db-field-desc">任务截止时间</div></div>
+        <div class="db-field"><div class="db-field-name">max_claim</div><div class="db-field-type">number</div><div class="db-field-desc">最多几个家庭可认领，0表示不限制</div></div>
+        <div class="db-field"><div class="db-field-name">estimated_time</div><div class="db-field-type">string</div><div class="db-field-desc">预计耗时，如"约30分钟"</div></div>
+        <div class="db-field"><div class="db-field-name">status</div><div class="db-field-type">string</div><div class="db-field-desc">open（开放）/ closed（关闭）/ expired（已过期）</div></div>
+        <div class="db-field"><div class="db-field-name">created_by</div><div class="db-field-type">string</div><div class="db-field-desc">发布者 openid</div></div>
+        <div class="db-field"><div class="db-field-name">created_at</div><div class="db-field-type">date</div><div class="db-field-desc">发布时间</div></div>
+      </div>
+    </div>
+
+    <!-- task_records -->
+    <div class="db-collection">
+      <div class="db-collection-header">
+        <span>📝</span>
+        <span class="db-collection-name">task_records</span>
+        <span class="db-collection-desc">任务认领和完成记录，核心业务表</span>
+      </div>
+      <div class="db-fields">
+        <div class="db-field"><div class="db-field-name">task_id</div><div class="db-field-type">string</div><div class="db-field-desc">关联的任务 _id</div></div>
+        <div class="db-field"><div class="db-field-name">user_id</div><div class="db-field-type">string</div><div class="db-field-desc">认领家长的 users._id</div></div>
+        <div class="db-field"><div class="db-field-name">openid</div><div class="db-field-type">string</div><div class="db-field-desc">认领家长的 openid，便于权限校验</div></div>
+        <div class="db-field"><div class="db-field-name">child_name</div><div class="db-field-type">string</div><div class="db-field-desc">孩子姓名（冗余存储，避免联表查询）</div></div>
+        <div class="db-field"><div class="db-field-name">claimed_at</div><div class="db-field-type">date</div><div class="db-field-desc">认领时间</div></div>
+        <div class="db-field"><div class="db-field-name">photos</div><div class="db-field-type">array</div><div class="db-field-desc">完成照片URL数组，最多3张</div></div>
+        <div class="db-field"><div class="db-field-name">note</div><div class="db-field-type">string</div><div class="db-field-desc">完成备注，选填</div></div>
+        <div class="db-field"><div class="db-field-name">submitted_at</div><div class="db-field-type">date</div><div class="db-field-desc">提交完成的时间</div></div>
+        <div class="db-field"><div class="db-field-name">status</div><div class="db-field-type">string</div><div class="db-field-desc">claimed（已认领）/ submitted（待审核）/ approved（已通过）/ rejected（已驳回）</div></div>
+        <div class="db-field"><div class="db-field-name">approved_at</div><div class="db-field-type">date</div><div class="db-field-desc">审核通过时间</div></div>
+        <div class="db-field"><div class="db-field-name">approved_by</div><div class="db-field-type">string</div><div class="db-field-desc">审核人 openid</div></div>
+      </div>
+    </div>
+
+    <!-- garden_photos -->
+    <div class="db-collection">
+      <div class="db-collection-header">
+        <span>📸</span>
+        <span class="db-collection-name">garden_photos</span>
+        <span class="db-collection-desc">成长相册，独立于任务记录</span>
+      </div>
+      <div class="db-fields">
+        <div class="db-field"><div class="db-field-name">image_url</div><div class="db-field-type">string</div><div class="db-field-desc">图片云存储URL</div></div>
+        <div class="db-field"><div class="db-field-name">uploader_openid</div><div class="db-field-type">string</div><div class="db-field-desc">上传者 openid</div></div>
+        <div class="db-field"><div class="db-field-name">child_name</div><div class="db-field-type">string</div><div class="db-field-desc">上传者孩子姓名</div></div>
+        <div class="db-field"><div class="db-field-name">week_no</div><div class="db-field-type">number</div><div class="db-field-desc">第几周拍摄，用于时间轴分组</div></div>
+        <div class="db-field"><div class="db-field-name">caption</div><div class="db-field-type">string</div><div class="db-field-desc">图片说明，选填</div></div>
+        <div class="db-field"><div class="db-field-name">taken_at</div><div class="db-field-type">date</div><div class="db-field-desc">拍摄/上传时间</div></div>
+        <div class="db-field"><div class="db-field-name">source</div><div class="db-field-type">string</div><div class="db-field-desc">来源：task（任务完成时同步）/ manual（手动上传）</div></div>
+      </div>
+    </div>
+
+    <div class="note note-info">
+      <span class="note-icon">ℹ️</span>
+      <div>集合需要在<strong>微信云开发控制台</strong>先手动创建，才能通过代码操作。创建路径：控制台 → 数据库 → 添加集合。</div>
+    </div>
+  </section>
+
+  <!-- ═══ 第一期：云函数 ═══ -->
+  <section class="section" id="p1-fn">
+    <div class="section-header">
+      <div class="section-icon">☁️</div>
+      <div>
+        <div class="section-title">第一期 · 云函数设计</div>
+        <div class="section-subtitle">新增8个云函数，全部放在 cloudfunctions/garden/ 目录下</div>
+      </div>
+    </div>
+
+    <div class="fn-list">
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/getStatus</div>
+          <div class="fn-path">cloudfunctions/garden/getStatus/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">获取菜园当前状态，供主页展示。返回健康值、当前阶段、阶段描述、本周任务概览（数量、是否有未认领）。</div>
+          <div class="fn-params">入参：无 | 出参：{ health_point, current_stage, stage_desc, stage_image, week_no, task_summary }</div>
+        </div>
+        <span class="fn-priority p1">P1</span>
+      </div>
+
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/getTasks</div>
+          <div class="fn-path">cloudfunctions/garden/getTasks/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">获取本周任务列表，包含每个任务的认领状态和当前用户是否已认领。任务大厅和主页卡片均调用此接口。</div>
+          <div class="fn-params">入参：{ week_no? } | 出参：{ tasks: [...], user_claimed_ids: [...] }</div>
+        </div>
+        <span class="fn-priority p1">P1</span>
+      </div>
+
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/claimTask</div>
+          <div class="fn-path">cloudfunctions/garden/claimTask/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">认领任务。需校验：任务是否存在、是否已过期、用户是否已认领过同一任务。认领成功后在 task_records 创建记录（status: claimed）。</div>
+          <div class="fn-params">入参：{ task_id } | 出参：{ success, record_id }</div>
+        </div>
+        <span class="fn-priority p1">P1</span>
+      </div>
+
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/submitTask</div>
+          <div class="fn-path">cloudfunctions/garden/submitTask/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">提交任务完成。上传照片后调用此接口，将 task_records 状态改为 submitted，通知管理员审核。照片通过 wx.cloud.uploadFile 上传到云存储，此处只接收 URL 数组。</div>
+          <div class="fn-params">入参：{ record_id, photos: [url], note? } | 出参：{ success }</div>
+        </div>
+        <span class="fn-priority p1">P1</span>
+      </div>
+
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/approveTask</div>
+          <div class="fn-path">cloudfunctions/garden/approveTask/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">管理员审核任务。通过时：更新 task_records 状态为 approved，将任务对应的 health_value 加到 garden_config.health_point（不超过100），将 points_reward 加到用户积分，同步照片到 garden_photos。驳回时：状态改为 rejected。需调用 checkAdmin 验证权限。</div>
+          <div class="fn-params">入参：{ record_id, action: 'approve'|'reject', reason? } | 出参：{ success, new_health }</div>
+        </div>
+        <span class="fn-priority p1">P1</span>
+      </div>
+
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/updateConfig</div>
+          <div class="fn-path">cloudfunctions/garden/updateConfig/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">管理员更新菜园状态（阶段、描述、配图、手动调整健康值等）。管理后台调用。需验证 admin 权限。</div>
+          <div class="fn-params">入参：{ health_point?, current_stage?, stage_desc?, stage_image?, week_no? } | 出参：{ success }</div>
+        </div>
+        <span class="fn-priority p1">P1</span>
+      </div>
+
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/publishTask</div>
+          <div class="fn-path">cloudfunctions/garden/publishTask/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">管理员发布/编辑任务。支持新建任务和修改已有任务（标题、图标、类型、健康值、截止时间等）。需验证 admin 权限。</div>
+          <div class="fn-params">入参：{ task_id?(有则编辑), title, icon, type, health_value, deadline, ... } | 出参：{ success, task_id }</div>
+        </div>
+        <span class="fn-priority p1">P1</span>
+      </div>
+
+      <div class="fn-item">
+        <div>
+          <div class="fn-name">garden/getPhotos</div>
+          <div class="fn-path">cloudfunctions/garden/getPhotos/</div>
+        </div>
+        <div class="fn-method method-new">新增</div>
+        <div>
+          <div class="fn-desc">获取成长相册，按周分组返回。第三期使用，第一期可暂不开发。</div>
+          <div class="fn-params">入参：{ page?, page_size? } | 出参：{ photos_by_week: { week1: [...], week2: [...] } }</div>
+        </div>
+        <span class="fn-priority p3">P3</span>
+      </div>
+    </div>
+
+    <div class="note note-tip">
+      <span class="note-icon">💡</span>
+      <div>云函数目录结构：每个云函数是一个独立文件夹，包含 <code>index.js</code> 和 <code>package.json</code>。参考现有 <code>cloudfunctions/challenge/submit/</code> 的结构来创建。<strong>记得先在控制台手动创建云函数，再上传代码。</strong></div>
+    </div>
+  </section>
+
+  <!-- ═══ 第一期：页面 ═══ -->
+  <section class="section" id="p1-pages">
+    <div class="section-header">
+      <div class="section-icon">📱</div>
+      <div>
+        <div class="section-title">第一期 · 页面结构</div>
+        <div class="section-subtitle">新增4个页面，在 app.json 的 pages 数组中注册</div>
+      </div>
+    </div>
+
+    <div class="note note-warn">
+      <span class="note-icon">⚠️</span>
+      <div>新增页面后需要在 <code>app.json</code> 的 <code>pages</code> 数组中添加路径，并在 <code>tabBar</code>（如果有）中配置入口。菜园模块建议作为独立 Tab 与读书 Tab 并列。</div>
+    </div>
+
+    <div class="page-list">
+      <div class="page-card">
+        <div class="page-card-header" style="background:var(--green-fog);">
+          <span class="page-card-icon">🌱</span>
+          <div>
+            <div class="page-card-name">菜园主页</div>
+            <div class="page-card-path">pages/garden/index</div>
+          </div>
+        </div>
+        <div class="page-card-body">
+          <div class="page-feature"><span class="page-feature-dot">●</span>菜园状态大图/动画（对应健康值5种状态）</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>健康值进度条（带动画，颜色随状态变化）</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>当前种植阶段名称 + 描述文字</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>本周任务卡片（最多3个，显示认领状态）</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>「查看全部任务」入口 → 跳转任务大厅</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>相册最新3张缩略图 → 跳转成长相册</div>
+        </div>
+      </div>
+
+      <div class="page-card">
+        <div class="page-card-header" style="background:var(--amber-light);">
+          <span class="page-card-icon">📋</span>
+          <div>
+            <div class="page-card-name">任务大厅</div>
+            <div class="page-card-path">pages/garden/tasks</div>
+          </div>
+        </div>
+        <div class="page-card-body">
+          <div class="page-feature"><span class="page-feature-dot">●</span>本周必选任务列表（带健康值贡献标注）</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>选做任务列表</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>每个任务显示：认领数/名额、截止时间、预计耗时</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>「认领」按钮（已认领则显示「已认领 ✓」）</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>任务详情弹窗（点击任务卡片展开）</div>
+        </div>
+      </div>
+
+      <div class="page-card">
+        <div class="page-card-header" style="background:#F0F7FF;">
+          <span class="page-card-icon">✅</span>
+          <div>
+            <div class="page-card-name">我的任务</div>
+            <div class="page-card-path">pages/garden/my-tasks</div>
+          </div>
+        </div>
+        <div class="page-card-body">
+          <div class="page-feature"><span class="page-feature-dot">●</span>Tab切换：待完成 / 待审核 / 已完成</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>待完成列表：显示认领的任务 + 「提交完成」按钮</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>提交完成：wx.chooseImage 选图 → 上传云存储 → 调用 submitTask</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>待审核：显示已提交等待管理员审核的任务</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>已完成：历史完成记录 + 获得积分展示</div>
+        </div>
+      </div>
+
+      <div class="page-card">
+        <div class="page-card-header" style="background:var(--purple-pale);">
+          <span class="page-card-icon">📸</span>
+          <div>
+            <div class="page-card-name">成长相册</div>
+            <div class="page-card-path">pages/garden/photos</div>
+          </div>
+        </div>
+        <div class="page-card-body">
+          <div class="page-feature"><span class="page-feature-dot">●</span>按周分组的时间轴展示（第1周、第2周…）</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>每张照片显示：图片、上传者孩子姓名、说明</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>点击照片全屏预览</div>
+          <div class="page-feature"><span class="page-feature-dot">●</span>管理员可手动上传照片（不通过任务）</div>
+          <div style="padding:5px 0;font-size:11px;color:var(--text-light);">⏰ 第三期开发</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <strong style="font-size:14px;color:var(--green-deep);">app.json 需要修改的地方</strong>
+      <div class="code-block" style="margin-top:10px;">
+        <div class="code-header">
+          <span class="code-filename">app.json — 新增页面和tabBar配置</span>
+          <span class="code-lang">JSON</span>
+        </div>
+        <div class="code-body"><span class="code-comment">// pages 数组新增：</span>
+<span class="code-new">"pages/garden/index",
+"pages/garden/tasks",
+"pages/garden/my-tasks",
+"pages/garden/photos",</span>
+
+<span class="code-comment">// tabBar 建议配置（如果要做底部Tab）：</span>
+{
+  <span class="code-key">"tabBar"</span>: {
+    <span class="code-key">"list"</span>: [
+      { <span class="code-key">"pagePath"</span>: <span class="code-str">"pages/index/index"</span>, <span class="code-key">"text"</span>: <span class="code-str">"读书"</span> },
+      <span class="code-new">{ "pagePath": "pages/garden/index", "text": "菜园", "iconPath": "..." }</span>
+    ]
+  }
+}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 健康值设计 ═══ -->
+  <section class="section" id="p2">
+    <div class="section-header">
+      <div class="section-icon">✅</div>
+      <div>
+        <div class="section-title">第二期 · 健康值系统 & 任务闭环</div>
+        <div class="section-subtitle">健康值运作逻辑 + 审核流程 + 消息推送</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong style="color:var(--green-deep);font-size:14px;">健康值运作规则</strong>
+      <table style="margin-top:12px;">
+        <thead><tr><th>事件</th><th>健康值变化</th><th>触发时机</th></tr></thead>
+        <tbody>
+          <tr><td>必选任务完成（审核通过）</td><td><code>+15 ~ +20</code></td><td>管理员审核通过时</td></tr>
+          <tr><td>选做任务完成（审核通过）</td><td><code>+5 ~ +10</code></td><td>管理员审核通过时</td></tr>
+          <tr><td>全周任务都完成</td><td><code>额外 +10</code></td><td>最后一个任务通过时检测</td></tr>
+          <tr><td>必选任务未认领超48小时</td><td><code>-5</code></td><td>定时云函数每天检查（第三期）</td></tr>
+          <tr><td>每周自然衰减</td><td><code>-20</code></td><td>每周一定时触发（第三期）</td></tr>
+          <tr><td>管理员手动调整</td><td>任意值</td><td>后台 updateConfig 接口</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;" class="card">
+      <strong style="color:var(--green-deep);font-size:14px;">5种健康值状态</strong>
+      <table style="margin-top:12px;">
+        <thead><tr><th>分值区间</th><th>状态名称</th><th>显示颜色</th><th>孩子看到的描述</th></tr></thead>
+        <tbody>
+          <tr><td><code>90~100</code></td><td>🌟 欣欣向荣</td><td>深绿 #2E7D32</td><td>菜园超级开心，蔬菜们茁壮成长！</td></tr>
+          <tr><td><code>70~89</code></td><td>🌿 生长良好</td><td>中绿 #43A047</td><td>菜园状态不错，继续加油！</td></tr>
+          <tr><td><code>50~69</code></td><td>🥱 有点疲惫</td><td>黄绿 #9CCC65</td><td>菜园有点渴了，快来帮帮它！</td></tr>
+          <tr><td><code>30~49</code></td><td>😟 需要关爱</td><td>橙色 #FF7043</td><td>菜园在哭泣，小农夫们快出动！</td></tr>
+          <tr><td><code>0~29</code></td><td>🆘 紧急求救</td><td>红色 #E53935</td><td>菜园快撑不住了！全班紧急任务！</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;">
+      <strong style="font-size:14px;color:var(--green-deep);">审核流程（approveTask 云函数核心逻辑）</strong>
+      <div class="code-block" style="margin-top:10px;">
+        <div class="code-header">
+          <span class="code-filename">cloudfunctions/garden/approveTask/index.js — 核心逻辑</span>
+          <span class="code-lang">JavaScript</span>
+        </div>
+        <div class="code-body"><span class="code-comment">// 审核通过时的完整流程</span>
+<span class="code-key">if</span> (action === <span class="code-str">'approve'</span>) {
+
+  <span class="code-comment">// 1. 更新 task_records 状态</span>
+  <span class="code-key">await</span> db.collection(<span class="code-str">'task_records'</span>).doc(record_id).update({
+    data: { status: <span class="code-str">'approved'</span>, approved_at: db.serverDate(), approved_by: OPENID }
+  })
+
+  <span class="code-comment">// 2. 获取任务的 health_value 和 points_reward</span>
+  <span class="code-key">const</span> task = <span class="code-key">await</span> db.collection(<span class="code-str">'garden_tasks'</span>).doc(record.task_id).get()
+
+  <span class="code-comment">// 3. 更新菜园健康值（不超过100）</span>
+  <span class="code-key">const</span> config = <span class="code-key">await</span> db.collection(<span class="code-str">'garden_config'</span>).limit(<span class="code-val">1</span>).get()
+  <span class="code-key">const</span> newHealth = <span class="code-fn">Math.min</span>(<span class="code-val">100</span>, config.data[<span class="code-val">0</span>].health_point + task.data.health_value)
+  <span class="code-key">await</span> db.collection(<span class="code-str">'garden_config'</span>).doc(config.data[<span class="code-val">0</span>]._id).update({
+    data: { health_point: newHealth, last_updated: db.serverDate() }
+  })
+
+  <span class="code-comment">// 4. 更新用户积分</span>
+  <span class="code-key">await</span> db.collection(<span class="code-str">'users'</span>).where({ openid: record.openid }).update({
+    data: { points: db.command.inc(task.data.points_reward) }
+  })
+
+  <span class="code-comment">// 5. 同步照片到 garden_photos（如果有照片）</span>
+  <span class="code-key">if</span> (record.photos && record.photos.length > <span class="code-val">0</span>) {
+    <span class="code-key">for</span> (<span class="code-key">const</span> url <span class="code-key">of</span> record.photos) {
+      <span class="code-key">await</span> db.collection(<span class="code-str">'garden_photos'</span>).add({
+        data: { image_url: url, uploader_openid: record.openid,
+                child_name: record.child_name, week_no: currentWeek,
+                source: <span class="code-str">'task'</span>, taken_at: db.serverDate() }
+      })
+    }
+  }
+}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 第三期 ═══ -->
+  <section class="section" id="p3">
+    <div class="section-header">
+      <div class="section-icon">✨</div>
+      <div>
+        <div class="section-title">第三期 · 体验提升</div>
+        <div class="section-subtitle">动画、定时器、成就系统</div>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <div class="card-label">健康值自动衰减</div>
+        <div class="card-value" style="font-size:16px;">定时云函数</div>
+        <div class="card-desc">在微信云开发控制台配置定时触发器，每周一 00:00 触发 garden/scheduleDecay 云函数，自动扣除20点健康值</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">消息推送提醒</div>
+        <div class="card-value" style="font-size:16px;">订阅消息</div>
+        <div class="card-desc">健康值低于50时，通过微信「订阅消息」推送提醒全班家长。需要在微信公众平台申请订阅消息模板</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">菜园成就</div>
+        <div class="card-value" style="font-size:16px;">追加到 achievements</div>
+        <div class="card-desc">新增成就：浇水达人（完成5次浇水）、丰收英雄（参与收获）、全勤小农夫（连续4周有任务）等</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">成长相册</div>
+        <div class="card-value" style="font-size:16px;">时间轴展示</div>
+        <div class="card-desc">按周分组，每周一个节点，展示该周上传的照片和菜园状态快照，记录从开荒到收获的完整历程</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 开发排期 ═══ -->
+  <section class="section" id="sprint">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div>
+        <div class="section-title">开发排期建议</div>
+        <div class="section-subtitle">单人开发，利用碎片时间，约3周完成三期</div>
+      </div>
+    </div>
+
+    <div class="sprint-grid">
+      <div class="sprint-col sprint-1">
+        <div class="sprint-col-header">🌱 第一期（第1~2周）</div>
+        <div class="sprint-col-body">
+          <div class="sprint-task">
+            <div class="sprint-task-title">第零步：注册流程</div>
+            <div class="sprint-task-sub">改云函数 + 改注册页面</div>
+            <div class="sprint-task-day">第1天 ⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">创建数据库集合</div>
+            <div class="sprint-task-sub">控制台建4个集合 + 初始化数据</div>
+            <div class="sprint-task-day">第1天 ⏱约1小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">getStatus + updateConfig 云函数</div>
+            <div class="sprint-task-sub">菜园状态读写</div>
+            <div class="sprint-task-day">第2天 ⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">菜园主页 UI</div>
+            <div class="sprint-task-sub">健康值进度条 + 阶段展示</div>
+            <div class="sprint-task-day">第3~4天 ⏱约3小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">getTasks + claimTask 云函数</div>
+            <div class="sprint-task-sub">任务读取和认领</div>
+            <div class="sprint-task-day">第5天 ⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">任务大厅页面</div>
+            <div class="sprint-task-sub">任务列表 + 认领交互</div>
+            <div class="sprint-task-day">第6~7天 ⏱约3小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">管理后台页面</div>
+            <div class="sprint-task-sub">调健康值 + 发布任务</div>
+            <div class="sprint-task-day">第8~9天 ⏱约3小时</div>
+          </div>
+        </div>
+        <div class="sprint-col-footer">
+          <span>✅ 完成后可发给家长</span>
+          <span>约 16 小时</span>
+        </div>
+      </div>
+
+      <div class="sprint-col sprint-2">
+        <div class="sprint-col-header">✅ 第二期（第2~3周）</div>
+        <div class="sprint-col-body">
+          <div class="sprint-task">
+            <div class="sprint-task-title">submitTask 云函数</div>
+            <div class="sprint-task-sub">提交完成 + 照片上传逻辑</div>
+            <div class="sprint-task-day">第10天 ⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">「我的任务」页面</div>
+            <div class="sprint-task-sub">待完成/待审核/已完成Tab</div>
+            <div class="sprint-task-day">第11~12天 ⏱约3小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">照片上传交互</div>
+            <div class="sprint-task-sub">wx.chooseImage + 上传云存储</div>
+            <div class="sprint-task-day">第13天 ⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">approveTask 云函数</div>
+            <div class="sprint-task-sub">审核 + 加健康值 + 加积分</div>
+            <div class="sprint-task-day">第14天 ⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">管理员审核页面</div>
+            <div class="sprint-task-sub">待审核列表 + 一键通过/驳回</div>
+            <div class="sprint-task-day">第15天 ⏱约2小时</div>
+          </div>
+        </div>
+        <div class="sprint-col-footer">
+          <span>✅ 任务完整闭环</span>
+          <span>约 11 小时</span>
+        </div>
+      </div>
+
+      <div class="sprint-col sprint-3">
+        <div class="sprint-col-header">✨ 第三期（第3周后）</div>
+        <div class="sprint-col-body">
+          <div class="sprint-task">
+            <div class="sprint-task-title">成长相册页面</div>
+            <div class="sprint-task-sub">时间轴 + 全屏预览</div>
+            <div class="sprint-task-day">⏱约3小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">健康值动画</div>
+            <div class="sprint-task-sub">5种状态对应不同动画效果</div>
+            <div class="sprint-task-day">⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">定时衰减云函数</div>
+            <div class="sprint-task-sub">控制台配置定时触发器</div>
+            <div class="sprint-task-day">⏱约1小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">菜园成就</div>
+            <div class="sprint-task-sub">新增成就 + 解锁逻辑</div>
+            <div class="sprint-task-day">⏱约2小时</div>
+          </div>
+          <div class="sprint-task">
+            <div class="sprint-task-title">订阅消息推送</div>
+            <div class="sprint-task-sub">低健康值提醒（需申请模板）</div>
+            <div class="sprint-task-day">⏱约2小时</div>
+          </div>
+        </div>
+        <div class="sprint-col-footer">
+          <span>✨ 体验完整版</span>
+          <span>约 10 小时</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 注意事项 ═══ -->
+  <section class="section" id="notes">
+    <div class="section-header">
+      <div class="section-icon">⚠️</div>
+      <div>
+        <div class="section-title">开发注意事项</div>
+        <div class="section-subtitle">踩坑预警，参考现有项目经验</div>
+      </div>
+    </div>
+
+    <div class="note note-danger">
+      <span class="note-icon">🚨</span>
+      <div><strong>云函数部署必须先在控制台手动创建：</strong>每个新云函数（garden/getStatus、garden/getTasks等）都必须先在微信云开发控制台创建空函数，再通过开发者工具上传代码。跳过这步会导致部署失败。</div>
+    </div>
+
+    <div class="note note-warn">
+      <span class="note-icon">⚠️</span>
+      <div><strong>数据库单次查询20条限制：</strong>已在现有代码中有批量查询方案（pages/list/list.js），任务记录查询如果超过20条需要分页。初期30个家庭任务量不大，可以先不处理，后期再加分页。</div>
+    </div>
+
+    <div class="note note-warn">
+      <span class="note-icon">⚠️</span>
+      <div><strong>garden_config 只有1条记录：</strong>不要用 add，要用 update。第一次初始化时手动在云控制台插入一条记录，之后代码始终用 doc(id).update() 更新。建议把这条记录的 _id 写在注释里备查。</div>
+    </div>
+
+    <div class="note note-info">
+      <span class="note-icon">ℹ️</span>
+      <div><strong>照片上传流程：</strong>照片不经过云函数，直接在小程序端调用 <code>wx.cloud.uploadFile()</code> 上传到云存储，获得 fileID 后再把 fileID 数组传给 submitTask 云函数存入数据库。fileID 格式：<code>cloud://env-id.xxx/garden/photos/filename.jpg</code>。</div>
+    </div>
+
+    <div class="note note-info">
+      <span class="note-icon">ℹ️</span>
+      <div><strong>OpenID 大小写：</strong>现有代码已有记录，<code>cloud.getWXContext().OPENID</code> 的大小写可能不一致，比较时统一用 <code>.toLowerCase()</code>。</div>
+    </div>
+
+    <div class="note note-tip">
+      <span class="note-icon">💡</span>
+      <div><strong>先用手动方式替代自动化：</strong>第一期不需要自动衰减、不需要自动推送，管理员手动调整健康值完全够用。把复杂的自动化逻辑放到第三期，先把核心流程跑通。</div>
+    </div>
+  </section>
+
+  <!-- ═══ 上线清单 ═══ -->
+  <section class="section" id="checklist">
+    <div class="section-header">
+      <div class="section-icon">☑️</div>
+      <div>
+        <div class="section-title">上线前检查清单</div>
+        <div class="section-subtitle">每期开发完成后对照检查，再发给家长使用</div>
+      </div>
+    </div>
+
+    <strong style="font-size:14px;color:var(--green-deep);display:block;margin-bottom:10px;">第零步 + 第一期上线清单</strong>
+    <ul class="checklist">
+      <li><span class="chk"></span>注册云函数已改造，child_name 必填，role 固定为 parent</li>
+      <li><span class="chk"></span>注册页面加入「孩子姓名」输入框，验证非空</li>
+      <li><span class="chk"></span>自己的 users 记录已手动补充 child_name 和 class_id</li>
+      <li><span class="chk"></span>4个新集合已在控制台创建：garden_config / garden_tasks / task_records / garden_photos</li>
+      <li><span class="chk"></span>garden_config 已初始化一条记录（health_point: 80，当前阶段信息）</li>
+      <li><span class="chk"></span>8个云函数已在控制台创建并上传代码</li>
+      <li><span class="chk"></span>app.json 已添加4个新页面路径</li>
+      <li><span class="chk"></span>菜园主页能正确展示健康值和当前阶段</li>
+      <li><span class="chk"></span>任务大厅能显示任务列表并成功认领</li>
+      <li><span class="chk"></span>管理员后台能调整健康值和发布任务</li>
+      <li><span class="chk"></span>在真机（微信）上测试完整注册流程</li>
+      <li><span class="chk"></span>在真机上测试认领任务流程</li>
+    </ul>
+
+    <strong style="font-size:14px;color:var(--green-deep);display:block;margin:20px 0 10px;">第二期上线清单</strong>
+    <ul class="checklist">
+      <li><span class="chk"></span>「我的任务」页面三个Tab均可正常切换和展示</li>
+      <li><span class="chk"></span>wx.chooseImage 选图 + 云存储上传流程测试通过</li>
+      <li><span class="chk"></span>submitTask 提交后状态正确变为 submitted</li>
+      <li><span class="chk"></span>管理员审核页面能看到待审核列表</li>
+      <li><span class="chk"></span>审核通过后健康值正确增加（检查 garden_config）</li>
+      <li><span class="chk"></span>审核通过后用户积分正确增加（检查 users）</li>
+      <li><span class="chk"></span>照片同步到 garden_photos 集合</li>
+    </ul>
+  </section>
+
+  <!-- footer -->
+  <div style="text-align:center;padding:40px 0 20px;color:var(--text-light);font-size:12px;">
+    <div style="font-size:28px;margin-bottom:8px;">🌻</div>
+    菜园模块开发计划 · 基于现有阅读记录小程序扩展 · 2026年5月
+  </div>
+
+</main>
+
+<script>
+  // Highlight active nav on scroll
+  const sections = document.querySelectorAll('.section');
+  const navItems = document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navItems.forEach(n => {
+      n.classList.toggle('active', n.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>

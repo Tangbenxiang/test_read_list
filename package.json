@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "adm-zip": "^0.5.17",
+    "archiver": "^8.0.0",
+    "tencentcloud-sdk-nodejs": "^4.1.234"
+  }
+}

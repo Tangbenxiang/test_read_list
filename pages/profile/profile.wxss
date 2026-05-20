@@ -449,6 +449,29 @@
 }
 
 /* 设置卡片样式 */
+.garden-admin-card {
+  border-left: 8rpx solid #40916C;
+  padding: 30rpx;
+}
+
+.garden-admin-card:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 20rpx rgba(64, 145, 108, 0.15);
+}
+
+.admin-arrow {
+  font-size: 40rpx;
+  color: #999;
+  margin-left: auto;
+}
+
+.admin-desc {
+  font-size: 26rpx;
+  color: #666;
+  margin-top: -10rpx;
+}
+
+/* 设置卡片样式 */
 .settings-card {
   margin-top: 20rpx;
 }

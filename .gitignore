@@ -50,7 +50,13 @@ build/
 .ci/
 
 # 自定义忽略
-.claude/settings.local.json  # Claude Code本地配置（可能包含权限设置）
+.claude/settings.local.json
+
+# 临时脚本和打包文件
+*.zip
+delete_*.py
+list_*.py
+update_*.py
 
 # 数据文件
 *.db
@@ -64,6 +70,5 @@ build/
 *.psd
 *.ai
 
-# 会话记录文件
-SESSION_SUMMARY_*.md
-*_20260308.md
+# 归档目录
+archive/

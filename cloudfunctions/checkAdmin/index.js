@@ -23,7 +23,7 @@ exports.main = async (event, context) => {
 
   // 硬编码管理员OPENID检查（不区分大小写）
   const normalizedOpenId = OPENID ? OPENID.toLowerCase() : ''
-  const adminOpenIds = ['opj1C3VBfI94VgN5A_H41qrzqRm0']
+  const adminOpenIds = ['opj1C3VBfI94VgN5A_H41qrzqRm0', 'oaoLb4qz0R8STBj6ipGlHkfNCO2Q']
   const isHardcodedAdmin = adminOpenIds.includes(normalizedOpenId)
 
   // 调试日志：总是记录OPENID
@@ -195,82 +195,10 @@ exports.main = async (event, context) => {
     }
 
     // 3. 如果两个集合中都没有找到用户
-    // 尝试自动创建测试用户（方便开发测试）
-    if (OPENID) {
-      try {
-        console.log('开发模式：自动创建测试用户，openid:', OPENID)
+    // 不再自动创建用户，直接返回 guest 状态
+    // 用户需通过注册页面走正规注册流程
+    console.log('用户未在 users 和 admins 集合中找到，返回 guest 状态:', OPENID)
 
-        // 生成随机匿名名
-        const adjectives = ['爱读书的', '聪明的', '快乐的', '勇敢的', '好奇的', '勤奋的', '专注的']
-        const animals = ['小熊猫', '小狐狸', '小海豚', '小猫咪', '小兔子', '小松鼠', '小刺猬']
-        const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)]
-        const randomAnimal = animals[Math.floor(Math.random() * animals.length)]
-        const anonymousName = `${randomAdj}${randomAnimal}`
-
-        // 创建用户数据
-        const userData = {
-          openid: OPENID,
-          anonymousName: anonymousName,
-          avatarIndex: Math.floor(Math.random() * 30), // 0-29随机头像
-          role: 'student', // 默认学生角色
-          grade: '三至四年级', // 默认年级
-          points: 0,
-          achievements: [],
-          readingStats: {
-            booksRead: 0,
-            challengesCompleted: 0,
-            totalReadingTime: 0
-          },
-          settings: {
-            privacyLevel: 'high',
-            notificationEnabled: true
-          },
-          createTime: db.serverDate(),
-          lastLoginTime: db.serverDate()
-        }
-
-        // 插入用户数据
-        const addResult = await db.collection('users').add({
-          data: userData
-        })
-
-        if (addResult._id) {
-          console.log('测试用户创建成功，ID:', addResult._id)
-
-          // 构建返回的用户信息
-          const userInfo = {
-            userId: addResult._id,
-            anonymousName: userData.anonymousName,
-            avatar: `/images/avatars/${userData.avatarIndex}.png`,
-            role: userData.role,
-            grade: userData.grade,
-            points: userData.points,
-            achievements: userData.achievements,
-            readingStats: userData.readingStats,
-            settings: userData.settings
-          }
-
-          const hasRequiredRole = checkRolePermission(userData.role, requiredRole)
-          const permissions = rolePermissions[userData.role] || []
-
-          return {
-            success: true,
-            isAdmin: false, // 不是管理员
-            openid: OPENID,
-            role: userData.role,
-            hasRequiredRole: hasRequiredRole,
-            permissions: permissions,
-            userInfo: userInfo,
-            message: '测试用户自动创建成功，您现在可以添加计划阅读书籍了'
-          }
-        }
-      } catch (createError) {
-        console.error('自动创建测试用户失败:', createError)
-        // 创建失败，继续返回guest状态
-      }
-    }
-
-    // 如果不是开发模式或创建失败，返回guest状态
     const hasRequiredRole = checkRolePermission('guest', requiredRole)
     const permissions = rolePermissions['guest'] || []
 
@@ -282,7 +210,7 @@ exports.main = async (event, context) => {
       hasRequiredRole: hasRequiredRole,
       permissions: permissions,
       userInfo: null,
-      message: '用户未注册，请先完成匿名注册'
+      message: '用户未注册，请先完成注册'
     }
 
   } catch (error) {

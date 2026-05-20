@@ -9,7 +9,7 @@ Page({
     selectedName: '',
     selectedAvatarIndex: 0,
     selectedGrade: '',
-    selectedRole: 'student',
+    childName: '',
     customName: '',
 
     // 名字推荐
@@ -30,20 +30,12 @@ Page({
       { value: 'high-school', label: '高中' }
     ],
 
-    // 角色选项
-    roles: [
-      { value: 'student', label: '学生' },
-      { value: 'parent', label: '家长' },
-      { value: 'teacher', label: '老师' }
-    ],
-
     // UI状态
     loading: false,
     showCustomNameInput: false,
 
     // 显示文本
-    selectedGradeLabel: '不选择年级',
-    selectedRoleLabel: '学生'
+    selectedGradeLabel: '不选择年级'
   },
 
   onLoad() {
@@ -224,18 +216,23 @@ Page({
     })
   },
 
-  // 选择角色
-  onRoleChange(e) {
-    const value = e.detail.value
-    const roleObj = this.data.roles.find(r => r.value === value) || { label: '学生' }
-    this.setData({
-      selectedRole: value,
-      selectedRoleLabel: roleObj.label
-    })
+  // 输入孩子姓名
+  onChildNameInput(e) {
+    this.setData({ childName: e.detail.value.trim() })
   },
 
   // 提交注册
   async submitRegistration() {
+    // 验证孩子姓名（必填）
+    if (!this.data.childName || this.data.childName.trim() === '') {
+      wx.showToast({
+        title: '请填写孩子的姓名',
+        icon: 'error',
+        duration: 2000
+      })
+      return
+    }
+
     // 验证表单
     if (!this.data.selectedName || this.data.selectedName.trim() === '') {
       wx.showToast({
@@ -276,7 +273,7 @@ Page({
           anonymousName: this.data.selectedName,
           avatarIndex: this.data.selectedAvatarIndex,
           grade: this.data.selectedGrade,
-          role: this.data.selectedRole
+          child_name: this.data.childName
         }
       })
 
@@ -297,12 +294,12 @@ Page({
         // 错误码到友好消息的映射
         const errorMessages = {
           'NAME_TOO_LONG': '名字不能超过20个字符',
+          'CHILD_NAME_REQUIRED': '请填写孩子的姓名',
+          'CHILD_NAME_TOO_LONG': '孩子姓名不能超过10个字符',
           'INVALID_AVATAR': '请选择有效的头像编号 (0-29)',
-          'INVALID_ROLE': '请选择有效的身份',
           'INVALID_GRADE': '请选择有效的年级',
           'ALREADY_REGISTERED': '您已经注册过了，无需重复注册',
           'NAME_EXISTS': '这个名字已经被使用了，请换一个',
-          'ADMIN_PERMISSION_DENIED': '管理员身份需要特殊授权',
           'REGISTRATION_FAILED': '注册失败，请稍后重试'
         }
 
@@ -341,7 +338,7 @@ Page({
   showHelp() {
     wx.showModal({
       title: '注册说明',
-      content: '1. 选择或输入一个有趣的匿名名字\n2. 选择一个喜欢的卡通头像\n3. 选择你的年级（可选）\n4. 选择你的身份（学生/家长/老师）\n5. 所有信息都会匿名保护',
+      content: '1. 填写孩子的真实姓名（用于班级活动识别）\n2. 选择或输入一个有趣的匿名名字\n3. 选择一个喜欢的卡通头像\n4. 选择孩子的年级（可选）\n5. 孩子姓名仅老师和班委可见，匿名名字对全班可见',
       showCancel: false,
       confirmText: '明白了'
     })

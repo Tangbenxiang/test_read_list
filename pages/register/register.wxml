@@ -3,8 +3,8 @@
   <!-- 顶部背景区域 -->
   <view class="header-bg">
     <view class="help-icon" bindtap="showHelp">❓</view>
-    <text class="title">匿名注册</text>
-    <text class="subtitle">选择一个有趣的身份开始阅读之旅</text>
+    <text class="title">家长注册</text>
+    <text class="subtitle">注册后即可参与班级菜园活动</text>
   </view>
 
   <!-- 用户状态检查提示 -->
@@ -74,14 +74,27 @@
       </view>
     </view>
 
-    <!-- 第三步：选择年级和角色 -->
+    <!-- 第三步：完善信息 -->
     <view class="form-section">
       <view class="section-title">
         <view class="section-icon">👤</view>
-        <text>第三步：完善你的信息（可选）</text>
+        <text>第三步：完善信息</text>
       </view>
 
       <view class="info-selection">
+        <!-- 孩子姓名（必填） -->
+        <view class="picker-group">
+          <text class="picker-label">孩子姓名：</text>
+          <input
+            class="custom-name-input"
+            placeholder="请填写孩子的真实姓名"
+            placeholder-class="placeholder"
+            maxlength="10"
+            value="{{childName}}"
+            bindinput="onChildNameInput"
+          />
+        </view>
+
         <!-- 年级选择 -->
         <view class="picker-group">
           <text class="picker-label">选择年级：</text>
@@ -92,39 +105,28 @@
             </view>
           </picker>
         </view>
-
-        <!-- 角色选择 -->
-        <view class="picker-group">
-          <text class="picker-label">你的身份：</text>
-          <picker class="picker" range="{{roles}}" range-key="label" value="{{selectedRole}}" bindchange="onRoleChange">
-            <view class="picker-view">
-              <text class="picker-text">{{selectedRoleLabel}}</text>
-              <view class="picker-arrow">▼</view>
-            </view>
-          </picker>
-        </view>
       </view>
     </view>
 
     <!-- 提交按钮 -->
     <view class="submit-section">
       <view class="selected-info">
-        <text class="info-text">你将注册为：</text>
-        <text class="info-highlight">{{selectedName}}</text>
+        <text class="info-text">注册为：</text>
+        <text class="info-highlight">{{childName || '?'}}的家长 · {{selectedName}}</text>
       </view>
 
       <button
         class="submit-btn"
         bindtap="submitRegistration"
-        disabled="{{loading || !selectedName}}"
+        disabled="{{loading || !selectedName || !childName}}"
         loading="{{loading}}"
       >
-        {{loading ? '注册中...' : '完成注册，开始阅读'}}
+        {{loading ? '注册中...' : '完成注册'}}
       </button>
 
       <view class="privacy-notice">
         <text class="notice-icon">🔒</text>
-        <text class="notice-text">你的个人信息将被匿名保护，仅用于提供更好的阅读体验</text>
+        <text class="notice-text">孩子姓名仅用于班级活动识别，匿名名字对全班可见</text>
       </view>
     </view>
   </view>

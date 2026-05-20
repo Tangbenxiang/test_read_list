@@ -1,0 +1,205 @@
+<!-- pages/garden/tasks.wxml -->
+<view class="tasks-page">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载任务中...</text>
+  </view>
+
+  <!-- 加载失败 -->
+  <view wx:elif="{{error}}" class="error-container">
+    <text class="error-icon">😟</text>
+    <text class="error-text">加载失败，请检查网络</text>
+    <view class="retry-btn" bindtap="retry">重新加载</view>
+  </view>
+
+  <!-- 正常内容 -->
+  <block wx:else>
+
+    <!-- ① 顶部状态栏 -->
+    <view class="top-bar">
+      <view class="week-label">第{{week_no}}周任务</view>
+      <view class="mini-health-bar">
+        <view class="mini-health-bg">
+          <view class="mini-health-fill" style="width: {{health_point}}%; background: {{health_color}};"></view>
+        </view>
+        <text class="mini-health-text" style="color: {{health_color}};">{{health_point}}HP</text>
+      </view>
+    </view>
+
+    <!-- ② 必选任务区 -->
+    <view wx:if="{{requiredTasks.length > 0}}" class="section">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-icon">🔴</text>
+          <text class="section-title">必选任务</text>
+        </view>
+        <view class="section-tag tag-required">完成可恢复健康值</view>
+      </view>
+
+      <view class="task-list">
+        <view
+          wx:for="{{requiredTasks}}"
+          wx:key="_id"
+          class="task-card task-required {{item.user_claimed ? 'task-claimed' : ''}}"
+          bindtap="openDetail"
+          data-task-id="{{item._id}}"
+          data-task-type="required"
+        >
+          <view class="task-main">
+            <view class="task-left">
+              <view class="task-icon-wrap required-icon-bg">
+                <text class="task-icon">{{item.icon || '📋'}}</text>
+              </view>
+              <view class="task-info">
+                <text class="task-name">{{item.title}}</text>
+                <view class="task-meta-row">
+                  <text wx:if="{{item.estimated_time}}" class="task-time">⏱ {{item.estimated_time}}</text>
+                </view>
+              </view>
+            </view>
+            <view class="task-right">
+              <view class="task-hp" style="color: #43A047;">+{{item.health_value}}HP</view>
+              <text wx:if="{{item.deadline}}" class="task-deadline">截止 {{item.deadline}}</text>
+            </view>
+          </view>
+          <view class="task-bottom">
+            <text class="task-claim-text">已有{{item.claim_count}}个家庭认领</text>
+            <view
+              wx:if="{{item.user_claimed}}"
+              class="task-btn btn-claimed"
+              catchtap="preventBubble"
+            >已认领 ✓</view>
+            <view
+              wx:elif="{{item.max_claim > 0 && item.claim_count >= item.max_claim}}"
+              class="task-btn btn-full"
+              catchtap="preventBubble"
+            >名额已满</view>
+            <view
+              wx:else
+              class="task-btn btn-claim"
+              catchtap="claimTask"
+              data-task-id="{{item._id}}"
+            >认领</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ③ 选做任务区 -->
+    <view wx:if="{{optionalTasks.length > 0}}" class="section">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-icon">🔵</text>
+          <text class="section-title">选做任务</text>
+        </view>
+        <view class="section-tag tag-optional">选做</view>
+      </view>
+
+      <view class="task-list">
+        <view
+          wx:for="{{optionalTasks}}"
+          wx:key="_id"
+          class="task-card task-optional {{item.user_claimed ? 'task-claimed' : ''}}"
+          bindtap="openDetail"
+          data-task-id="{{item._id}}"
+          data-task-type="optional"
+        >
+          <view class="task-main">
+            <view class="task-left">
+              <view class="task-icon-wrap optional-icon-bg">
+                <text class="task-icon">{{item.icon || '📋'}}</text>
+              </view>
+              <view class="task-info">
+                <text class="task-name">{{item.title}}</text>
+                <view class="task-meta-row">
+                  <text wx:if="{{item.estimated_time}}" class="task-time">⏱ {{item.estimated_time}}</text>
+                </view>
+              </view>
+            </view>
+            <view class="task-right">
+              <view class="task-hp" style="color: #66B3FF;">+{{item.health_value}}HP</view>
+              <text wx:if="{{item.deadline}}" class="task-deadline">截止 {{item.deadline}}</text>
+            </view>
+          </view>
+          <view class="task-bottom">
+            <text class="task-claim-text">已有{{item.claim_count}}个家庭认领</text>
+            <view
+              wx:if="{{item.user_claimed}}"
+              class="task-btn btn-claimed"
+              catchtap="preventBubble"
+            >已认领 ✓</view>
+            <view
+              wx:elif="{{item.max_claim > 0 && item.claim_count >= item.max_claim}}"
+              class="task-btn btn-full"
+              catchtap="preventBubble"
+            >名额已满</view>
+            <view
+              wx:else
+              class="task-btn btn-claim-optional"
+              catchtap="claimTask"
+              data-task-id="{{item._id}}"
+            >认领</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 无任何任务 -->
+    <view wx:if="{{requiredTasks.length === 0 && optionalTasks.length === 0}}" class="empty-all">
+      <text class="empty-icon">🌱</text>
+      <text class="empty-text">本周暂无开放任务</text>
+      <text class="empty-sub">管理员还没有发布本周任务</text>
+    </view>
+
+  </block>
+
+  <!-- 任务详情弹窗 -->
+  <view wx:if="{{showDetail}}" class="modal-mask" bindtap="closeDetail">
+    <view class="modal-body" catchtap="preventBubble">
+      <view class="modal-header">
+        <view class="modal-icon-wrap {{detailTask.type === 'required' ? 'required-icon-bg' : 'optional-icon-bg'}}">
+          <text class="modal-icon">{{detailTask.icon || '📋'}}</text>
+        </view>
+        <text class="modal-title">{{detailTask.title}}</text>
+      </view>
+      <view class="modal-info">
+        <view class="modal-info-row">
+          <text class="modal-info-label">类型</text>
+          <text class="modal-info-value {{detailTask.type === 'required' ? 'text-required' : 'text-optional'}}">
+            {{detailTask.type === 'required' ? '必选' : '选做'}}
+          </text>
+        </view>
+        <view class="modal-info-row">
+          <text class="modal-info-label">健康值</text>
+          <text class="modal-info-value">+{{detailTask.health_value}} HP</text>
+        </view>
+        <view class="modal-info-row" wx:if="{{detailTask.points_reward}}">
+          <text class="modal-info-label">积分奖励</text>
+          <text class="modal-info-value">+{{detailTask.points_reward}} 分</text>
+        </view>
+        <view class="modal-info-row" wx:if="{{detailTask.estimated_time}}">
+          <text class="modal-info-label">预计耗时</text>
+          <text class="modal-info-value">{{detailTask.estimated_time}}</text>
+        </view>
+        <view class="modal-info-row" wx:if="{{detailTask.deadline}}">
+          <text class="modal-info-label">截止时间</text>
+          <text class="modal-info-value">{{detailTask.deadline}}</text>
+        </view>
+        <view class="modal-info-row">
+          <text class="modal-info-label">已认领</text>
+          <text class="modal-info-value">{{detailTask.claim_count}} 个家庭</text>
+        </view>
+        <view class="modal-info-row" wx:if="{{detailTask.max_claim > 0}}">
+          <text class="modal-info-label">认领上限</text>
+          <text class="modal-info-value">{{detailTask.max_claim}} 个家庭</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <view class="modal-close-btn" bindtap="closeDetail">关闭</view>
+      </view>
+    </view>
+  </view>
+
+</view>

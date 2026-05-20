@@ -1,0 +1,461 @@
+/* pages/garden/admin/admin.wxss */
+
+.admin-page {
+  min-height: 100vh;
+  background: #F0FAF2;
+  padding: 24rpx;
+  padding-bottom: 60rpx;
+}
+
+/* ── Loading ── */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid #B7E4C7;
+  border-top-color: #43A047;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* ── Section Card ── */
+.section-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.section-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1B4332;
+  flex: 1;
+}
+
+.badge {
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  background: #D8F3DC;
+  color: #2D6A4F;
+}
+
+.badge-warn {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+.empty-text {
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+  padding: 20rpx 0;
+}
+
+/* ── ① 菜园状态区 ── */
+.status-info {
+  margin-bottom: 20rpx;
+}
+
+.health-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.health-bar-bg {
+  flex: 1;
+  height: 20rpx;
+  background: #D8F3DC;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.health-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #40916C, #2D6A4F);
+  border-radius: 10rpx;
+  transition: width 0.5s ease;
+}
+
+.health-score {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2D6A4F;
+  margin-left: 16rpx;
+  min-width: 60rpx;
+  text-align: right;
+}
+
+.stage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stage-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1B4332;
+}
+
+.health-status {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* ── ② 任务列表 ── */
+.task-list {
+  margin-bottom: 20rpx;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: #F0FAF2;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.task-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1B4332;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 6rpx;
+}
+
+.task-type {
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+}
+
+.type-req {
+  background: #FFE4E1;
+  color: #C62828;
+}
+
+.type-opt {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.task-claims {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.task-close-btn {
+  font-size: 24rpx;
+  color: #E53935;
+  padding: 8rpx 20rpx;
+  border: 2rpx solid #E53935;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.task-close-btn:active {
+  background: #E53935;
+  color: white;
+}
+
+/* ── ③ 审核区 ── */
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.pending-item {
+  background: #F8FBFF;
+  border: 2rpx solid #D8F3DC;
+  border-radius: 14rpx;
+  padding: 20rpx;
+}
+
+.pending-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.pending-child {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2D6A4F;
+}
+
+.pending-task {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.pending-time {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+}
+
+.photo-scroll {
+  white-space: nowrap;
+  margin-bottom: 12rpx;
+}
+
+.photo-row {
+  display: flex;
+  gap: 12rpx;
+  padding: 4rpx 0;
+}
+
+.photo-thumb {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 10rpx;
+  flex-shrink: 0;
+}
+
+.pending-note {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  padding: 10rpx 14rpx;
+  background: white;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.approve-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.approve-btn {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.approve-pass {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 2rpx solid #A5D6A7;
+}
+
+.approve-pass:active {
+  background: #2E7D32;
+  color: white;
+}
+
+.approve-reject {
+  background: #FFF3E0;
+  color: #E65100;
+  border: 2rpx solid #FFCC80;
+}
+
+.approve-reject:active {
+  background: #E65100;
+  color: white;
+}
+
+/* ── 通用按钮 ── */
+.btn-row {
+  margin-top: 8rpx;
+}
+
+.btn {
+  text-align: center;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: #40916C;
+  color: white;
+}
+
+.btn-primary:active {
+  background: #2D6A4F;
+}
+
+/* ── Modal 通用 ── */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  width: 640rpx;
+  max-height: 80vh;
+  background: white;
+  border-radius: 20rpx;
+  padding: 36rpx;
+  overflow-y: auto;
+}
+
+.modal-tall {
+  max-height: 90vh;
+}
+
+.modal-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1B4332;
+  text-align: center;
+  margin-bottom: 28rpx;
+}
+
+.form-group {
+  margin-bottom: 24rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2D6A4F;
+  margin-bottom: 10rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 20rpx;
+  background: #F0FAF2;
+  border: 2rpx solid #D8F3DC;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.health-slider {
+  width: 100%;
+  margin: 0;
+}
+
+.radio-group {
+  display: flex;
+  gap: 40rpx;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.picker-input {
+  display: flex;
+  align-items: center;
+  color: #333;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 28rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 22rpx 0;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.modal-cancel {
+  background: #F5F5F5;
+  color: #666;
+}
+
+.modal-confirm {
+  background: #40916C;
+  color: white;
+}
+
+.modal-confirm:active {
+  background: #2D6A4F;
+}

@@ -1,0 +1,215 @@
+<!-- pages/garden/admin/admin.wxml -->
+<view class="admin-page">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <block wx:else>
+
+    <!-- ═══ ① 菜园状态区 ═══ -->
+    <view class="section-card">
+      <view class="section-header">
+        <text class="section-icon">🌱</text>
+        <text class="section-title">菜园状态</text>
+      </view>
+
+      <view wx:if="{{gardenStatus}}" class="status-info">
+        <view class="health-row">
+          <view class="health-bar-bg">
+            <view class="health-bar-fill" style="width: {{gardenStatus.health_point}}%;"></view>
+          </view>
+          <text class="health-score">{{gardenStatus.health_point}}</text>
+        </view>
+        <view class="stage-row">
+          <text class="stage-name">{{gardenStatus.current_stage}}</text>
+          <text class="health-status">{{gardenStatus.health_emoji}} {{gardenStatus.health_status}}</text>
+        </view>
+      </view>
+
+      <view class="btn-row">
+        <view class="btn btn-primary" bindtap="openConfigModal">更新菜园状态</view>
+      </view>
+    </view>
+
+    <!-- ═══ ② 任务管理区 ═══ -->
+    <view class="section-card">
+      <view class="section-header">
+        <text class="section-icon">📋</text>
+        <text class="section-title">本周任务</text>
+        <view class="badge" wx:if="{{tasks.length > 0}}">{{tasks.length}}</view>
+      </view>
+
+      <view wx:if="{{tasks.length > 0}}" class="task-list">
+        <view wx:for="{{tasks}}" wx:key="_id" class="task-item">
+          <view class="task-left">
+            <text class="task-icon">{{item.icon || '📋'}}</text>
+            <view class="task-info">
+              <text class="task-name">{{item.title}}</text>
+              <view class="task-meta">
+                <text class="task-type {{item.type === 'required' ? 'type-req' : 'type-opt'}}">
+                  {{item.type === 'required' ? '必选' : '选做'}}
+                </text>
+                <text class="task-claims">{{item.claim_count}}人认领</text>
+              </view>
+            </view>
+          </view>
+          <view class="task-close-btn" bindtap="closeTask" data-id="{{item._id}}" data-title="{{item.title}}">关闭</view>
+        </view>
+      </view>
+      <view wx:else class="empty-text">暂无任务</view>
+
+      <view class="btn-row">
+        <view class="btn btn-primary" bindtap="openTaskModal">发布新任务</view>
+      </view>
+    </view>
+
+    <!-- ═══ ③ 审核区 ═══ -->
+    <view class="section-card">
+      <view class="section-header">
+        <text class="section-icon">✅</text>
+        <text class="section-title">待审核</text>
+        <view class="badge badge-warn" wx:if="{{pendingTotal > 0}}">{{pendingTotal}}</view>
+      </view>
+
+      <view wx:if="{{pendingRecords.length > 0}}" class="pending-list">
+        <view wx:for="{{pendingRecords}}" wx:key="_id" class="pending-item">
+          <view class="pending-header">
+            <text class="pending-child">{{item.child_name || '未知'}}</text>
+            <text class="pending-task">{{item.task_title}}</text>
+          </view>
+          <text class="pending-time">提交于 {{item.submitted_at_display}}</text>
+
+          <!-- 照片 -->
+          <scroll-view wx:if="{{item.photos && item.photos.length > 0}}" class="photo-scroll" scroll-x>
+            <view class="photo-row">
+              <image wx:for="{{item.photos}}" wx:for-item="photo" wx:key="*this"
+                class="photo-thumb" src="{{photo}}" mode="aspectFill"
+                bindtap="previewPhoto" data-url="{{photo}}" data-urls="{{item.photos}}" />
+            </view>
+          </scroll-view>
+
+          <!-- 备注 -->
+          <text wx:if="{{item.note}}" class="pending-note">{{item.note}}</text>
+
+          <!-- 操作按钮 -->
+          <view class="approve-row">
+            <view class="approve-btn approve-pass" bindtap="approveRecord" data-id="{{item._id}}">✓ 通过</view>
+            <view class="approve-btn approve-reject" bindtap="rejectRecord" data-id="{{item._id}}">✗ 驳回</view>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-text">暂无待审核</view>
+    </view>
+
+  </block>
+
+  <!-- ═══ 更新菜园状态 Modal ═══ -->
+  <view wx:if="{{showConfigModal}}" class="modal-mask" bindtap="closeConfigModal">
+    <view class="modal-content" catchtap="preventBubble">
+      <view class="modal-title">更新菜园状态</view>
+
+      <view class="form-group">
+        <text class="form-label">健康值：{{configForm.health_point}}</text>
+        <slider class="health-slider" min="0" max="100" step="1"
+          value="{{configForm.health_point}}" bindchange="onHealthSlider"
+          activeColor="#40916C" backgroundColor="#D8F3DC" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">阶段名称</text>
+        <input class="form-input" value="{{configForm.current_stage}}"
+          bindinput="onConfigInput" data-field="current_stage" placeholder="如：开荒整地期" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">阶段描述</text>
+        <input class="form-input" value="{{configForm.stage_desc}}"
+          bindinput="onConfigInput" data-field="stage_desc" placeholder="给家长和孩子看的描述" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">第几周</text>
+        <input class="form-input" type="number" value="{{configForm.week_no}}"
+          bindinput="onConfigInput" data-field="week_no" placeholder="1" />
+      </view>
+
+      <view class="modal-btns">
+        <view class="modal-btn modal-cancel" bindtap="closeConfigModal">取消</view>
+        <view class="modal-btn modal-confirm" bindtap="saveConfig">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ═══ 发布任务 Modal ═══ -->
+  <view wx:if="{{showTaskModal}}" class="modal-mask" bindtap="closeTaskModal">
+    <view class="modal-content modal-tall" catchtap="preventBubble">
+      <view class="modal-title">发布新任务</view>
+
+      <view class="form-group">
+        <text class="form-label">任务名称 *</text>
+        <input class="form-input" value="{{taskForm.title}}"
+          bindinput="onTaskInput" data-field="title" placeholder="如：本周浇水第1次" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">图标 emoji *</text>
+        <input class="form-input" value="{{taskForm.icon}}"
+          bindinput="onTaskInput" data-field="icon" placeholder="如：💧" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">类型</text>
+        <radio-group class="radio-group" bindchange="onTypeChange">
+          <label class="radio-label">
+            <radio value="required" checked="{{taskForm.type === 'required'}}" color="#40916C" /> 必选
+          </label>
+          <label class="radio-label">
+            <radio value="optional" checked="{{taskForm.type === 'optional'}}" color="#40916C" /> 选做
+          </label>
+        </radio-group>
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">健康值贡献 *</text>
+        <input class="form-input" type="number" value="{{taskForm.health_value}}"
+          bindinput="onTaskInput" data-field="health_value" placeholder="15" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">积分奖励</text>
+        <input class="form-input" type="number" value="{{taskForm.points_reward}}"
+          bindinput="onTaskInput" data-field="points_reward" placeholder="10" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">截止时间 *</text>
+        <picker mode="date" value="{{taskForm.deadline}}" bindchange="onDeadlineChange">
+          <view class="form-input picker-input">
+            {{deadlineDisplay || '请选择日期'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">预计耗时</text>
+        <input class="form-input" value="{{taskForm.estimated_time}}"
+          bindinput="onTaskInput" data-field="estimated_time" placeholder="如：约30分钟" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">最多认领数（0=不限）</text>
+        <input class="form-input" type="number" value="{{taskForm.max_claim}}"
+          bindinput="onTaskInput" data-field="max_claim" placeholder="0" />
+      </view>
+
+      <view class="modal-btns">
+        <view class="modal-btn modal-cancel" bindtap="closeTaskModal">取消</view>
+        <view class="modal-btn modal-confirm" bindtap="publishTask">发布</view>
+      </view>
+    </view>
+  </view>
+
+</view>

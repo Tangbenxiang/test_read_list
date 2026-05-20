@@ -247,8 +247,11 @@ Page({
 
   // 查看本周挑战
   viewWeeklyChallenges() {
-    wx.navigateTo({
-      url: '/pages/index/index?tab=challenges'
+    // switchTab 不支持 URL 参数，通过 globalData 传递 tab 标记
+    const app = getApp()
+    app.globalData.pendingTab = 'challenges'
+    wx.switchTab({
+      url: '/pages/index/index'
     })
   },
 

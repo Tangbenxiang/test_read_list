@@ -1,0 +1,432 @@
+/* pages/garden/index.wxss */
+
+.garden-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #E8F5E9 0%, #F0FAF2 30%, #E6F4FF 100%);
+  padding-bottom: 40rpx;
+}
+
+/* ── Loading ── */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid #B7E4C7;
+  border-top-color: #43A047;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* ── Error ── */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.error-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 30rpx;
+}
+
+.retry-btn {
+  padding: 16rpx 48rpx;
+  background: #43A047;
+  color: white;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.retry-btn:active {
+  opacity: 0.8;
+}
+
+/* ── ① 菜园状态卡片 ── */
+.status-card {
+  margin: 24rpx 24rpx 0;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(160, 214, 255, 0.3);
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.08);
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.garden-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #1B4332;
+}
+
+.stage-tag {
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  background: rgba(67, 160, 71, 0.12);
+  color: #2D6A4F;
+}
+
+/* ── 健康值进度条 ── */
+.health-bar-wrap {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.health-bar-bg {
+  flex: 1;
+  height: 20rpx;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.health-bar-fill {
+  height: 100%;
+  border-radius: 10rpx;
+  transition: width 0.6s ease;
+}
+
+.health-score {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-left: 16rpx;
+  min-width: 60rpx;
+  text-align: right;
+}
+
+.status-info {
+  margin-bottom: 8rpx;
+}
+
+.status-label {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.status-desc {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 快捷入口 */
+.quick-links {
+  display: flex;
+  margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.quick-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  background: white;
+  border-radius: 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.quick-link-btn:active {
+  opacity: 0.8;
+}
+
+.quick-link-icon {
+  font-size: 28rpx;
+}
+
+.quick-link-text {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.admin-link {
+  background: rgba(64, 145, 108, 0.1);
+  border-color: #40916C;
+}
+
+/* ── Section 通用 ── */
+.section {
+  margin: 24rpx 24rpx 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.section-icon {
+  font-size: 32rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1B4332;
+}
+
+.task-badge {
+  font-size: 22rpx;
+  color: #666;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+  margin-left: 8rpx;
+}
+
+.section-more {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #66B3FF;
+}
+
+.section-more:active {
+  opacity: 0.7;
+}
+
+.arrow {
+  font-size: 32rpx;
+  margin-left: 4rpx;
+}
+
+/* ── ② 任务卡片 ── */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.task-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(160, 214, 255, 0.2);
+}
+
+.task-card-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.task-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 16rpx;
+  background: #E8F5E9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.task-icon {
+  font-size: 36rpx;
+}
+
+.task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.task-type {
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.type-required {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.type-optional {
+  background: #E6F4FF;
+  color: #0066CC;
+}
+
+.task-claim-count {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.task-hp {
+  font-size: 24rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+.task-hp-required {
+  color: #43A047;
+}
+
+.task-hp-optional {
+  color: #66B3FF;
+}
+
+.task-card-bottom {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.task-btn {
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 10rpx 28rpx;
+  border-radius: 24rpx;
+}
+
+.task-btn.unclaimed {
+  background: #43A047;
+  color: white;
+}
+
+.task-btn.unclaimed:active {
+  opacity: 0.8;
+}
+
+.task-btn.claimed {
+  background: #F5F5F5;
+  color: #999;
+}
+
+/* ── 空任务 ── */
+.empty-tasks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0;
+  background: white;
+  border-radius: 20rpx;
+}
+
+.empty-icon {
+  font-size: 60rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* ── 紧急提醒 ── */
+.urgent-notice {
+  display: flex;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 20rpx 24rpx;
+  background: #FEF2F2;
+  border-radius: 16rpx;
+  border-left: 6rpx solid #E53935;
+}
+
+.urgent-notice:active {
+  opacity: 0.8;
+}
+
+.urgent-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.urgent-text {
+  font-size: 26rpx;
+  color: #9B2335;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ── ③ 成长相册入口 ── */
+.photos-entry {
+  background: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.photos-entry:active {
+  opacity: 0.85;
+}
+
+.photos-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50rpx 0;
+}
+
+.photos-placeholder-icon {
+  font-size: 60rpx;
+  margin-bottom: 12rpx;
+}
+
+.photos-placeholder-text {
+  font-size: 26rpx;
+  color: #999;
+}

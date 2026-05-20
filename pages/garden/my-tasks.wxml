@@ -1,0 +1,199 @@
+<!-- pages/garden/my-tasks.wxml -->
+<wxs module="filter">
+module.exports = function(records, activeTab) {
+  if (!records) return [];
+  if (activeTab === 'approved') {
+    return records.filter(function(r) { return r.status === 'approved' || r.status === 'rejected'; });
+  }
+  return records.filter(function(r) { return r.status === activeTab; });
+}
+</wxs>
+
+<view class="my-tasks-page">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 加载失败 -->
+  <view wx:elif="{{error}}" class="error-container">
+    <text class="error-icon">😟</text>
+    <text class="error-text">加载失败，请检查网络</text>
+    <view class="retry-btn" bindtap="retry">重新加载</view>
+  </view>
+
+  <!-- 正常内容 -->
+  <block wx:else>
+
+    <!-- ① Tab 切换栏 -->
+    <view class="tab-bar">
+      <view class="tab-item {{activeTab === 'claimed' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="claimed">
+        <text class="tab-text">待完成</text>
+        <view wx:if="{{counts.claimed > 0}}" class="tab-badge">{{counts.claimed}}</view>
+        <view class="tab-underline" wx:if="{{activeTab === 'claimed'}}"></view>
+      </view>
+      <view class="tab-item {{activeTab === 'submitted' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="submitted">
+        <text class="tab-text">待审核</text>
+        <view wx:if="{{counts.submitted > 0}}" class="tab-badge">{{counts.submitted}}</view>
+        <view class="tab-underline" wx:if="{{activeTab === 'submitted'}}"></view>
+      </view>
+      <view class="tab-item {{activeTab === 'approved' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="approved">
+        <text class="tab-text">已完成</text>
+        <view wx:if="{{counts.approved > 0}}" class="tab-badge badge-gray">{{counts.approved}}</view>
+        <view class="tab-underline" wx:if="{{activeTab === 'approved'}}"></view>
+      </view>
+    </view>
+
+    <!-- ② 列表内容 -->
+    <view class="record-list">
+
+      <!-- 空状态 -->
+      <view wx:if="{{filter(records, activeTab).length === 0}}" class="empty-state">
+        <text class="empty-icon">
+          {{activeTab === 'claimed' ? '📋' : activeTab === 'submitted' ? '⏳' : '🎉'}}
+        </text>
+        <text class="empty-text">
+          {{activeTab === 'claimed' ? '没有待完成的任务' : activeTab === 'submitted' ? '没有待审核的任务' : '还没有完成的任务'}}
+        </text>
+      </view>
+
+      <!-- ── 待完成 ── -->
+      <block wx:if="{{activeTab === 'claimed'}}">
+        <view wx:for="{{filter(records, activeTab)}}" wx:key="_id"
+          class="record-card card-claimed">
+          <view class="card-header">
+            <view class="card-icon-wrap claimed-icon-bg">
+              <text class="card-icon">{{item.task_icon || '📋'}}</text>
+            </view>
+            <view class="card-title-area">
+              <text class="card-title">{{item.task_title || '任务'}}</text>
+              <text class="card-time">认领于 {{item.claimed_at}}</text>
+            </view>
+          </view>
+          <view class="card-footer">
+            <view class="card-deadline-area">
+              <text wx:if="{{item.task_deadline}}" class="card-deadline {{item.is_deadline_urgent ? 'deadline-urgent' : ''}}">
+                截止 {{item.task_deadline}}
+              </text>
+            </view>
+            <view class="card-btn btn-submit" catchtap="openSubmit"
+              data-record-id="{{item._id}}" data-task-title="{{item.task_title}}">
+              提交完成
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- ── 待审核 ── -->
+      <block wx:if="{{activeTab === 'submitted'}}">
+        <view wx:for="{{filter(records, activeTab)}}" wx:key="_id"
+          class="record-card card-submitted">
+          <view class="card-header">
+            <view class="card-icon-wrap submitted-icon-bg">
+              <text class="card-icon">⏳</text>
+            </view>
+            <view class="card-title-area">
+              <text class="card-title">{{item.task_title || '任务'}}</text>
+              <text class="card-time">提交于 {{item.submitted_at}}</text>
+            </view>
+          </view>
+          <!-- 照片缩略图 -->
+          <view wx:if="{{item.photos && item.photos.length > 0}}" class="card-photos">
+            <scroll-view scroll-x class="photos-scroll">
+              <view class="photos-row">
+                <image wx:for="{{item.photos}}" wx:for-item="photo" wx:key="*this"
+                  class="photo-thumb" src="{{photo}}" mode="aspectFill"
+                  data-url="{{photo}}" catchtap="previewSubmittedPhoto" />
+              </view>
+            </scroll-view>
+          </view>
+          <view class="card-footer">
+            <view></view>
+            <view class="card-status-label status-submitted">等待审核中...</view>
+          </view>
+        </view>
+      </block>
+
+      <!-- ── 已完成 ── -->
+      <block wx:if="{{activeTab === 'approved'}}">
+        <view wx:for="{{filter(records, activeTab)}}" wx:key="_id"
+          class="record-card {{item.status === 'rejected' ? 'card-rejected' : 'card-approved'}}">
+          <view class="card-header">
+            <view class="card-icon-wrap {{item.status === 'rejected' ? 'rejected-icon-bg' : 'approved-icon-bg'}}">
+              <text class="card-icon">{{item.status === 'rejected' ? '❌' : '✅'}}</text>
+            </view>
+            <view class="card-title-area">
+              <text class="card-title">{{item.task_title || '任务'}}</text>
+              <text class="card-time">
+                {{item.status === 'rejected' ? '驳回于' : '完成于'}} {{item.approved_at}}
+              </text>
+            </view>
+            <view wx:if="{{item.status === 'approved' && item.points_reward}}" class="card-points">+{{item.points_reward}}分</view>
+          </view>
+          <!-- 被驳回原因 -->
+          <view wx:if="{{item.status === 'rejected'}}" class="reject-reason">
+            <text class="reject-label">驳回原因：</text>
+            <text class="reject-text">{{item.reject_reason || '未填写原因'}}</text>
+          </view>
+          <!-- 照片缩略图 -->
+          <view wx:if="{{item.photos && item.photos.length > 0}}" class="card-photos">
+            <scroll-view scroll-x class="photos-scroll">
+              <view class="photos-row">
+                <image wx:for="{{item.photos}}" wx:for-item="photo" wx:key="*this"
+                  class="photo-thumb" src="{{photo}}" mode="aspectFill" />
+              </view>
+            </scroll-view>
+          </view>
+        </view>
+      </block>
+
+    </view>
+
+  </block>
+
+  <!-- ③ 提交完成弹窗 -->
+  <view wx:if="{{showSubmit}}" class="modal-mask" bindtap="closeSubmit">
+    <view class="modal-body" catchtap="preventBubble">
+      <view class="modal-title">提交完成</view>
+      <view class="modal-task-name">{{submitTaskTitle}}</view>
+
+      <!-- 照片选择 -->
+      <view class="modal-section">
+        <view class="modal-section-label">
+          <text>上传照片</text>
+          <text class="photo-count">{{chosenPhotos.length}}/3</text>
+        </view>
+        <view class="modal-photos">
+          <!-- 已选照片 -->
+          <view wx:for="{{chosenPhotos}}" wx:key="*this" class="modal-photo-item">
+            <image class="modal-photo-img" src="{{item}}" mode="aspectFill"
+              data-url="{{item}}" catchtap="previewPhoto" />
+            <view class="modal-photo-del" catchtap="removePhoto" data-index="{{index}}">✕</view>
+          </view>
+          <!-- 添加按钮 -->
+          <view wx:if="{{chosenPhotos.length < 3}}" class="modal-photo-add" bindtap="choosePhotos">
+            <text class="add-icon">+</text>
+            <text class="add-text">添加</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 备注 -->
+      <view class="modal-section">
+        <view class="modal-section-label">
+          <text>备注（选填）</text>
+        </view>
+        <textarea class="modal-note-input" placeholder="说说完成了什么..."
+          maxlength="50" value="{{noteInput}}" bindinput="onNoteInput" />
+      </view>
+
+      <!-- 提交按钮 -->
+      <view class="modal-submit-btn {{submitting ? 'btn-loading' : ''}}" bindtap="confirmSubmit">
+        {{submitting ? '上传中...' : '确认提交'}}
+      </view>
+    </view>
+  </view>
+
+</view>

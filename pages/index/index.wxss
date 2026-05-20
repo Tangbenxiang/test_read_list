@@ -130,6 +130,96 @@
   flex: 1;
 }
 
+/* 菜园状态卡片 */
+.garden-card {
+  margin: 0 30rpx 30rpx;
+  padding: 24rpx 28rpx;
+  background: white;
+  border-radius: 20rpx;
+  border-left: 8rpx solid #43A047;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+}
+
+.garden-card:active {
+  opacity: 0.85;
+}
+
+.garden-card-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.garden-card-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.garden-card-emoji {
+  font-size: 32rpx;
+  margin-right: 8rpx;
+}
+
+.garden-card-score {
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.garden-card-sep {
+  font-size: 26rpx;
+  color: #999;
+  margin: 0 6rpx;
+}
+
+.garden-card-name {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.garden-card-bottom {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.garden-card-stage {
+  color: #666;
+}
+
+.garden-card-task-warn {
+  color: #FF7043;
+}
+
+.garden-card-task-ok {
+  color: #43A047;
+}
+
+.garden-card-arrow {
+  font-size: 40rpx;
+  color: #CCC;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+/* 菜园卡片骨架占位 */
+.garden-card-skeleton {
+  margin: 0 30rpx 30rpx;
+  padding: 24rpx 28rpx;
+  background: white;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.skeleton-line {
+  height: 24rpx;
+  width: 60%;
+  background: #F0F0F0;
+  border-radius: 12rpx;
+}
+
 /* 章节标题 */
 .section-title {
   display: flex;

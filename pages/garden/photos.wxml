@@ -1,0 +1,69 @@
+<!-- pages/garden/photos.wxml -->
+<view class="photos-page">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载相册...</text>
+  </view>
+
+  <!-- 加载失败 -->
+  <view wx:elif="{{error}}" class="error-container">
+    <text class="error-icon">📷</text>
+    <text class="error-text">加载失败</text>
+    <view class="retry-btn" bindtap="retry">重试</view>
+  </view>
+
+  <block wx:else>
+
+    <!-- ① 顶部统计栏 -->
+    <view class="stats-bar">
+      <text class="stats-text">共 {{totalPhotos}} 张照片，记录 {{totalWeeks}} 周成长历程</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{weekList.length === 0}}" class="empty-container">
+      <text class="empty-icon">🌱</text>
+      <text class="empty-text">还没有照片，快去完成任务吧</text>
+    </view>
+
+    <!-- ② 时间轴主体 -->
+    <view wx:else class="timeline">
+      <view wx:for="{{weekList}}" wx:key="*this" class="week-group">
+        <view class="week-header">
+          <view class="week-dot"></view>
+          <text class="week-title">第{{item}}周</text>
+        </view>
+        <view class="photo-grid">
+          <view wx:for="{{photosByWeek[item]}}" wx:for-item="photo" wx:key="_id"
+            class="photo-card" bindtap="openPreview"
+            data-url="{{photo.image_url}}" data-name="{{photo.child_name}}"
+            data-caption="{{photo.caption}}" data-urls="{{weekUrls[item]}}">
+            <image class="photo-img" src="{{photo.image_url}}" mode="aspectFill" />
+            <view class="photo-info">
+              <text class="photo-name">{{photo.child_name}}</text>
+              <text wx:if="{{photo.caption}}" class="photo-caption">{{photo.caption}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </block>
+
+  <!-- ③ 全屏预览 Modal -->
+  <view wx:if="{{showPreview}}" class="preview-mask" bindtap="closePreview">
+    <image class="preview-img" src="{{previewUrl}}" mode="aspectFit" catchtap="preventBubble" />
+    <view class="preview-footer" catchtap="preventBubble">
+      <text wx:if="{{previewName}}" class="preview-name">{{previewName}}</text>
+      <text wx:if="{{previewCaption}}" class="preview-caption">{{previewCaption}}</text>
+    </view>
+  </view>
+
+  <!-- ④ 管理员上传按钮 -->
+  <view wx:if="{{isAdmin}}" class="fab-btn {{uploading ? 'fab-uploading' : ''}}" bindtap="chooseAndUpload">
+    <text wx:if="{{!uploading}}" class="fab-icon">+</text>
+    <view wx:else class="fab-spinner"></view>
+  </view>
+
+</view>

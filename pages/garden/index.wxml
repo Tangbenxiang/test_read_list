@@ -1,0 +1,132 @@
+<!-- pages/garden/index.wxml -->
+<view class="garden-page">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">菜园加载中...</text>
+  </view>
+
+  <!-- 加载失败 -->
+  <view wx:elif="{{error}}" class="error-container">
+    <text class="error-icon">😟</text>
+    <text class="error-text">加载失败，请检查网络</text>
+    <view class="retry-btn" bindtap="retry">重新加载</view>
+  </view>
+
+  <!-- 正常内容 -->
+  <block wx:else>
+
+    <!-- ① 菜园状态区 -->
+    <view class="status-card" wx:if="{{gardenStatus}}">
+      <view class="status-header">
+        <text class="garden-name">我们班的菜园 🌱</text>
+        <view class="stage-tag" wx:if="{{gardenStatus.current_stage}}">{{gardenStatus.current_stage}}</view>
+      </view>
+
+      <!-- 健康值进度条 -->
+      <view class="health-bar-wrap">
+        <view class="health-bar-bg">
+          <view class="health-bar-fill" style="width: {{gardenStatus.health_point}}%;"></view>
+        </view>
+        <text class="health-score">{{gardenStatus.health_point}}</text>
+      </view>
+
+      <!-- 状态信息 -->
+      <view class="status-info">
+        <text class="status-label">{{gardenStatus.health_emoji}} {{gardenStatus.health_status}}</text>
+      </view>
+      <text class="status-desc">{{gardenStatus.health_desc}}</text>
+
+      <!-- 快捷入口 -->
+      <view class="quick-links">
+        <view class="quick-link-btn" bindtap="goToMyTasks">
+          <text class="quick-link-icon">✅</text>
+          <text class="quick-link-text">我的任务</text>
+        </view>
+        <view wx:if="{{isAdmin}}" class="quick-link-btn admin-link" bindtap="goToAdmin">
+          <text class="quick-link-icon">🔧</text>
+          <text class="quick-link-text">管理后台</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ② 本周任务区 -->
+    <view class="section">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-icon">📋</text>
+          <text class="section-title">本周任务</text>
+          <view class="task-badge" wx:if="{{gardenStatus && gardenStatus.task_summary}}">
+            {{gardenStatus.task_summary.total}}个任务
+          </view>
+        </view>
+        <view class="section-more" bindtap="goToTasks">
+          <text>查看全部</text>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 有任务 -->
+      <view wx:if="{{tasks.length > 0}}" class="task-list">
+        <view wx:for="{{tasks}}" wx:key="_id" class="task-card">
+          <view class="task-card-top">
+            <view class="task-icon-wrap">
+              <text class="task-icon">{{item.icon || '📋'}}</text>
+            </view>
+            <view class="task-info">
+              <text class="task-name">{{item.title}}</text>
+              <view class="task-meta">
+                <text class="task-type {{item.type === 'required' ? 'type-required' : 'type-optional'}}">
+                  {{item.type === 'required' ? '必选' : '选做'}}
+                </text>
+                <text class="task-claim-count">{{item.claim_count}}人已认领</text>
+              </view>
+            </view>
+            <view class="task-hp task-hp-{{item.type}}">
+              +{{item.health_value}}HP
+            </view>
+          </view>
+          <view class="task-card-bottom">
+            <view wx:if="{{item.user_claimed}}" class="task-btn claimed">已认领 ✓</view>
+            <view wx:else class="task-btn unclaimed" bindtap="goToTasks">去认领</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 无任务 -->
+      <view wx:else class="empty-tasks">
+        <text class="empty-icon">🌱</text>
+        <text class="empty-text">本周暂无任务</text>
+      </view>
+
+      <!-- 紧急提醒 -->
+      <view wx:if="{{gardenStatus && gardenStatus.task_summary && gardenStatus.task_summary.has_urgent}}" class="urgent-notice" bindtap="goToTasks">
+        <text class="urgent-icon">🚨</text>
+        <text class="urgent-text">菜园健康值偏低，还有 {{gardenStatus.task_summary.unclaimed_required}} 个必选任务等认领！</text>
+      </view>
+    </view>
+
+    <!-- ③ 成长相册入口 -->
+    <view class="section">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-icon">📸</text>
+          <text class="section-title">成长相册</text>
+        </view>
+        <view class="section-more" bindtap="goToPhotos">
+          <text>查看全部</text>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+
+      <view class="photos-entry" bindtap="goToPhotos">
+        <view class="photos-placeholder">
+          <text class="photos-placeholder-icon">🌻</text>
+          <text class="photos-placeholder-text">菜园的成长记录即将在这里展示</text>
+        </view>
+      </view>
+    </view>
+
+  </block>
+</view>

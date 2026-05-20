@@ -2,11 +2,14 @@
 <view class="container page-content">
   <!-- 顶部背景区域 -->
   <view class="header-bg">
+    <!-- 个人中心按钮已隐藏（个人使用场景不需要） -->
+    <!--
     <view class="user-avatar" bindtap="goToProfile">
       <image wx:if="{{userInfo && userInfo.avatar}}" class="avatar-image" src="{{userInfo.avatar}}" mode="aspectFill" />
       <view wx:else class="avatar-placeholder">👤</view>
       <text wx:if="{{userInfo && userInfo.anonymousName}}" class="avatar-name">{{userInfo.anonymousName}}</text>
     </view>
+    -->
     <view class="admin-icon" bindtap="goToAddBook">➕</view>
     <text class="title">阅读记录小助手</text>
     <text class="subtitle">和Shelly一起探索书海，爱上阅读</text>
@@ -18,10 +21,32 @@
     <text class="search-placeholder">搜索书名、作者或类型</text>
   </view>
 
-  <!-- 学生专区 -->
+  <!-- 菜园状态卡片 -->
+  <view wx:if="{{gardenLoading}}" class="garden-card-skeleton">
+    <view class="skeleton-line"></view>
+  </view>
+  <view wx:elif="{{gardenStatus}}" class="garden-card" style="background: {{gardenStatus.health_color}}10;" bindtap="goToGarden">
+    <view class="garden-card-left">
+      <view class="garden-card-status">
+        <text class="garden-card-emoji">{{gardenStatus.health_emoji}}</text>
+        <text class="garden-card-score" style="color: {{gardenStatus.health_color}};">{{gardenStatus.health_point}}分</text>
+        <text class="garden-card-sep">·</text>
+        <text class="garden-card-name" style="color: {{gardenStatus.health_color}};">{{gardenStatus.health_status}}</text>
+      </view>
+      <view class="garden-card-bottom">
+        <text class="garden-card-stage">{{gardenStatus.current_stage || '菜园'}}</text>
+        <text class="garden-card-sep">·</text>
+        <text wx:if="{{gardenStatus.task_summary.unclaimed_required > 0}}" class="garden-card-task-warn">有{{gardenStatus.task_summary.unclaimed_required}}个任务待认领</text>
+        <text wx:else class="garden-card-task-ok">本周任务已全部认领 ✓</text>
+      </view>
+    </view>
+    <view class="garden-card-arrow">›</view>
+  </view>
+
+  <!-- 按年级选书 -->
   <view class="section-title">
-    <view class="section-icon">👦</view>
-    <text>学生专区</text>
+    <view class="section-icon">📚</view>
+    <text>按年级选书</text>
   </view>
 
   <view class="grade-cards">

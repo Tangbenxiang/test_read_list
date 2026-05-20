@@ -18,7 +18,12 @@
     "pages/ranking/ranking",
     "pages/parent/parent",
     "pages/achievements/achievements",
-    "pages/family/family"
+    "pages/family/family",
+    "pages/garden/index",
+    "pages/garden/tasks",
+    "pages/garden/my-tasks",
+    "pages/garden/photos",
+    "pages/garden/admin/admin"
   ],
   "entryPagePath": "pages/index/index",
   "window": {
@@ -27,6 +32,26 @@
     "navigationBarTitleText": "儿童阅读记录",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#E6F4FF"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#0066CC",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "读书",
+        "iconPath": "images/tab-book.png",
+        "selectedIconPath": "images/tab-book-active.png"
+      },
+      {
+        "pagePath": "pages/garden/index",
+        "text": "菜园",
+        "iconPath": "images/tab-garden.png",
+        "selectedIconPath": "images/tab-garden-active.png"
+      }
+    ]
   },
   "cloud": true,
   "style": "v2",

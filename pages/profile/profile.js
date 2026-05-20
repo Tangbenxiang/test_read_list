@@ -2,6 +2,7 @@
 Page({
   data: {
     // 用户信息
+    isAdmin: false,
     userInfo: null,
     loading: true,
     refreshing: false,
@@ -38,16 +39,31 @@ Page({
   },
 
   onLoad() {
+    this.initAdminStatus()
     this.loadUserProfile()
   },
 
   onShow() {
     // 每次显示页面时刷新数据
+    this.initAdminStatus()
     this.loadUserProfile()
   },
 
   onPullDownRefresh() {
     this.refreshProfile()
+  },
+
+  // 从 globalData 获取管理员状态（处理硬编码管理员无 users 记录的情况）
+  initAdminStatus() {
+    try {
+      const app = getApp()
+      const role = app.globalData.userInfo && app.globalData.userInfo.role
+      if (role === 'admin' || role === 'teacher') {
+        this.setData({ isAdmin: true })
+      }
+    } catch (err) {
+      // 忽略
+    }
   },
 
   // 加载用户资料
@@ -73,6 +89,7 @@ Page({
         // 更新用户信息
         this.setData({
           userInfo: userInfo,
+          isAdmin: userInfo.role === 'admin' || userInfo.role === 'teacher',
           readingStats: userInfo.readingStats || {
             booksRead: 0,
             challengesCompleted: 0,
@@ -91,8 +108,24 @@ Page({
         this.loadRecentActivities()
 
       } else {
-        // 如果是用户未找到，跳转到注册页
+        // 如果是用户未找到，检查是否硬编码管理员
         if (res.result.code === 'USER_NOT_FOUND') {
+          const app = getApp()
+          const role = app.globalData.userInfo && app.globalData.userInfo.role
+          if (role === 'admin' || role === 'teacher') {
+            // 硬编码管理员无 users 记录，显示简化版个人中心
+            this.setData({
+              userInfo: {
+                anonymousName: '管理员',
+                role: role,
+                points: 0,
+                achievements: []
+              },
+              isAdmin: true,
+              loading: false
+            })
+            return
+          }
           wx.redirectTo({
             url: '/pages/register/register'
           })
@@ -191,6 +224,11 @@ Page({
     wx.navigateTo({
       url: '/pages/challenge-list/challenge-list'
     })
+  },
+
+  // 跳转菜园管理
+  goToGardenAdmin() {
+    wx.navigateTo({ url: '/pages/garden/admin/admin' })
   },
 
   // 跳转到设置页面（后续实现）
